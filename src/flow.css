@@ -304,18 +304,18 @@
 .r-pull {
   position: absolute;
   z-index: 12;
-  left: 35px;
+  left: 180px;
   top: 396px;
-  width: 296px;
+  width: 137px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 8px;
   color: #fff;
   font-size: 12px;
   line-height: 15px;
   letter-spacing: 0.02em;
-  text-align: center;
+  text-align: right;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
   animation: nudge 1.6s ease-in-out 1.1s infinite;
 }
@@ -359,8 +359,13 @@
   background: #393939;
 }
 
-.l-disc.spin {
+.l-disc {
   animation: l-spin 9s linear infinite;
+  animation-play-state: paused;
+}
+
+.l-disc.run {
+  animation-play-state: running;
 }
 
 @keyframes l-spin {
@@ -380,12 +385,19 @@
   background: #bababa;
 }
 
-.l-label img {
+.l-label img,
+.l-label video {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  animation: l-fade 0.45s ease both;
+  opacity: 0;
+  transition: opacity 0.7s ease 0.15s;
+}
+
+.l-label img.on,
+.l-label video.on {
+  opacity: 1;
 }
 
 @keyframes l-fade {
@@ -394,15 +406,26 @@
   }
 }
 
-.l-empty {
+.l-hint {
   position: absolute;
   left: 0;
   right: 0;
-  top: 660px;
+  top: 690px;
   margin: 0;
   text-align: center;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+}
+
+.l-hint.nudge {
+  animation: l-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes l-pulse {
+  50% {
+    opacity: 0.35;
+  }
 }
 
 .l-arm-base {
@@ -423,6 +446,14 @@
   width: 0;
   transform-origin: 0 0;
   transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+  touch-action: none;
+  cursor: grab;
+  z-index: 3;
+}
+
+.l-arm.drag {
+  transition: none;
+  cursor: grabbing;
 }
 
 .l-arm-bar {
@@ -433,6 +464,12 @@
   height: 100%;
   border-radius: 9px;
   background: linear-gradient(90deg, #b3b3b3, #979797);
+}
+
+.l-arm-head::after {
+  content: '';
+  position: absolute;
+  inset: -22px -26px;
 }
 
 .l-arm-head {
@@ -486,7 +523,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .l-disc.spin,
+  .l-disc,
   .h-plane,
   .r-pull {
     animation: none;

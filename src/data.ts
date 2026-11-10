@@ -2,7 +2,11 @@
 
 export interface FlowMoment {
   id: string
+  /** 사진 또는 영상 파일 */
   src: string
+  kind?: 'photo' | 'video'
+  /** 이 moment 의 음악 파일. 없으면 임시 멜로디가 나온다. (예: public/audio/paris-1.mp3) */
+  audio?: string
 }
 
 export interface FlowAlbum {
