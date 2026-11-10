@@ -22,7 +22,7 @@ export default function Engrave({ city, label, onDone }: Props) {
     const ts = [
       window.setTimeout(() => setPhase(1), 500),
       window.setTimeout(() => setPhase(2), 3300),
-      window.setTimeout(onDone, 4600),
+      window.setTimeout(onDone, 5600),
     ]
     return () => ts.forEach(clearTimeout)
   }, [onDone])
@@ -59,6 +59,15 @@ export default function Engrave({ city, label, onDone }: Props) {
             <polygon points="36,24 66,12 66,40 38,54" fill="#454545" />
             <path d="M12 46l-3 9" stroke="#d94b3a" strokeWidth="2" />
           </svg>
+        </div>
+
+        <div className={`eg-done ${phase === 2 ? 'on' : ''}`}>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M7.5 12.5l3 3 6-6.5" />
+          </svg>
+          <b>Recorded</b>
+          <span>{label} is engraved on your LP</span>
         </div>
 
         <div className="eg-text">
