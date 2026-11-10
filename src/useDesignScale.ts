@@ -4,19 +4,19 @@ import { useEffect, useRef, useState } from 'react'
 export const DESIGN_W = 368
 export const DESIGN_H = 799
 
-export function useDesignScale<T extends HTMLElement>() {
+export function useDesignScale<T extends HTMLElement>(baseW: number = DESIGN_W) {
   const ref = useRef<T | null>(null)
   const [k, setK] = useState(1)
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    const update = () => setK(el.clientWidth / DESIGN_W)
+    const update = () => setK(el.clientWidth / baseW)
     update()
     const ro = new ResizeObserver(update)
     ro.observe(el)
     return () => ro.disconnect()
-  }, [])
+  }, [baseW])
 
   return { ref, k }
 }

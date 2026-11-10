@@ -341,36 +341,12 @@
   cursor: grabbing;
 }
 
-/* ───────── LP 화면 ───────── */
+/* ───────── LP 화면 (Figma Section 3, 393 × 852) ───────── */
 .l-root {
   position: absolute;
   inset: 0;
   overflow: hidden;
   background: #545e85;
-}
-
-.l-disc {
-  position: absolute;
-  left: -141px;
-  top: 168px;
-  width: 464px;
-  height: 464px;
-  border-radius: 50%;
-  background: #393939;
-  transition:
-    left 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
-    top 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
-    width 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
-    height 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
-}
-
-.l-disc {
-  animation: l-spin 9s linear infinite;
-  animation-play-state: paused;
-}
-
-.l-disc.run {
-  animation-play-state: running;
 }
 
 @keyframes l-spin {
@@ -379,12 +355,49 @@
   }
 }
 
-.l-label {
+@keyframes l-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.lv-strip {
   position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 213px;
-  height: 213px;
+  left: 0;
+  top: 0;
+  width: 786px;
+  height: 852px;
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.25, 1);
+}
+
+.lv-sub {
+  position: absolute;
+  top: 0;
+  width: 393px;
+  height: 852px;
+  overflow: hidden;
+}
+
+.lv-disc {
+  position: absolute;
+  border-radius: 50%;
+  background: #393939;
+  display: grid;
+  place-items: center;
+  animation: l-spin 9s linear infinite;
+  animation-play-state: paused;
+  transition:
+    left 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
+    top 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
+    width 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
+    height 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+
+.lv-disc.run {
+  animation-play-state: running;
+}
+
+.lv-photo {
   border-radius: 50%;
   overflow: hidden;
   background: #bababa;
@@ -393,8 +406,8 @@
     height 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
 }
 
-.l-label img,
-.l-label video {
+.lv-photo img,
+.lv-photo video {
   display: block;
   width: 100%;
   height: 100%;
@@ -403,171 +416,156 @@
   transition: opacity 0.7s ease 0.15s;
 }
 
-.l-label img.on,
-.l-label video.on {
+.lv-photo img.on,
+.lv-photo video.on {
   opacity: 1;
 }
 
-@keyframes l-fade {
-  from {
-    opacity: 0;
-  }
-}
-
-.l-hint {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 690px;
-  margin: 0;
-  text-align: center;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
-  pointer-events: none;
-}
-
-.l-hint.nudge {
-  animation: l-pulse 1.8s ease-in-out infinite;
-}
-
-@keyframes l-pulse {
-  50% {
-    opacity: 0.35;
-  }
-}
-
-.l-arm-base {
-  position: absolute;
-  left: 261px;
-  top: 184px;
-  width: 92px;
-  height: 92px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #d6d6d6 0 38%, #ececec 40%);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  transition:
-    left 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
-    top 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
-}
-
-.l-arm {
+.lv-arm {
   position: absolute;
   width: 0;
+  height: 0;
   transform-origin: 0 0;
+  pointer-events: none;
   transition:
     transform 0.9s cubic-bezier(0.4, 0, 0.2, 1),
     left 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
     top 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
-  touch-action: none;
-  cursor: grab;
-  z-index: 3;
 }
 
-.l-arm.drag {
+.lv-arm i {
+  position: absolute;
+  display: block;
+}
+
+.lv-arm.grab i {
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+}
+
+.lv-arm.drag {
   transition: none;
+}
+
+.lv-arm.drag i {
   cursor: grabbing;
 }
 
-.l-arm-bar {
+.lv-ui {
   position: absolute;
-  left: -9px;
-  top: 0;
-  width: 18px;
-  height: 100%;
-  border-radius: 9px;
-  background: linear-gradient(90deg, #b3b3b3, #979797);
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
 }
 
-.l-arm-head::after {
-  content: '';
-  position: absolute;
-  inset: -22px -26px;
+.lv-ui.on {
+  opacity: 1;
 }
 
-.l-arm-head {
-  position: absolute;
-  left: -17px;
-  bottom: -26px;
-  width: 34px;
-  height: 52px;
-  border-radius: 8px;
-  background: #e8e8e8;
-  box-shadow:
-    inset -4px 0 0 rgba(0, 0, 0, 0.06),
-    0 3px 8px rgba(0, 0, 0, 0.25);
+.lv-ui.on button {
+  pointer-events: auto;
 }
 
-
-.l-back {
+.lv-meta {
   position: absolute;
-  left: 12px;
-  top: 38px;
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
+  right: 26px;
+  top: 624px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.lv-meta b {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 26px;
+}
+
+.lv-meta span {
+  font-size: 14px;
+  line-height: 17px;
+}
+
+.lv-prog {
+  position: absolute;
+  left: 51px;
+  top: 712px;
+  width: 290px;
+  height: 12px;
+}
+
+.lv-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 5px;
+  height: 2px;
+  background: #8c9dde;
+}
+
+.lv-knob {
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  color: rgba(255, 255, 255, 0.85);
-  z-index: 5;
+  background: #fff;
+  animation: lv-prog linear forwards;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .l-disc,
-  .h-plane,
-  .r-pull {
-    animation: none;
+@keyframes lv-prog {
+  to {
+    transform: translateX(280px);
   }
 }
 
-/* ───────── 전체 화면 (LP 크게) ───────── */
-.l-root.full .l-disc {
-  left: -134px;
-  top: 82px;
-  width: 636px;
-  height: 636px;
-}
-
-.l-root.full .l-label {
-  width: 349px;
-  height: 349px;
-}
-
-.l-full {
+.lv-ctl {
   position: absolute;
-  right: 12px;
-  top: 38px;
-  z-index: 5;
-  width: 40px;
-  height: 40px;
+  top: 740px;
+  width: 64px;
+  height: 52px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  color: rgba(255, 255, 255, 0.85);
 }
 
-/* ───────── LP 화면 안의 가로 페이지 (재생 ↔ 눕힌 LP) ───────── */
-.lv-strip {
+.lv-ctl.prev {
+  left: 72px;
+}
+
+.lv-ctl.mid {
+  left: 164px;
+}
+
+.lv-ctl.next {
+  left: 257px;
+}
+
+.lv-hint {
   position: absolute;
   left: 0;
-  top: 0;
-  width: 736px;
-  height: 799px;
-  transition: transform 0.6s cubic-bezier(0.65, 0, 0.25, 1);
+  right: 0;
+  top: 560px;
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  pointer-events: none;
 }
 
-.lv-sub {
-  position: absolute;
-  top: 0;
-  width: 368px;
-  height: 799px;
-  overflow: hidden;
+.lv-hint.nudge {
+  animation: l-pulse 1.8s ease-in-out infinite;
 }
 
 .l-pages {
   position: absolute;
   left: 0;
   right: 0;
-  top: 775px;
+  top: 828px;
   display: flex;
   justify-content: center;
   gap: 3px;
@@ -590,6 +588,19 @@
   background: #fff;
 }
 
+.l-back {
+  position: absolute;
+  left: 12px;
+  top: 38px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.85);
+  z-index: 25;
+}
+
 /* ───────── 눕힌 LP ───────── */
 .lp2 {
   position: absolute;
@@ -600,7 +611,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 70px;
+  top: 78px;
   text-align: center;
   opacity: 0;
   transform: translateY(-8px);
@@ -618,16 +629,16 @@
 .lp2-title h2 {
   margin: 0;
   font-family: var(--serif);
-  font-weight: 600;
-  font-size: 20px;
-  line-height: 26px;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 31px;
 }
 
 .lp2-title p {
-  margin: 8px 0 0;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.55);
+  margin: 7px 0 0;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .lp2-disc,
@@ -635,33 +646,33 @@
   position: absolute;
   left: 0;
   top: 0;
-  width: 752px;
-  height: 752px;
+  width: 800px;
+  height: 800px;
   border-radius: 50%;
   pointer-events: none;
   transition: transform 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
 }
 
 .lp2-edge {
-  background: #141211;
+  background: #171514;
 }
 
 .lp2-disc {
-  background: radial-gradient(circle at 38% 32%, #433d38, #1d1b1a 72%);
+  background: linear-gradient(150deg, #3f3b38, #201e1d);
 }
 
 .lp2-ring {
   position: absolute;
   border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.09);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
 }
 
 .lp2-label {
   position: absolute;
   inset: 0;
   margin: auto;
-  width: 14.6%;
-  height: 14.6%;
+  width: 15.25%;
+  height: 15.25%;
   border-radius: 50%;
   background: #dedede;
 }
@@ -682,21 +693,22 @@
 
 .lp2-foot {
   position: absolute;
-  left: -8.5px;
-  top: -3.5px;
-  width: 17px;
-  height: 7px;
   border-radius: 50%;
-  background: #cfc7b8;
+  background: rgba(211, 203, 189, 0.9);
+}
+
+.lp2-stem,
+.lp2-foot {
+  transition:
+    height 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
+    top 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
 }
 
 .lp2-stem {
   position: absolute;
   left: -1px;
-  top: -55px;
   width: 2px;
-  height: 55px;
-  background: rgba(212, 203, 189, 0.75);
+  background: rgba(211, 203, 189, 0.8);
 }
 
 .lp2-pinhead {
@@ -704,7 +716,7 @@
   padding: 0;
   border: 2px solid #e8e8e8;
   border-radius: 50%;
-  background: #d4cbbd;
+  background: #d3cbbd;
   overflow: visible;
   pointer-events: auto;
   transition:
@@ -735,18 +747,18 @@
 
 .lp2-play {
   position: absolute;
-  left: 92px;
-  top: 716px;
-  width: 184px;
-  height: 40px;
+  left: 98px;
+  top: 763px;
+  width: 196px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 9px;
   border-radius: 999px;
   background: #fff;
-  color: #1a1d33;
-  font-size: 14px;
+  color: #373d56;
+  font-size: 14.5px;
   font-weight: 500;
   opacity: 0;
   transform: translateY(10px);
@@ -760,6 +772,16 @@
   opacity: 1;
   transform: none;
   pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lv-disc,
+  .lv-hint,
+  .lv-knob,
+  .h-plane,
+  .r-pull {
+    animation: none;
+  }
 }
 
 /* ───────── 한 순간 크게 보기 ───────── */
