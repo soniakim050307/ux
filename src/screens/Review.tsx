@@ -6,6 +6,11 @@ const W = 393
 const H = 852
 const CX = 196.5
 const CY = 363
+/** 시안용 가짜 감지 결과: 폰에서 재생 중인 곡 ↔ 녹음 속에서 들린 곡이 번갈아 나온다 */
+const DETECTED = [
+  { label: 'Now Playing', title: 'Summer', artist: 'The Volunteers' },
+  { label: 'Heard in recording', title: 'La Vie en Rose', artist: 'Édith Piaf' },
+]
 const R = 156
 const RR = 166
 
@@ -27,10 +32,14 @@ export default function Review({ moment, dur, peaks, title, index, onSave, onRet
   const [playing, setPlaying] = useState(false)
   const [p, setP] = useState(0)
   const [song, setSong] = useState<{ title: string; artist: string } | null>(null)
-  const [adding, setAdding] = useState(false)
-  const [t, setT] = useState('')
-  const [a, setA] = useState('')
+  const [cand, setCand] = useState(0)
   const isVideo = moment.kind === 'video'
+
+  useEffect(() => {
+    if (song) return
+    const id = window.setInterval(() => setCand((c) => (c + 1) % DETECTED.length), 3200)
+    return () => clearInterval(id)
+  }, [song])
 
   useEffect(() => {
     media.current?.play().then(() => setPlaying(true)).catch(() => {})
@@ -62,14 +71,26 @@ export default function Review({ moment, dur, peaks, title, index, onSave, onRet
           Save
         </button>
 
-        <button type="button" className="rv-chip" onClick={() => setAdding(true)}>
-          <i className="rv-art" />
-          <span>
-            <b>{song ? 'Now Playing' : 'Add music'}</b>
-            <em>{song ? `${song.title}${song.artist ? ' - ' + song.artist : ''}` : 'Tap + to add a song'}</em>
-          </span>
-          <u>{song ? '✓' : '+'}</u>
-        </button>
+        {(() => {
+          const d = DETECTED[cand]
+          const shown = song ? { label: 'Added', title: song.title, artist: song.artist } : d
+          return (
+            <button
+              type="button"
+              className="rv-chip"
+              onClick={() => setSong(song ? null : { title: d.title, artist: d.artist })}
+            >
+              <i className="rv-art" />
+              <span key={shown.label + shown.title}>
+                <b>{shown.label}</b>
+                <em>
+                  {shown.title} - {shown.artist}
+                </em>
+              </span>
+              <u>{song ? '✓' : '+'}</u>
+            </button>
+          )
+        })()}
 
         <div className="rv-disc" style={{ left: CX - R, top: CY - R, width: R * 2, height: R * 2 }}>
           {isVideo ? (
@@ -138,33 +159,6 @@ export default function Review({ moment, dur, peaks, title, index, onSave, onRet
           </button>
         </div>
 
-        {adding && (
-          <div className="rv-sheet" onClick={() => setAdding(false)}>
-            <div onClick={(e) => e.stopPropagation()}>
-              <p>Add the song you were listening to</p>
-              <input placeholder="Song title" value={t} onChange={(e) => setT(e.target.value)} />
-              <input placeholder="Artist" value={a} onChange={(e) => setA(e.target.value)} />
-              <div>
-                {song && (
-                  <button type="button" onClick={() => { setSong(null); setT(''); setA(''); setAdding(false) }}>
-                    Remove
-                  </button>
-                )}
-                <button
-                  type="button"
-                  className="ok"
-                  disabled={!t.trim()}
-                  onClick={() => {
-                    setSong({ title: t.trim(), artist: a.trim() })
-                    setAdding(false)
-                  }}
-                >
-                  Add
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       <button type="button" className="l-back" onClick={onBack} aria-label="Back">
