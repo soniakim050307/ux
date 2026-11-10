@@ -7,7 +7,7 @@ const H = 852
 const CX = 196.5
 const CY = 363
 /** 시안용 가짜 감지 결과: 폰에서 재생 중인 곡 ↔ 녹음 속에서 들린 곡이 번갈아 나온다 */
-const DETECTED = [
+export const DETECTED = [
   { label: 'Now Playing', title: 'Summer', artist: 'The Volunteers' },
   { label: 'Heard in recording', title: 'La Vie en Rose', artist: 'Édith Piaf' },
 ]

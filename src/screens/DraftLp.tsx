@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { FlowAlbum } from '../data'
 import { useDesignScale } from '../useDesignScale'
 import Capture from './Capture'
+import Organizer from './Organizer'
 
 const W = 393
 const H = 852
@@ -29,6 +30,7 @@ export default function DraftLp({ album, active, onChange, onBack }: Props) {
   const { ref, k } = useDesignScale<HTMLDivElement>(W)
   const [form, setForm] = useState(false)
   const [cap, setCap] = useState(false)
+  const [org, setOrg] = useState(false)
   const [name, setName] = useState('')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
@@ -39,6 +41,7 @@ export default function DraftLp({ album, active, onChange, onBack }: Props) {
     if (!active) {
       setForm(false)
       setCap(false)
+      setOrg(false)
     }
   }, [active])
 
@@ -98,6 +101,14 @@ export default function DraftLp({ album, active, onChange, onBack }: Props) {
           <path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
+
+      {saved && (
+        <button type="button" className="dl-save" onClick={() => setOrg(true)}>
+          Save
+        </button>
+      )}
+
+      {org && <Organizer album={album} onChange={(moments) => onChange({ moments })} onClose={() => setOrg(false)} />}
 
       {cap && (
         <Capture
