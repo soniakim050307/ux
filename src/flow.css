@@ -1140,3 +1140,8 @@
   paint-order: stroke;
   pointer-events: all;
 }
+
+/* 크게 보기에서는 영상이 바로 보이도록 판이 돌지 않는다 */
+.lv-disc.still {
+  animation: none;
+}

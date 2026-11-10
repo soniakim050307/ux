@@ -182,7 +182,7 @@ export default function LpView({ album, active, onBack }: Props) {
           {/* ───── 서 있는 LP: 플레이어 ↔ 크게 보기 ───── */}
           <div className="lv-sub" style={{ left: 0 }}>
             <div
-              className={`lv-disc ${playing ? 'run' : ''}`}
+              className={`lv-disc ${playing ? 'run' : ''} ${page === 1 ? 'still' : ''}`}
               style={{ left: d.cx - d.d / 2, top: d.cy - d.d / 2, width: d.d, height: d.d }}
               onClick={onDiscClick}
             >
