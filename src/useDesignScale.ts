@@ -11,7 +11,7 @@ export function useDesignScale<T extends HTMLElement>(baseW: number = DESIGN_W) 
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    const update = () => setK(el.clientWidth / baseW)
+    const update = () => el.clientWidth > 0 && setK(el.clientWidth / baseW)
     update()
     const ro = new ResizeObserver(update)
     ro.observe(el)
