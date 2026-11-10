@@ -568,8 +568,19 @@
   top: 828px;
   display: flex;
   justify-content: center;
-  gap: 3px;
-  pointer-events: none;
+  gap: 0;
+  top: 816px;
+}
+
+.l-pages button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 32px;
+}
+
+.l-pages button.on {
+  width: 54px;
 }
 
 .l-pages i {
@@ -583,7 +594,7 @@
     background 0.3s ease;
 }
 
-.l-pages i.on {
+.l-pages button.on i {
   width: 31px;
   background: #fff;
 }

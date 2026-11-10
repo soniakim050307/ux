@@ -304,10 +304,12 @@ export default function LpView({ album, active, onBack }: Props) {
           </div>
         </div>
 
-        <div className="l-pages" aria-label={`Page ${page + 1} of 3`}>
-          <i className={page === 0 ? 'on' : ''} />
-          <i className={page === 1 ? 'on' : ''} />
-          <i className={page === 2 ? 'on' : ''} />
+        <div className="l-pages" aria-label={`Page ${page + 1} of 3`} onPointerDown={(e) => e.stopPropagation()} onPointerUp={(e) => e.stopPropagation()}>
+          {([0, 1, 2] as const).map((n) => (
+            <button key={n} type="button" className={page === n ? 'on' : ''} onClick={() => goPage(n)} aria-label={`Go to page ${n + 1}`}>
+              <i />
+            </button>
+          ))}
         </div>
       </div>
 
