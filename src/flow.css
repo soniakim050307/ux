@@ -1673,3 +1673,16 @@
     stroke-width: 6;
   }
 }
+
+/* 이미 만들어진 LP에는 줄무늬가 있다 (새 앨범의 빈 LP만 매끈하다) */
+.r-lp:not(.blank) {
+  background:
+    repeating-radial-gradient(circle at 50% 50%, transparent 0 5px, rgba(255, 255, 255, 0.07) 5px 6px),
+    #363636;
+}
+
+.lv-disc {
+  background:
+    repeating-radial-gradient(circle at 50% 50%, transparent 0 7px, rgba(255, 255, 255, 0.06) 7px 8px),
+    #393939;
+}
