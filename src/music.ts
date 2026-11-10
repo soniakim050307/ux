@@ -77,10 +77,16 @@ function synth(seed: number): () => void {
 }
 
 /** 재생을 시작하고, 멈추는 함수를 돌려준다. */
-export function playMusic(opts: { src?: string; seed: number }): () => void {
+export function playMusic(opts: { src?: string; seed: number; start?: number }): () => void {
   if (opts.src) {
     const el = new Audio(opts.src)
     el.loop = true
+    const start = opts.start ?? 0
+    if (start > 0) {
+      el.addEventListener('loadedmetadata', () => {
+        el.currentTime = start
+      })
+    }
     void el.play().catch(() => {})
     return () => {
       el.pause()

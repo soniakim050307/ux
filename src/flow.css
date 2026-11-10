@@ -357,6 +357,11 @@
   height: 464px;
   border-radius: 50%;
   background: #393939;
+  transition:
+    left 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
+    top 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
+    width 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
+    height 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
 }
 
 .l-disc {
@@ -383,6 +388,9 @@
   border-radius: 50%;
   overflow: hidden;
   background: #bababa;
+  transition:
+    width 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
+    height 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
 }
 
 .l-label img,
@@ -437,15 +445,19 @@
   border-radius: 50%;
   background: radial-gradient(circle, #d6d6d6 0 38%, #ececec 40%);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition:
+    left 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
+    top 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
 }
 
 .l-arm {
   position: absolute;
-  left: 307px;
-  top: 230px;
   width: 0;
   transform-origin: 0 0;
-  transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform 0.9s cubic-bezier(0.4, 0, 0.2, 1),
+    left 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
+    top 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
   touch-action: none;
   cursor: grab;
   z-index: 3;
@@ -485,29 +497,6 @@
     0 3px 8px rgba(0, 0, 0, 0.25);
 }
 
-.l-dots {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 775px;
-  display: flex;
-  justify-content: center;
-  gap: 3px;
-}
-
-.l-dots i {
-  display: block;
-  width: 7px;
-  height: 7px;
-  border-radius: 4px;
-  background: #9a9a9a;
-  transition: width 0.3s ease, background 0.3s ease;
-}
-
-.l-dots i.on {
-  width: 31px;
-  background: #fff;
-}
 
 .l-back {
   position: absolute;
@@ -528,4 +517,422 @@
   .r-pull {
     animation: none;
   }
+}
+
+/* ───────── 전체 화면 (LP 크게) ───────── */
+.l-root.full .l-disc {
+  left: -134px;
+  top: 82px;
+  width: 636px;
+  height: 636px;
+}
+
+.l-root.full .l-label {
+  width: 349px;
+  height: 349px;
+}
+
+.l-full {
+  position: absolute;
+  right: 12px;
+  top: 38px;
+  z-index: 5;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ───────── LP 화면 안의 가로 페이지 (재생 ↔ 눕힌 LP) ───────── */
+.lv-strip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 736px;
+  height: 799px;
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.25, 1);
+}
+
+.lv-sub {
+  position: absolute;
+  top: 0;
+  width: 368px;
+  height: 799px;
+  overflow: hidden;
+}
+
+.l-pages {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 775px;
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  pointer-events: none;
+}
+
+.l-pages i {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 4px;
+  background: #9a9a9a;
+  transition:
+    width 0.3s ease,
+    background 0.3s ease;
+}
+
+.l-pages i.on {
+  width: 31px;
+  background: #fff;
+}
+
+/* ───────── 눕힌 LP ───────── */
+.lp2 {
+  position: absolute;
+  inset: 0;
+}
+
+.lp2-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 70px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
+  pointer-events: none;
+}
+
+.lp2-title.on {
+  opacity: 1;
+  transform: none;
+}
+
+.lp2-title h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 26px;
+}
+
+.lp2-title p {
+  margin: 8px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.lp2-disc,
+.lp2-edge {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 752px;
+  height: 752px;
+  border-radius: 50%;
+  pointer-events: none;
+  transition: transform 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+
+.lp2-edge {
+  background: #141211;
+}
+
+.lp2-disc {
+  background: radial-gradient(circle at 38% 32%, #433d38, #1d1b1a 72%);
+}
+
+.lp2-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.09);
+}
+
+.lp2-label {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 14.6%;
+  height: 14.6%;
+  border-radius: 50%;
+  background: #dedede;
+}
+
+.lp2-pin {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  transition:
+    left 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
+    top 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+
+.lp2-pin.on {
+  z-index: 3;
+}
+
+.lp2-foot {
+  position: absolute;
+  left: -8.5px;
+  top: -3.5px;
+  width: 17px;
+  height: 7px;
+  border-radius: 50%;
+  background: #cfc7b8;
+}
+
+.lp2-stem {
+  position: absolute;
+  left: -1px;
+  top: -55px;
+  width: 2px;
+  height: 55px;
+  background: rgba(212, 203, 189, 0.75);
+}
+
+.lp2-pinhead {
+  position: absolute;
+  padding: 0;
+  border: 2px solid #e8e8e8;
+  border-radius: 50%;
+  background: #d4cbbd;
+  overflow: visible;
+  pointer-events: auto;
+  transition:
+    width 0.55s cubic-bezier(0.3, 0.7, 0.2, 1),
+    height 0.55s cubic-bezier(0.3, 0.7, 0.2, 1),
+    left 0.55s cubic-bezier(0.3, 0.7, 0.2, 1),
+    top 0.55s cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+
+.lp2-pinhead::after {
+  content: '';
+  position: absolute;
+  inset: -12px;
+}
+
+.lp2-pinhead span {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: center / cover no-repeat;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.1s;
+}
+
+.lp2-pin.on .lp2-pinhead span {
+  opacity: 1;
+}
+
+.lp2-play {
+  position: absolute;
+  left: 92px;
+  top: 716px;
+  width: 184px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  background: #fff;
+  color: #1a1d33;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition:
+    opacity 0.45s ease 0.2s,
+    transform 0.45s ease 0.2s;
+}
+
+.lp2-play.on {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* ───────── 한 순간 크게 보기 ───────── */
+.d-root {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  overflow: hidden;
+  background: #545e85;
+  animation: d-up 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes d-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+.d-head {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 52px;
+  text-align: center;
+}
+
+.d-head h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 26px;
+}
+
+.d-head p {
+  margin: 6px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.d-media {
+  position: absolute;
+  left: 24px;
+  top: 118px;
+  width: 320px;
+  height: 396px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #3a4062;
+  box-shadow: 0 12px 30px rgba(10, 12, 30, 0.35);
+  animation: l-fade 0.5s ease both;
+}
+
+.d-media img,
+.d-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@keyframes l-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.d-song {
+  position: absolute;
+  left: 24px;
+  top: 534px;
+  width: 320px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.d-disc {
+  position: relative;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #0d0d0d;
+  display: grid;
+  place-items: center;
+}
+
+.d-disc i {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #e8a3a3;
+}
+
+.d-disc.spin {
+  animation: l-spin 3s linear infinite;
+}
+
+.d-song-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+
+.d-song-text b {
+  font-weight: 500;
+}
+
+.d-song-text span {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.d-toggle {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  color: #1a1d33;
+}
+
+.d-memo {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  top: 618px;
+}
+
+.d-memo span {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.d-memo p {
+  margin: 8px 0 0;
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.d-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 775px;
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+}
+
+.d-dots i {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 4px;
+  background: #9a9a9a;
+  transition:
+    width 0.3s ease,
+    background 0.3s ease;
+}
+
+.d-dots i.on {
+  width: 31px;
+  background: #fff;
 }
