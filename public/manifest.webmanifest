@@ -1,0 +1,13 @@
+{
+  "name": "LP Travel",
+  "short_name": "LP Travel",
+  "description": "Press your travel moments into a record.",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#525a82",
+  "theme_color": "#525a82",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
