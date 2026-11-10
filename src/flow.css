@@ -958,3 +958,185 @@
   width: 31px;
   background: #fff;
 }
+
+/* ───────── 새 앨범 ───────── */
+.r-lp.blank {
+  background: #262629;
+}
+
+.r-lp.blank .r-lp-label {
+  background: #38373b;
+}
+
+.r-lp.blank .r-lp-hole {
+  background: #000;
+}
+
+.dl-lp {
+  position: absolute;
+  border-radius: 50%;
+  background: #262629;
+}
+
+.dl-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dl-t {
+  font-size: 19px;
+  font-weight: 300;
+  fill: #8a8a92;
+  letter-spacing: 0.5px;
+}
+
+.dl-t.on {
+  fill: #fff;
+  cursor: pointer;
+}
+
+.dl-t.go {
+  fill: #fff;
+}
+
+.dl-info {
+  position: absolute;
+  right: 26px;
+  bottom: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  animation: dl-in 0.8s ease 0.5s both;
+}
+
+.dl-info b {
+  font-family: var(--serif);
+  font-size: 20px;
+}
+
+.dl-info span {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+@keyframes dl-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.df {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: #545e85;
+  padding: 44px 22px 0;
+  color: #fff;
+  font-size: 14px;
+  overflow: auto;
+}
+
+.df-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+}
+
+.df-top button:last-child {
+  font-size: 14px;
+}
+
+.df-lp {
+  width: 118px;
+  height: 118px;
+  margin: 34px auto 28px;
+  border-radius: 50%;
+  background: #262629;
+  display: grid;
+  place-items: center;
+}
+
+.df-lp i {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #38373b;
+}
+
+.df-l {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.df-l em {
+  font-style: normal;
+  font-size: 9px;
+}
+
+.df-in,
+.df-loc {
+  width: 100%;
+  height: 40px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0 12px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.df-in::placeholder,
+.df-loc::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.df-h {
+  margin: 28px 0 10px;
+  font-size: 12px;
+}
+
+.df-h.line {
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
+  padding-top: 20px;
+}
+
+.df-dates {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-size: 15px;
+}
+
+.df-dates label {
+  position: relative;
+  padding: 4px 6px;
+}
+
+.df-dates input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.df-loc {
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 0;
+  padding: 0 4px;
+}
+
+.dl-t {
+  stroke: transparent;
+  stroke-width: 20px;
+  paint-order: stroke;
+  pointer-events: all;
+}

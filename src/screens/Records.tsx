@@ -14,6 +14,7 @@ import {
 } from '../stackLayout'
 import { DESIGN_H, DESIGN_W, useDesignScale } from '../useDesignScale'
 import LpView from './LpView'
+import DraftLp from './DraftLp'
 
 type Mode = 'home' | 'stack' | 'cover'
 
@@ -36,6 +37,7 @@ const PLANES = [
 export default function Records({ albums }: { albums: FlowAlbum[] }) {
   // 슬랩 0 = "Add New Album", 1.. = 최신 → 오래된 앨범
   const list = [...albums].reverse()
+  const [draft, setDraft] = useState<FlowAlbum | null>(null)
   const slotIdx = Array.from({ length: list.length + 1 }, (_, i) => i)
 
   const [mode, setMode] = useState<Mode>('home')
@@ -53,7 +55,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
     timers.current.push(window.setTimeout(fn, ms))
   }
 
-  const album = sel !== null ? list[sel - 1] : null
+  const album = sel === 0 ? draft : sel !== null ? list[sel - 1] : null
 
   const geos: Geo[] =
     mode === 'cover' && sel !== null
@@ -85,7 +87,8 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
   const tapSlab = (i: number) => {
     if (mode === 'home') return openStack()
     if (mode === 'stack') {
-      if (i === 0) return // 앨범 추가는 다음 단계
+      if (i === 0 && !draft)
+        setDraft({ id: 'draft', city: '', date: '', tone: '#7a7a7a', moments: [], draft: true })
       setPull(0)
       setSel(i)
       setMode('cover')
@@ -245,7 +248,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
             {album && (
               <>
                 <div
-                  className={`r-lp ${coverOn ? 'on' : ''}`}
+                  className={`r-lp ${coverOn ? 'on' : ''} ${album.draft ? 'blank' : ''}`}
                   style={{
                     transform: `translateX(${pull * PULL_MAX}px)`,
                     transition: dragging ? 'none' : undefined,
@@ -299,7 +302,16 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
 
         {/* ───────── 페이지 1: LP 화면 ───────── */}
         <section className="r-page">
-          <LpView album={album} active={page === 1} onBack={backFromLp} />
+          {album?.draft ? (
+            <DraftLp
+              album={album}
+              active={page === 1}
+              onChange={(p) => setDraft((d) => (d ? { ...d, ...p } : d))}
+              onBack={backFromLp}
+            />
+          ) : (
+            <LpView album={album} active={page === 1} onBack={backFromLp} />
+          )}
         </section>
       </div>
     </div>

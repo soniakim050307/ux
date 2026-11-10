@@ -26,6 +26,10 @@ export interface FlowAlbum {
   /** 커버 사진 (없으면 회색 슬리브) */
   cover?: string
   moments: FlowMoment[]
+  /** 새로 만드는 중인 앨범 (정보 입력 전) */
+  draft?: boolean
+  /** 앨범 이름 */
+  name?: string
 }
 
 const img = (name: string) => `${import.meta.env.BASE_URL}img/${name}`
