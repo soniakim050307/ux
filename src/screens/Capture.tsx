@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FlowMoment } from '../data'
 import { useDesignScale } from '../useDesignScale'
+import Review from './Review'
+import Engrave from './Engrave'
 
 const W = 393
 const H = 852
@@ -36,6 +38,10 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
   const [mic, setMic] = useState(true)
   const [rec, setRec] = useState(false)
   const [err, setErr] = useState('')
+  const [shot, setShot] = useState(0)
+  const [stage, setStage] = useState<'cap' | 'review' | 'engrave'>('cap')
+  const [taken, setTaken] = useState<{ m: FlowMoment; dur: number; peaks: number[] } | null>(null)
+  const startAt = useRef(0)
   const stream = useRef<MediaStream | null>(null)
   const video = useRef<HTMLVideoElement | null>(null)
   const canvas = useRef<HTMLCanvasElement | null>(null)
@@ -75,7 +81,7 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
     return () => {
       dead = true
     }
-  }, [cam, mic])
+  }, [cam, mic, shot])
 
   useEffect(
     () => () => {
@@ -131,14 +137,23 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
       const url = URL.createObjectURL(blob)
       const now = new Date()
       const pad = (n: number) => String(n).padStart(2, '0')
-      onDone({
-        id: `m-${now.getTime()}`,
-        src: cam ? url : '',
-        kind: cam ? 'video' : 'audio',
-        audio: cam ? undefined : url,
-        time: `${now.getFullYear()}.${pad(now.getMonth() + 1)}.${pad(now.getDate())} · ${pad(now.getHours())}:${pad(now.getMinutes())}`,
+      const dur = Math.max(1, (performance.now() - startAt.current) / 1000)
+      stream.current?.getTracks().forEach((t) => t.stop())
+      stream.current = null
+      setTaken({
+        dur,
+        peaks: peaks.current.slice(),
+        m: {
+          id: `m-${now.getTime()}`,
+          src: cam ? url : '',
+          kind: cam ? 'video' : 'audio',
+          audio: cam ? undefined : url,
+          time: `${now.getFullYear()}.${pad(now.getMonth() + 1)}.${pad(now.getDate())} · ${pad(now.getHours())}:${pad(now.getMinutes())}`,
+        },
       })
+      setStage('review')
     }
+    startAt.current = performance.now()
     r.start()
     setRec(true)
     stopTimer.current = window.setTimeout(stop, MAX_S * 1000)
@@ -150,6 +165,29 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
   }
 
   const canRec = (cam || mic) && !err
+
+  if (stage === 'review' && taken)
+    return (
+      <Review
+        moment={taken.m}
+        dur={taken.dur}
+        peaks={taken.peaks}
+        title={title}
+        index={index}
+        onBack={onClose}
+        onRetake={() => {
+          setTaken(null)
+          setStage('cap')
+          setShot((n) => n + 1)
+        }}
+        onSave={(song) => {
+          setTaken({ ...taken, m: { ...taken.m, song } })
+          setStage('engrave')
+        }}
+      />
+    )
+  if (stage === 'engrave' && taken)
+    return <Engrave city={title} label={`moment${index}`} onDone={() => onDone(taken.m)} />
 
   return (
     <div className="l-root cap" ref={ref}>
