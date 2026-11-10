@@ -57,6 +57,9 @@ export default function DraftLp({ album, active, onChange, onBack }: Props) {
             viewBox={`${-LP.r} ${-LP.r} ${LP.r * 2} ${LP.r * 2}`}
             style={{ transform: `rotate(${saved ? -100 : 0}deg)` }}
           >
+            {album.moments.map((m, i) => (
+              <circle key={m.id} className="dl-groove" r={Math.max(184, 312 - i * 14)} fill="none" />
+            ))}
             <circle r={172} fill="#38373b" />
             <circle r={118} fill="#232226" />
             <circle r={110} fill="#38373b" />

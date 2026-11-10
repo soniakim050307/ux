@@ -1659,3 +1659,17 @@
   font-size: 12px;
   color: rgba(255, 255, 255, 0.7);
 }
+
+/* 기록할 때마다 바깥에서 안쪽으로 늘어나는 옅은 줄무늬 */
+.dl-groove {
+  stroke: rgba(255, 255, 255, 0.14);
+  stroke-width: 2;
+  animation: dl-groove 1.2s ease both;
+}
+
+@keyframes dl-groove {
+  from {
+    opacity: 0;
+    stroke-width: 6;
+  }
+}
