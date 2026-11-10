@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { FlowAlbum } from '../data'
 import { useDesignScale } from '../useDesignScale'
+import Capture from './Capture'
 
 const W = 393
 const H = 852
@@ -27,6 +28,7 @@ const fmt = (iso: string) => {
 export default function DraftLp({ album, active, onChange, onBack }: Props) {
   const { ref, k } = useDesignScale<HTMLDivElement>(W)
   const [form, setForm] = useState(false)
+  const [cap, setCap] = useState(false)
   const [name, setName] = useState('')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
@@ -34,7 +36,10 @@ export default function DraftLp({ album, active, onChange, onBack }: Props) {
   const saved = album.city !== ''
 
   useEffect(() => {
-    if (!active) setForm(false)
+    if (!active) {
+      setForm(false)
+      setCap(false)
+    }
   }, [active])
 
   const save = () => {
@@ -46,7 +51,7 @@ export default function DraftLp({ album, active, onChange, onBack }: Props) {
   return (
     <div className="l-root" ref={ref}>
       <div className="design" style={{ width: W, height: H, transform: `scale(${k})` }}>
-        <div className="dl-lp" style={{ left: LP.cx - LP.r, top: LP.cy - LP.r, width: LP.r * 2, height: LP.r * 2 }}>
+        <div className={`dl-lp ${saved ? 'tap' : ''}`} onClick={() => saved && setCap(true)} style={{ left: LP.cx - LP.r, top: LP.cy - LP.r, width: LP.r * 2, height: LP.r * 2 }}>
           <svg
             className="dl-svg"
             viewBox={`${-LP.r} ${-LP.r} ${LP.r * 2} ${LP.r * 2}`}
@@ -64,7 +69,10 @@ export default function DraftLp({ album, active, onChange, onBack }: Props) {
                 Enter information
               </textPath>
             </text>
-            <text className={`dl-t ${saved ? 'on go' : ''}`} onClick={() => saved && onBack()}>
+            <text className={`dl-t ${saved ? 'on go' : ''}`} onClick={(e) => {
+                e.stopPropagation()
+                if (saved) onBack()
+              }}>
               <textPath href="#dl-circ" startOffset={LEN * 0.455}>
                 Finish my journey
               </textPath>
@@ -72,10 +80,12 @@ export default function DraftLp({ album, active, onChange, onBack }: Props) {
           </svg>
         </div>
 
+        {saved && <p className="dl-hint">기록하려면 LP를 누르세요</p>}
         {saved && (
           <div className="dl-info">
             <b>{album.city}</b>
             {album.date && <span>{album.date}</span>}
+            {album.moments.length > 0 && <span>{album.moments.length} MOMENT{album.moments.length > 1 ? "S" : ""}</span>}
           </div>
         )}
       </div>
@@ -85,6 +95,18 @@ export default function DraftLp({ album, active, onChange, onBack }: Props) {
           <path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
+
+      {cap && (
+        <Capture
+          title={album.city}
+          index={album.moments.length + 1}
+          onClose={() => setCap(false)}
+          onDone={(m) => {
+            onChange({ moments: [...album.moments, m] })
+            setCap(false)
+          }}
+        />
+      )}
 
       {form && (
         <div className="df">

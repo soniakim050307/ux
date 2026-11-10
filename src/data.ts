@@ -4,7 +4,7 @@ export interface FlowMoment {
   id: string
   /** 사진 또는 영상 파일 */
   src: string
-  kind?: 'photo' | 'video'
+  kind?: 'photo' | 'video' | 'audio'
   /** 이 moment 의 음악 파일. 없으면 임시 멜로디가 나온다. (예: public/audio/paris-1.mp3) */
   audio?: string
   /** audio 파일에서 재생을 시작할 위치(초) */

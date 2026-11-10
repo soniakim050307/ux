@@ -1162,3 +1162,171 @@
 .df-loc {
   border-bottom: 1px solid rgba(255, 255, 255, 0.35) !important;
 }
+
+/* ───────── 기록 화면 ───────── */
+.dl-lp.tap {
+  cursor: pointer;
+}
+
+.dl-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 70px;
+  margin: 0;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+  animation: l-pulse 2s ease-in-out infinite;
+}
+
+.l-root.cap {
+  z-index: 40;
+}
+
+.cap-head {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 72px;
+  text-align: center;
+}
+
+.cap-head b {
+  display: block;
+  font-family: var(--serif);
+  font-size: 14px;
+}
+
+.cap-head span {
+  display: block;
+  margin-top: 3px;
+  font-size: 8px;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.cap-view,
+.cap-wave {
+  position: absolute;
+  left: 0;
+  width: 393px;
+  top: 133px;
+  height: 394px;
+  overflow: hidden;
+}
+
+.cap-view video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #2f3350;
+}
+
+.cap-mask {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, transparent 196px, rgba(84, 94, 133, 0.45) 197px);
+}
+
+.cap-grid {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.35)) 33.3% 0 / 1px 100% no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.35)) 66.6% 0 / 1px 100% no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.35)) 0 33.3% / 100% 1px no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.35)) 0 66.6% / 100% 1px no-repeat;
+}
+
+.cap-wave {
+  border-radius: 50%;
+  background: #3a3e5c;
+  top: 133px;
+  height: 393px;
+}
+
+.cap-wave canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.cap-err {
+  position: absolute;
+  left: 30px;
+  right: 30px;
+  top: 560px;
+  margin: 0;
+  text-align: center;
+  font-size: 12px;
+  color: #ffd2d2;
+}
+
+.cap-tools {
+  position: absolute;
+  right: 22px;
+  top: 548px;
+  display: flex;
+  gap: 18px;
+}
+
+.cap-tools button:disabled {
+  opacity: 0.4;
+}
+
+.cap-rec {
+  position: absolute;
+  left: 104px;
+  top: 630px;
+  width: 185px;
+  height: 185px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #3a3d4c;
+}
+
+.cap-rec:disabled {
+  opacity: 0.5;
+}
+
+.cap-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.cap-prog {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: cap-fill 10s linear forwards;
+}
+
+@keyframes cap-fill {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.cap-rec i {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: #e8321f;
+  border: 2px solid #fff;
+  transition:
+    border-radius 0.25s ease,
+    transform 0.25s ease;
+}
+
+.cap-rec i.on {
+  border-radius: 14px;
+  transform: scale(0.6);
+}
