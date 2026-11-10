@@ -66,17 +66,27 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
   const openStack = () => {
     if (mode === 'home') setMode('stack')
   }
+  const closeStack = () => {
+    if (mode === 'stack') setMode('home')
+  }
   const onWheel = (e: React.WheelEvent) => {
-    if (mode === 'home' && Math.abs(e.deltaY) > 8) openStack()
+    if (Math.abs(e.deltaY) < 8) return
+    if (mode === 'home') openStack()
+    else if (mode === 'stack' && e.deltaY < 0) closeStack()
   }
   const onPageDown = (e: PointerEvent) => {
-    if (mode === 'home') swipe.current = { y: e.clientY }
+    if (mode === 'home' || mode === 'stack') swipe.current = { y: e.clientY }
   }
   const onPageMove = (e: PointerEvent) => {
     const s = swipe.current
-    if (s && Math.abs(e.clientY - s.y) / k > SWIPE_PX) {
+    if (!s) return
+    const dy = (e.clientY - s.y) / k
+    if (mode === 'home' && Math.abs(dy) > SWIPE_PX) {
       swipe.current = null
       openStack()
+    } else if (mode === 'stack' && dy < -SWIPE_PX) {
+      swipe.current = null
+      closeStack() // 위로 올리면 홈으로
     }
   }
   const onPageUp = () => {
@@ -85,8 +95,8 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
 
   /* ---------- 슬랩 탭 ---------- */
   const tapSlab = (i: number) => {
-    if (mode === 'home') return openStack()
-    if (mode === 'stack') {
+    if (mode === 'home' && i !== 0) return openStack()
+    if (mode === 'home' || mode === 'stack') {
       if (i === 0 && !draft)
         setDraft({ id: 'draft', city: '', date: '', tone: '#7a7a7a', moments: [], draft: true })
       setPull(0)
