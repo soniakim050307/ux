@@ -92,6 +92,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
       setPull(0)
       setSel(i)
       setMode('cover')
+      if (i === 0) later(commit, 800) // 새 앨범은 따로 끌지 않아도 LP가 바로 빠져나간다
       return
     }
     if (i !== sel) setMode('stack')
