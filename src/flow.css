@@ -304,16 +304,18 @@
 .r-pull {
   position: absolute;
   z-index: 12;
-  left: 252px;
-  top: 356px;
+  left: 35px;
+  top: 396px;
+  width: 296px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
   color: #fff;
   font-size: 12px;
   line-height: 15px;
   letter-spacing: 0.02em;
-  text-align: left;
+  text-align: center;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
   animation: nudge 1.6s ease-in-out 1.1s infinite;
 }
