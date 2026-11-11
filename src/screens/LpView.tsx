@@ -122,11 +122,15 @@ export default function LpView({ album, active, onBack }: Props) {
   const drag = useRef<{ moved: number; lx: number; ly: number } | null>(null)
 
   useEffect(() => {
-    setPlaying(false)
+    // 들어오면 바로 재생된다 (톤암이 내려오고 첫 순간부터)
+    const auto = active && (album?.moments.length ?? 0) > 0 && !album?.draft
+    setPlaying(auto)
+    if (auto) setRun((r) => r + 1)
     setIdx(0)
     setPage(0)
     setPin(null)
     setDetail(null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, album?.id])
 
   const moment = moments[idx] ?? null
