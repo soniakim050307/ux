@@ -3239,3 +3239,9 @@
     opacity: 0;
   }
 }
+
+/* ===== 홈 새기기 장면 (측면 침) ===== */
+.cv2 { position: absolute; inset: 0; background: #545c86; overflow: hidden; }
+.cv2-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.cv2-city { font-family: 'Lora', serif; font-weight: 600; font-size: 22px; fill: #fff; }
+.cv2-sub { font-family: 'Inter', sans-serif; font-size: 20px; fill: #fff; }
