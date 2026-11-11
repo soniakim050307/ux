@@ -40,7 +40,7 @@ const TABLE: { top: number; h: number; dir: Dir }[] = [
 ]
 
 /** 홈에서는 스택이 화면 아래쪽에 살짝 걸쳐 있고, 스택 화면에서는 위로 올라온다. */
-export const HOME_OFFSET = 508
+export const HOME_OFFSET = 440
 export const STACK_OFFSET = 43
 
 export function stackGeo(index: number, offset: number): Geo {
