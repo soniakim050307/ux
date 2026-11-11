@@ -45,3 +45,6 @@ npm run build    # dist/ 생성
 
 Figma 에 한두 번만 쓰인 Manrope · Roboto · SF Pro · Crimson Text · IBM Plex Mono 는 위 글꼴로 통일했다.
 글꼴은 `@fontsource/*` 패키지로 앱에 포함되어 있어 외부 연결이 필요 없다.
+
+## 사진 출처
+Paris 외 도시 앨범(Lisbon·Kyoto·Reykjavik·Bangkok·New York·Barcelona·Jeju)의 사진은 [Unsplash](https://unsplash.com) 무료 사진(Unsplash License)입니다. 체험용 더미이며 실제 서비스에서는 사용자의 사진으로 대체됩니다.
