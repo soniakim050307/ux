@@ -3325,7 +3325,7 @@
 }
 .cap-scene {
   background:
-    radial-gradient(circle at 70% 52%, #f6e7c3 0 9%, transparent 9.5%),
+    radial-gradient(circle at 70% 52%, #f6e7c3 0 6%, transparent 6.5%), /* 해를 조금 작게 */
     linear-gradient(180deg, #8fa3c9 0%, #c9b9a8 52%, #4a5f80 52.5%, #2f3e5c 100%);
 }
 .cap-hint {
@@ -3708,4 +3708,39 @@
   font-size: 11px;
   color: #8a8a95;
   white-space: nowrap;
+}
+
+/* 녹화 화면 → 녹화 후 화면: 원이 그 자리에서 위로 올라가며 이어지고, 나머지는 차례로 나타남 */
+.et .et-media {
+  animation: et-from-cap 0.85s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes et-from-cap {
+  from {
+    transform: translateY(104px) scale(0.99);
+    box-shadow: 0 0 0 13px rgba(255, 255, 255, 0.12);
+  }
+}
+.et .et-head {
+  animation: et-rise 0.6s ease 0.15s both;
+}
+.et .et-song {
+  animation: et-rise-c 0.6s ease 0.45s both;
+}
+.et .et-note {
+  animation: et-rise 0.6s ease 0.58s both;
+}
+.et .et-carve {
+  animation: et-rise 0.6s ease 0.7s both;
+}
+@keyframes et-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+@keyframes et-rise-c {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
 }
