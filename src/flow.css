@@ -3245,7 +3245,10 @@
   animation: dl-ihead-out 3.4s ease both;
 }
 @keyframes dl-ihead-out {
-  0%,
+  0% {
+    opacity: 0;
+  }
+  15%,
   45% {
     opacity: 1;
   }
@@ -3757,4 +3760,37 @@
     opacity: 0;
     transform: translate(-50%, 12px);
   }
+}
+
+/* 인트로 재킷이 올라간 자리에 정보 입력 화면이 겹쳐 나타나도록: 위쪽 아이콘을 같은 재킷으로, 화면은 서서히 */
+.df {
+  animation: df-in 0.45s ease both;
+}
+@keyframes df-in {
+  from {
+    opacity: 0;
+  }
+}
+.df-lp {
+  border-radius: 3px;
+  background: linear-gradient(160deg, #9a9fb8, #6d7292);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+}
+.df-lp i {
+  display: none;
+}
+.df > :not(.df-lp) {
+  animation: df-rise 0.5s ease 0.15s both;
+}
+@keyframes df-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.dl-intro.lift .dl-ihead {
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }

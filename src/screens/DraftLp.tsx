@@ -24,7 +24,7 @@ interface Props {
 /** 인트로 판(607px, 중심 35.5/379.5)을 (cx, cy) 중심·지름 d·회전 r 로 옮기는 transform */
 const TV = (cx: number, cy: number, d: number, r: number) => `translate(${cx - 35.5}px,${cy - 379.5}px) scale(${d / 607}) rotate(${r}deg)`
 const SL_SIDE = 'translate(-84px,-12px) scale(.8) rotate(-4deg)' // 판 옆에 놓인 재킷
-const SL_FORM = 'translate(0,-190px) scale(.57)' // 정보 입력 화면 위쪽 자리
+const SL_FORM = 'translate(0.5px,-234px) scale(.536)' // 정보 입력 화면 위쪽 재킷 자리(118px)와 정확히 겹치게
 
 const fmt = (iso: string) => {
   if (!iso) return ''
@@ -56,6 +56,7 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
      split : 재킷(=정보)과 판(=moment)이 나란히 나옴 → 재킷만 남아 정보 입력으로
      back  : 정보를 저장하면 둘이 다시 나란히 → 재킷은 빠지고 판이 커지며 허브가 됨 */
   const [stage, setStage] = useState<'split' | 'back' | null>(null)
+  const [lift, setLift] = useState(false) // 재킷이 정보 입력 자리로 올라가는 중
   const vRef = useRef<HTMLDivElement>(null)
   const sRef = useRef<HTMLDivElement>(null)
   const anims = useRef<Animation[]>([])
@@ -111,6 +112,7 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
       // 보여주기만 하고 곧바로 정보 입력으로 (재킷만 남아 위로)
       tms.current.push(
         window.setTimeout(() => {
+          setLift(true)
           anims.current.push(
             V.animate(
               [
@@ -130,6 +132,7 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
       )
     }
     if (stage === 'back') {
+      setLift(false)
       clearIntro()
       Sl.style.zIndex = '1'
       V.style.zIndex = '2'
@@ -206,7 +209,7 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
     <div className="l-root" ref={ref}>
       <div className={`design ${stage ? 'dl-intro-on' : 'dl-hub-in'}`} style={{ width: W, height: H, transform: `scale(${k})` }}>
         {stage && (
-          <div className={`dl-intro ${stage}`}>
+          <div className={`dl-intro ${stage} ${lift ? 'lift' : ''}`}>
             <div className="dl-ihead">New Journey</div>
             <div className="dl-ivinyl" ref={vRef} onClick={pickMoment}>
               <i />
