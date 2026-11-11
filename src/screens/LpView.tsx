@@ -170,7 +170,7 @@ export default function LpView({ album, active, onBack }: Props) {
   }
 
   const rot = armDrag ?? (playing ? 0 : ARM_LIFT)
-  const showMedia = playing && moment !== null
+  const showMedia = moment !== null // 재생 전에도 가운데에 사진이 보인다
   const d = scene.disc
 
   return (
