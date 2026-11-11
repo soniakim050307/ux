@@ -2637,3 +2637,19 @@
 
 .r-trigger { position: absolute; z-index: 30; left: 50%; bottom: 28px; transform: translateX(-50%); padding: 9px 16px; border-radius: 999px; background: rgba(255,255,255,.92); color: #232744; font-size: 12px; font-weight: 600; box-shadow: 0 4px 14px rgba(0,0,0,.25); white-space: nowrap; }
 .r-trigger.in-map { bottom: auto; top: 54px; background: rgba(35,39,68,.85); color: #fff; }
+
+/* 스택 속 소포: 끈 + 도장 + 움찔 */
+.s-slab.parcel { animation: sp-jig 3.4s ease-in-out infinite; transform-origin: 50% 100%; }
+.sp-tape { position: absolute; background: #f6e4cd; }
+.sp-tape.h { left: 0; right: 0; top: 52%; height: 9%; }
+.sp-tape.v { top: 0; bottom: 0; left: 68%; width: 5%; }
+.sp-stamp { position: absolute; left: 41%; top: 14%; width: 26%; aspect-ratio: 1; border: 1.2px solid #6b4a2b; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #6b4a2b; font-size: 7px; line-height: 9px; transform: rotate(-14deg); opacity: .85; }
+.sp-stamp b { font-weight: 600; max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@keyframes sp-jig {
+  0%, 60%, 100% { translate: 0 0; rotate: 0deg; }
+  64% { translate: 0 -5px; rotate: -1.2deg; }
+  68% { translate: 0 0; rotate: 1.2deg; }
+  72% { translate: 0 -3px; rotate: -.8deg; }
+  76% { translate: 0 0; rotate: .6deg; }
+  80% { translate: 0 0; rotate: 0deg; }
+}

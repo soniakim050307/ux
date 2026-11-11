@@ -282,7 +282,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
               return (
                 <div
                   key={a ? a.id : 'add'}
-                  className={`s-slab ${i === 0 ? 'add' : ''}`}
+                  className={`s-slab ${i === 0 ? 'add' : ''} ${a?.delivery ? 'parcel' : ''}`}
                   style={style}
                   role="button"
                   tabIndex={0}
@@ -295,10 +295,20 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                     style={{
                       top: g.dir === 'down' ? SPINE_H - 1 : 0,
                       height: g.h,
-                      background: a ? a.tone : 'transparent',
+                      background: a ? (a.cover && !a.delivery ? `${a.tone} url(${a.cover}) center / cover no-repeat` : a.tone) : 'transparent',
                       clipPath: clipFor(g.dir),
                     }}
                   >
+                    {a?.delivery && (
+                      <>
+                        <i className="sp-tape h" />
+                        <i className="sp-tape v" />
+                        <span className="sp-stamp">
+                          <b>{a.city || 'Paris'}</b>
+                          <b>→ Seoul</b>
+                        </span>
+                      </>
+                    )}
                     {!a && (
                       <svg
                         viewBox={`0 0 ${SLAB_W} ${g.h}`}
