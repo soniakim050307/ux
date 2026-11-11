@@ -18,12 +18,6 @@ const bez = (t: number) => {
     y: u * u * PARIS.y + 2 * u * t * CTRL.y + t * t * SEOUL.y,
   }
 }
-const tangent = (t: number) => {
-  const u = 1 - t
-  const dx = 2 * u * (CTRL.x - PARIS.x) + 2 * t * (SEOUL.x - CTRL.x)
-  const dy = 2 * u * (CTRL.y - PARIS.y) + 2 * t * (SEOUL.y - CTRL.y)
-  return (Math.atan2(dy, dx) * 180) / Math.PI
-}
 
 
 interface MapProps {
@@ -77,14 +71,14 @@ export default function DeliveryMap({ city, startedAt, days, buttonLabel = 'Back
               <g transform={`translate(${PARIS.x} ${PARIS.y})`}>
                 <circle r="4" fill="#2f365a" />
               </g>
-              <g transform={`translate(${pos.x} ${pos.y}) rotate(${tangent(p) * 0.5}) scale(1.3)`}>
-                {/* LP 는 종이비행기 안에 타고 있다: 먼저 그리고 비행기가 앞을 덮는다 */}
-                <circle cx="-2" cy="-8" r="15" fill="#262528" />
-                <circle cx="-2" cy="-8" r="5.500" fill="#e9e4d8" />
-                <polygon points="-18,-9 24,-3 -3,6" fill="#ececec" />
-                <polygon points="-18,-9 -3,6 -9,15" fill="#d6d6d6" />
-                <polygon points="24,-3 -3,6 -9,15" fill="#c9c9c9" />
-                <polygon points="-18,-9 -9,15 -3,6" fill="#bdbdbd" opacity=".55" />
+              {/* Figma 909:1463 그대로 (62×50) */}
+              <g transform={`translate(${pos.x} ${pos.y}) translate(-31 -25)`}>
+                <path d="M60.5146 11.0845C51.1813 23.4179 32.1146 48.0845 30.5146 48.0845C29.301 48.0845 24.5586 41.3721 20.7387 35.5845L9.01463 40.0845L12.0146 24.5845C8.01463 20.9179 0.114633 13.2845 0.514633 12.0845C0.914633 10.8845 40.6813 10.9179 60.5146 11.0845Z" fill="#D9D9D9" />
+                <path d="M9.01463 40.0845L17.5146 30.5845L60.5146 11.0845M17.5146 30.5845C18.4001 31.9932 19.5226 33.742 20.7387 35.5845M12.0146 24.5845C8.01463 20.9179 0.114633 13.2845 0.514633 12.0845C0.914633 10.8845 40.6813 10.9179 60.5146 11.0845C51.1813 23.4179 32.1146 48.0845 30.5146 48.0845C29.301 48.0845 24.5586 41.3721 20.7387 35.5845M60.5146 11.0845L12.0146 24.5845M12.0146 24.5845L9.01463 40.0845L20.7387 35.5845" fill="none" stroke="#B9B9B9" />
+                <circle cx="31" cy="16.5" r="16.5" fill="#363636" />
+                <circle cx="31.117" cy="16.617" r="5.61702" fill="#D9D9D9" />
+                <path d="M17 31.5L60 12C50.6667 24.3333 31.6 49 30 49C28.7864 49 24.0439 42.2876 20.2241 36.5L8.5 41L17 31.5Z" fill="#D9D9D9" />
+                <path d="M20.2241 36.5L8.5 41L17 31.5L60 12C50.6667 24.3333 31.6 49 30 49C28.7864 49 24.0439 42.2876 20.2241 36.5ZM17 31.5C17.8854 32.9086 19.008 34.6575 20.2241 36.5" fill="none" stroke="#B9B9B9" />
               </g>
             </svg>
 
