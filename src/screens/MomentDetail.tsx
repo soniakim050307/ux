@@ -61,7 +61,7 @@ export default function MomentDetail({ album, index, onIndex, onClose }: Props) 
 
         <div className={`d-media slide${dir > 0 ? 'r' : 'l'}`} key={m.id}>
           {m.kind === 'video' ? (
-            <video src={m.src} muted loop playsInline autoPlay controls />
+            <video src={m.src} poster={m.poster} muted loop playsInline autoPlay controls />
           ) : (
             <img src={m.src} alt="" draggable={false} />
           )}

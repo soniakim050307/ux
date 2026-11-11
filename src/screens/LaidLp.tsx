@@ -81,7 +81,7 @@ export default function LaidLp({ album, selected, onSelect, onOpen }: Props) {
               style={{ width: hw, height: hh, left: -hw / 2, top: -stem - hh }}
               onClick={() => (on ? onOpen(i) : onSelect(i))}
             >
-              <span style={{ backgroundImage: `url(${m.src})` }} />
+              <span style={{ backgroundImage: `url(${m.poster ?? m.src})` }} />
             </button>
           </div>
         )

@@ -170,6 +170,15 @@ export default function LpView({ album, active, onBack }: Props) {
   }
 
   const rot = armDrag ?? (playing ? 0 : ARM_LIFT)
+  // 크게 보기(2번째 화면)에서는 영상이 각각 바로 재생된다. 작게 볼 때는 재생 중일 때만.
+  const vref = useRef<HTMLVideoElement>(null)
+  const wantVideo = playing || page === 1
+  useEffect(() => {
+    const el = vref.current
+    if (!el) return
+    if (wantVideo) void el.play().catch(() => {})
+    else el.pause()
+  }, [wantVideo, moment?.id])
   const showMedia = moment !== null // 재생 전에도 가운데에 사진이 보인다
   const d = scene.disc
 
@@ -216,11 +225,13 @@ export default function LpView({ album, active, onBack }: Props) {
                     <video
                       key={moment.id}
                       className={showMedia ? 'on' : ''}
+                      ref={vref}
                       src={moment.src}
+                      poster={moment.poster}
                       muted
                       loop
                       playsInline
-                      autoPlay={playing}
+                      autoPlay={playing || page === 1}
                     />
                   ) : (
                     <img

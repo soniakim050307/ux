@@ -27,7 +27,7 @@ function Thumb({ m, size }: { m: FlowMoment; size: number }) {
           <path d="M5.5 11.5a6.5 6.5 0 0013 0M12 18v3" />
         </svg>
       ) : m.kind === 'video' ? (
-        <video src={`${m.src}#t=0.1`} muted playsInline preload="metadata" />
+        <video src={`${m.src}#t=0.1`} poster={m.poster} muted playsInline preload="metadata" />
       ) : (
         <img src={m.src} alt="" draggable={false} />
       )}

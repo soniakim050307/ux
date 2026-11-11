@@ -4,6 +4,8 @@ export interface FlowMoment {
   id: string
   /** 사진 또는 영상 파일 */
   src: string
+  /** 영상일 때 첫 화면·썸네일로 쓰는 사진 */
+  poster?: string
   kind?: 'photo' | 'video' | 'audio'
   /** 이 moment 의 음악 파일. 없으면 임시 멜로디가 나온다. (예: public/audio/paris-1.mp3) */
   audio?: string
@@ -54,7 +56,9 @@ function trip(
     cover: img(`${id}-${coverIdx + 1}.jpg`),
     moments: moments.map(([time, note], i) => ({
       id: `${id}-${i + 1}`,
-      src: img(`${id}-${i + 1}.jpg`),
+      src: `${import.meta.env.BASE_URL}video/${id}-${i + 1}.mp4`,
+      poster: img(`${id}-${i + 1}.jpg`),
+      kind: 'video',
       time,
       note,
       audio: audio('paris.mp3'),
