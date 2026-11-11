@@ -16,7 +16,7 @@ export default function PressSeq({ city, onFinish }: Props) {
   const [startedAt] = useState(() => Date.now())
 
   useEffect(() => {
-    const at = [700, 1700, 2700, 3700, 5600, 9200]
+    const at = [500, 1000, 2600, 3700, 6100, 9700]
     const ts = at.map((ms, i) => window.setTimeout(() => setStep(i + 1), ms))
     return () => ts.forEach(clearTimeout)
   }, [])
@@ -34,11 +34,9 @@ export default function PressSeq({ city, onFinish }: Props) {
   const pink =
     step <= 1
       ? { cx: 196, cy: 293, w: 123, h: 94 }
-      : step === 2
-        ? { cx: 196, cy: 423, w: 123, h: 94 }
-        : step === 3
-          ? { cx: 196, cy: 523, w: 126, h: 84 }
-          : { cx: 196, cy: 444, w: 106, h: 106 }
+      : step <= 3
+        ? { cx: 196, cy: 517, w: 123, h: 94 }
+        : { cx: 196, cy: 444, w: 106, h: 106 }
   const lp = done
     ? { l: 22, t: 270, w: 348, h: 348 }
     : { l: -8, t: 370, w: 409, h: 333 }
@@ -53,13 +51,15 @@ export default function PressSeq({ city, onFinish }: Props) {
           <div className={`ps-title ${pressing ? 'on' : ''}`}>Press!</div>
           <div className={`ps-title c ${done ? 'on' : ''}`}>Completed</div>
           <div
-            className="ps-lp"
+            className={`ps-lp ${step === 3 ? 'dip' : ''}`}
             style={{ left: lp.l, top: lp.t, width: lp.w, height: lp.h, boxShadow: glow }}
           >
             <i className={`ps-hole ${done ? '' : 'on'}`} />
           </div>
+          {step === 3 && <i className="ps-ripple" />}
+          {step === 3 && <i className="ps-ripple b" />}
           <div
-            className="ps-pink"
+            className={`ps-pink ${step <= 1 ? 'hover' : ''} ${step === 3 ? 'press' : ''}`}
             style={{ left: pink.cx - pink.w / 2, top: pink.cy - pink.h / 2, width: pink.w, height: pink.h }}
           />
           <div className={`ps-city ${done ? 'on' : ''}`}>{city}</div>

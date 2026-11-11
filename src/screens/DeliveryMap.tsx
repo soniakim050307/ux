@@ -71,12 +71,14 @@ export default function DeliveryMap({ city, startedAt, days, buttonLabel = 'Back
               <g transform={`translate(${PARIS.x} ${PARIS.y})`}>
                 <circle r="4" fill="#2f365a" />
               </g>
-              <g transform={`translate(${pos.x} ${pos.y}) rotate(${tangent(p) * 0.6})`}>
-                <polygon points="24,0 -18,-15 -4,2" fill="#f7f4ea" />
-                <polygon points="24,0 -4,2 -14,13" fill="#cfcabc" />
-                <polygon points="-4,2 -18,-15 -14,13" fill="#e4dfd1" />
-                <circle cx="-2" cy="-8" r="13" fill="#262528" />
-                <circle cx="-2" cy="-8" r="5" fill="#e9e4d8" />
+              <g transform={`translate(${pos.x} ${pos.y}) rotate(${tangent(p) * 0.5}) scale(1.3)`}>
+                {/* LP 는 종이비행기 안에 타고 있다: 먼저 그리고 비행기가 앞을 덮는다 */}
+                <circle cx="-2" cy="-8" r="15" fill="#262528" />
+                <circle cx="-2" cy="-8" r="5.500" fill="#e9e4d8" />
+                <polygon points="-18,-9 24,-3 -3,6" fill="#ececec" />
+                <polygon points="-18,-9 -3,6 -9,15" fill="#d6d6d6" />
+                <polygon points="24,-3 -3,6 -9,15" fill="#c9c9c9" />
+                <polygon points="-18,-9 -9,15 -3,6" fill="#bdbdbd" opacity=".55" />
               </g>
             </svg>
 
