@@ -12,6 +12,7 @@ const RING_LEN = 2 * Math.PI * RING_R
 /** 지금 듣고 있는 노래 (실제 연동 전까지는 최근 재생곡으로 대신) */
 const NOW_PLAYING = { title: 'Paris in the rain', artist: 'Lauv' }
 const SAMPLE_CLIP = `${import.meta.env.BASE_URL}video/jeju-1.mp4`
+const LIB_THUMB = `${import.meta.env.BASE_URL}img/jeju-3.jpg`
 
 interface Props {
   title: string
@@ -268,15 +269,8 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
         {!rec && (
           <>
             <button type="button" className="cap-side cap-lib" onClick={() => fileRef.current?.click()} aria-label="Choose from library">
-              {clip ? (
-                <video src={clip} muted playsInline />
-              ) : (
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round">
-                  <rect x="3.5" y="5" width="17" height="14" rx="2" />
-                  <path d="M3.5 16l5-5 4 4 3-3 5 5" />
-                  <circle cx="15.5" cy="9" r="1.4" />
-                </svg>
-              )}
+              {/* 실제 카메라처럼 최근 항목이 동그란 썸네일로 보임 */}
+              {clip ? <video src={clip} muted playsInline /> : <img src={LIB_THUMB} alt="" />}
             </button>
             <button
               type="button"
