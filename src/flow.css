@@ -3254,7 +3254,7 @@
 .cap-np {
   position: absolute;
   left: 50%;
-  top: 104px;
+  top: 94px; /* 제목·시간 표시·링 사이 여백이 고르게 */
   transform: translateX(-50%);
   display: flex;
   align-items: center;
