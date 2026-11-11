@@ -3136,3 +3136,106 @@
   font-size: 12px;
   white-space: nowrap;
 }
+
+/* 새 앨범 인트로: 재킷(정보)과 판(moment) */
+.dl-intro {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+}
+.dl-ihead {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 120px;
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 600;
+  animation: dl-in 0.7s ease 0.2s both;
+}
+.dl-ivinyl {
+  position: absolute;
+  left: -268px;
+  top: 76px;
+  width: 607px;
+  height: 607px;
+  border-radius: 50%;
+  /* 허브 판과 같은 라벨 (반지름 110 / 118 / 172 of 323) */
+  background: radial-gradient(circle closest-side, #38373b 0 34%, #232226 34% 36.5%, #38373b 36.5% 53.3%, #262629 53.3%);
+  cursor: pointer;
+  will-change: transform;
+}
+.dl-ivinyl i {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34%;
+  height: 34%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #38373b;
+}
+.dl-ivinyl::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2.4%;
+  height: 2.4%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #000;
+}
+.dl-isleeve {
+  position: absolute;
+  left: 86px;
+  top: 290px;
+  width: 220px;
+  height: 220px;
+  z-index: 3;
+  border-radius: 3px;
+  background: linear-gradient(160deg, #9a9fb8, #6d7292);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 18px;
+  will-change: transform;
+}
+.dl-isleeve b {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+}
+.dl-isleeve small {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.8);
+}
+/* 인트로가 도는 동안 허브는 숨기고, 끝나면 살며시 나타남 */
+.dl-intro-on > :not(.dl-intro) {
+  opacity: 0;
+  pointer-events: none;
+}
+.dl-hub-in > .dl-city,
+.dl-hub-in > .dl-record {
+  animation: dl-in 0.8s ease 0.2s both;
+}
+
+.dl-intro.back .dl-ihead {
+  animation: dl-ihead-out 4.8s ease both;
+}
+@keyframes dl-ihead-out {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  65%,
+  100% {
+    opacity: 0;
+  }
+}
