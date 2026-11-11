@@ -32,3 +32,16 @@ npm run build    # dist/ 생성
 
 ## 주의
 참가자의 촬영 데이터는 기기 안에만 저장됩니다. 저장소에 커밋하지 마세요.
+
+## 글꼴 체계 (Figma Section 3 기준)
+
+| 용도 | 글꼴 | CSS 변수 |
+|---|---|---|
+| 도시명 · 큰 숫자("3 Days") · 메모 | Lora (SemiBold/Bold) | `--serif` |
+| UI 텍스트 · 버튼 · 날짜 · 컨트롤 | Inter (Light~Bold) | `--sans` |
+| "Press!" · "Completed" 같은 연출 문구 | DM Sans Light | `--light` |
+| 도장 · 스탬프 | DM Mono | `--mono` |
+| 한글 | Noto Sans KR (위 글꼴의 한글 대체) | — |
+
+Figma 에 한두 번만 쓰인 Manrope · Roboto · SF Pro · Crimson Text · IBM Plex Mono 는 위 글꼴로 통일했다.
+글꼴은 `@fontsource/*` 패키지로 앱에 포함되어 있어 외부 연결이 필요 없다.

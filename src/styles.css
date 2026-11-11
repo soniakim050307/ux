@@ -3,8 +3,11 @@
   --bg-deep: #161827;
   --ink: #fff;
   --muted: rgba(255, 255, 255, 0.58);
-  --serif: 'Lora', Georgia, serif;
-  --sans: 'Inter', system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif;
+  /* 글꼴 체계 (Figma Section 3 기준) */
+  --serif: 'Lora', 'Noto Sans KR', Georgia, serif; /* 도시명·큰 숫자·메모 */
+  --sans: 'Inter', 'Noto Sans KR', system-ui, -apple-system, 'Apple SD Gothic Neo', sans-serif; /* UI 텍스트 */
+  --light: 'DM Sans', 'Inter', 'Noto Sans KR', sans-serif; /* Press! · Completed 같은 연출 문구 */
+  --mono: 'DM Mono', ui-monospace, Menlo, monospace; /* 도장·스탬프 */
   color-scheme: dark;
 }
 
@@ -957,4 +960,10 @@ p {
   .wave.live i {
     animation: none;
   }
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
 }
