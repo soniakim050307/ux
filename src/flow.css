@@ -1768,13 +1768,14 @@
   background: #d9d9d9;
 }
 
-.eg-cube {
+.eg-tone {
   position: absolute;
-  left: -38px;
-  top: -30px;
+  left: 0;
+  top: 0;
+  overflow: visible;
 }
 
-.eg-arm.work .eg-cube {
+.eg-arm.work .eg-tone {
   animation: eg-shake 0.12s linear infinite;
 }
 

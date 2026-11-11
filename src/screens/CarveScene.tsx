@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { ArmRod, Head } from '../Tonearm'
 
 /**
  * LP에 홈을 새기는 장면 (측면 뷰).
@@ -13,7 +14,6 @@ const H = 898
 const GROOVE = 'M 108 531 C 150 528 215 519 262 496'
 /** 앞 모먼트에서 이미 새겨진 홈 */
 const OLD_GROOVE = 'M -20 536 L 108 531'
-const COLOR = { top: '#d9d9d9', front: '#a9a9a9', side: '#7c7c7c', arm: '#d9d9d9', armShade: '#959595' }
 
 interface Props {
   city?: string
@@ -118,36 +118,5 @@ export default function CarveScene({ city = 'Paris, France', label = 'moment1', 
         </text>
       </svg>
     </div>
-  )
-}
-
-/** 침 끝점(0,0) 기준: 헤드 오른쪽에서 화면 밖 피벗까지 이어지는 둥근 암 */
-function ArmRod() {
-  return (
-    <g>
-      <line x1="30" y1="-70" x2="330" y2="-52" stroke={COLOR.armShade} strokeWidth="16" strokeLinecap="round" />
-      <line x1="30" y1="-72" x2="330" y2="-54" stroke={COLOR.arm} strokeWidth="13" strokeLinecap="round" />
-    </g>
-  )
-}
-
-/** 둥근 모서리의 입체 헤드: 윗면·앞면·옆면 + 붉은 바늘 */
-function Head() {
-  const r = (fill: string, d: string) => (
-    <path d={d} fill={fill} stroke={fill} strokeWidth="7" strokeLinejoin="round" />
-  )
-  return (
-    <g transform="translate(0 0)">
-      {/* 바늘 */}
-      <path d="M -3 -26 L 0 0 L 2 -26 Z" fill="#d6554a" stroke="#d6554a" strokeWidth="2.5" strokeLinejoin="round" />
-      {/* 옆면 */}
-      {r(COLOR.side, 'M -42 -58 L -34 -68 L -34 -34 L -42 -28 Z')}
-      {/* 앞면 */}
-      {r(COLOR.front, 'M -38 -62 L 14 -62 L 14 -28 L -38 -28 Z')}
-      {/* 윗면 */}
-      {r(COLOR.top, 'M -36 -72 L 22 -70 L 14 -60 L -38 -62 Z')}
-      {/* 암과 이어지는 목 */}
-      {r(COLOR.front, 'M 16 -66 L 36 -66 L 36 -52 L 16 -52 Z')}
-    </g>
   )
 }

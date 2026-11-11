@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useDesignScale } from '../useDesignScale'
+import { ArmRod, Head } from '../Tonearm'
 
 const W = 393
 const H = 852
@@ -52,12 +53,11 @@ export default function Engrave({ city, label, onDone }: Props) {
           className={`eg-arm ${phase === 1 ? 'work' : ''}`}
           style={{ transform: `translate(${pos.x}px, ${pos.y}px) rotate(${pos.a}deg)` }}
         >
-          <i className="eg-bar" />
-          <svg viewBox="0 0 70 60" width="70" height="60" className="eg-cube">
-            <polygon points="8,14 38,2 66,12 36,24" fill="#767676" />
-            <polygon points="8,14 36,24 38,54 10,44" fill="#5b5b5b" />
-            <polygon points="36,24 66,12 66,40 38,54" fill="#454545" />
-            <path d="M12 46l-3 9" stroke="#d94b3a" strokeWidth="2" />
+          <svg className="eg-tone" width="1" height="1" overflow="visible">
+            <g transform="translate(-26 20)">
+              <ArmRod x1={30} y1={-62} x2={450} y2={-62} />
+              <Head />
+            </g>
           </svg>
         </div>
 
