@@ -2588,3 +2588,52 @@
     transform: scale(3.1, 2.6);
   }
 }
+
+/* 새 지도 화면 (Figma 909:1451) */
+.mp { position: absolute; inset: 0; background: #525c85; overflow: hidden; }
+.mp-map { height: 446px; width: auto; max-width: none; }
+.mp-sheet {
+  left: 0; right: 0; bottom: 0; top: 528px;
+  padding: 16px 24px 0;
+  border-radius: 34px 34px 0 0;
+  background: #f5f5f9;
+  box-shadow: none;
+}
+.mp-grab { width: 74px; height: 6px; margin: 0 auto 22px; border-radius: 3px; background: #d9d9d9; }
+.mp-lead { margin: 0; font-family: var(--sans); font-size: 17.5px; color: #000; }
+.mp-days { display: block; margin: 12px 0 20px; text-align: center; background: none; color: #000; font-family: var(--serif); line-height: 1.1; }
+.mp-days b { font-weight: 600; font-size: 40px; }
+.mp-days span { margin: 0 12px 0 8px; font-size: 30px; font-weight: 500; }
+.mp-chip { display: none; }
+
+/* 도착한 소포 */
+.h-parcel { position: absolute; z-index: 15; left: 50%; top: 600px; width: 150px; margin-left: -75px; text-align: center; }
+.hp-box { position: relative; display: block; width: 150px; height: 100px; background: #e3b98f; border-radius: 4px; box-shadow: 0 14px 24px rgba(0,0,0,.35); animation: hp-jig 3.2s ease-in-out infinite; transform-origin: 50% 100%; }
+.hp-box .pk-tape.h { top: 62%; height: 6px; animation: none; }
+.hp-box .pk-tape.v { left: 68%; width: 6px; animation: none; }
+.hp-lid { position: absolute; left: 0; right: 0; top: 0; height: 38%; background: #d9a97c; border-radius: 4px 4px 0 0; transform-origin: 50% 0; }
+.hp-disc { position: absolute; left: 25px; top: 20px; width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle, #e9e4d8 0 12%, #262528 13%); opacity: 0; z-index: -1; }
+.h-parcel em { display: block; margin-top: 18px; font-style: normal; font-size: 12px; color: #fff; opacity: .9; white-space: nowrap; margin-left: -40px; margin-right: -40px; }
+@keyframes hp-jig {
+  0%, 62%, 100% { transform: none; }
+  66% { transform: translateY(-9px) rotate(-3deg); }
+  70% { transform: translateY(0) rotate(3deg); }
+  74% { transform: translateY(-5px) rotate(-2deg); }
+  78% { transform: translateY(0) rotate(1.5deg); }
+  82% { transform: none; }
+}
+.h-parcel.open em { opacity: 0; transition: opacity .3s; }
+.h-parcel.open .hp-box { animation: hp-pop .5s ease-out both; }
+.h-parcel.open .pk-tape { animation: hp-tape .4s ease-in both !important; }
+.h-parcel.open .hp-lid { animation: hp-lid .7s .35s cubic-bezier(.3,1.4,.5,1) both; }
+.h-parcel.open .hp-disc { animation: hp-disc .9s .55s ease-out both; }
+@keyframes hp-pop { 50% { transform: scale(1.12, .94); } 100% { transform: scale(1); } }
+@keyframes hp-tape { to { transform: scaleX(0); opacity: 0; } }
+@keyframes hp-lid { to { transform: perspective(300px) rotateX(-150deg) translateY(-6px); opacity: .0; } }
+@keyframes hp-disc { 0% { opacity: 1; transform: translateY(0) scale(.7); } 100% { opacity: 1; transform: translateY(-90px) scale(1.2) rotate(180deg); } }
+.r-parcel.arrived { animation: hp-jig 3.2s ease-in-out infinite; transform-origin: 50% 100%; }
+.r-parcel.open { animation: hp-pop .6s ease-out both; }
+.r-parcel.open .pk-tape { animation: hp-tape .4s ease-in both !important; }
+
+.r-trigger { position: absolute; z-index: 30; left: 50%; bottom: 28px; transform: translateX(-50%); padding: 9px 16px; border-radius: 999px; background: rgba(255,255,255,.92); color: #232744; font-size: 12px; font-weight: 600; box-shadow: 0 4px 14px rgba(0,0,0,.25); white-space: nowrap; }
+.r-trigger.in-map { bottom: auto; top: 54px; background: rgba(35,39,68,.85); color: #fff; }

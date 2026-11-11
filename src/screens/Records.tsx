@@ -31,16 +31,31 @@ const clipFor = (dir: Dir) =>
     : 'polygon(3.5% 0, 96.5% 0, 100% 100%, 0 100%)'
 
 /** Figma 비율 그대로의 종이비행기 변환 행렬 (좌우 반전 포함) */
-const PLANES = [
-  { cx: 264, cy: 447, m: 'matrix(-0.4688, 0.8833, 0.8833, 0.4688, 0, 0)', delay: '0s' },
-  { cx: 313, cy: 418, m: 'matrix(-0.9068, 0.4215, 0.4215, 0.9068, 0, 0)', delay: '-1.6s' },
-]
+
+// ?fast=초 로 열면 배송이 그 초 만에 도착한다 (체험용)
+const FAST = Number(new URLSearchParams(window.location.search).get('fast')) || 0
 
 export default function Records({ albums }: { albums: FlowAlbum[] }) {
   // 슬랩 0 = "Add New Album", 1.. = 최신 → 오래된 앨범
   const [created, setCreated] = useState<FlowAlbum[]>([])
   const list = [...albums, ...created].reverse()
   const [draft, setDraft] = useState<FlowAlbum | null>(null)
+  const [, setTick] = useState(0)
+  const [unwrapId, setUnwrapId] = useState<string | null>(null)
+  // 배송 중인 소포가 있을 때만, 도착 시각에 딱 한 번 다시 그린다
+  const nextArrival = created.reduce((m, a) => {
+    if (!a.delivery) return m
+    const at = a.delivery.startedAt + a.delivery.days * 86400000
+    return at > Date.now() && at < m ? at : m
+  }, Infinity)
+  useEffect(() => {
+    if (!isFinite(nextArrival)) return
+    const t = window.setTimeout(() => setTick((n) => n + 1), Math.min(2147483000, nextArrival - Date.now() + 50))
+    return () => clearTimeout(t)
+  }, [nextArrival])
+  const isArrived = (a?: FlowAlbum | null) =>
+    !!a?.delivery && Date.now() >= a.delivery.startedAt + a.delivery.days * 86400000
+  const arrivedAlbum = created.find(isArrived) ?? null
   const slotIdx = Array.from({ length: list.length + 1 }, (_, i) => i)
 
   const [mode, setMode] = useState<Mode>('home')
@@ -145,11 +160,40 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
 
   const coverOn = mode === 'cover' && album !== null
   const [mapOpen, setMapOpen] = useState(false)
-  const parcel = !!album?.delivery
+  const boxed = !!album?.delivery
+  const parcel = boxed && !isArrived(album)
   const cTop = sel !== null ? coverTop(sel) : 0
   const daysLeft = album?.delivery
     ? Math.max(0, Math.ceil((album.delivery.startedAt + album.delivery.days * 86400000 - Date.now()) / 86400000))
     : 0
+
+  // 체험용 트리거: 배송 중인 소포를 지금 바로 도착시킨다
+  const transitAlbum = created.find((a) => a.delivery && !isArrived(a)) ?? null
+  const arriveNow = () => {
+    setCreated((c) =>
+      c.map((a) =>
+        a.delivery && !isArrived(a) ? { ...a, delivery: { ...a.delivery, startedAt: Date.now() - a.delivery.days * 86400000 - 1000 } } : a,
+      ),
+    )
+    setMapOpen(false)
+  }
+
+  /* 도착한 소포: 움찔거리다가 누르면 쫘라락 풀리고 회고(LP) 화면으로 */
+  const openArrived = (a: FlowAlbum) => {
+    if (unwrapId) return
+    setUnwrapId(a.id)
+    later(() => {
+      const next = created.map((x) => (x.id === a.id ? { ...x, delivery: undefined } : x))
+      const idx = [...albums, ...next].reverse().findIndex((x) => x.id === a.id) + 1
+      setCreated(next)
+      setPull(0)
+      setSel(idx)
+      setMode('cover')
+      setPage(0)
+      setUnwrapId(null)
+      later(commit, 900)
+    }, 1500)
+  }
 
   const finishDraft = () => {
     if (!draft) return
@@ -160,7 +204,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
       draft: false,
       date: `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}`,
       tone: '#c9a77b',
-      delivery: { startedAt: now.getTime(), days: 3 },
+      delivery: { startedAt: now.getTime(), days: FAST ? FAST / 86400 : 3 },
     }
     setCreated((c) => [...c, a])
     setDraft(null)
@@ -197,21 +241,31 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
               <div className="h-hole" />
               <div className="h-arm-bar" />
               <div className="h-arm-head" />
-              {PLANES.map((p, i) => (
-                <div
-                  key={i}
-                  className="h-plane"
-                  style={{ left: p.cx - 32, top: p.cy - 32, animationDelay: p.delay }}
-                >
-                  <img
-                    src={`${import.meta.env.BASE_URL}img/plane.png`}
-                    alt=""
-                    draggable={false}
-                    style={{ transform: p.m }}
-                  />
-                </div>
-              ))}
             </div>
+
+            {transitAlbum && page === 0 && !mapOpen && (
+              <button type="button" className="r-trigger" onClick={arriveNow}>
+                ▶ 배송 도착시키기 (체험용)
+              </button>
+            )}
+
+            {/* 도착한 소포 (홈) */}
+            {arrivedAlbum && mode === 'home' && (
+              <button
+                type="button"
+                className={`h-parcel ${unwrapId === arrivedAlbum.id ? 'open' : ''}`}
+                onClick={() => openArrived(arrivedAlbum)}
+                aria-label="Open arrived parcel"
+              >
+                <span className="hp-box">
+                  <i className="pk-tape h" />
+                  <i className="pk-tape v" />
+                  <span className="hp-lid" />
+                  <span className="hp-disc" />
+                </span>
+                <em>Your LP has arrived · tap to open</em>
+              </button>
+            )}
 
             {/* 앨범 스택 */}
             {slotIdx.map((i) => {
@@ -286,7 +340,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
             {/* 선택한 앨범: 커버가 서고, LP가 옆으로 빠진다 */}
             {album && (
               <>
-                {!parcel && (
+                {!boxed && (
                   <div
                     className={`r-lp ${coverOn ? 'on' : ''} ${album.draft ? 'blank' : ''}`}
                     style={{
@@ -305,8 +359,8 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                   className={`r-sel ${coverOn ? 'on' : ''}`}
                   style={{ left: COVER.x, top: cTop, width: COVER.w, height: COVER.h }}
                 >
-                  {parcel ? (
-                    <div className="r-parcel">
+                  {boxed ? (
+                    <div className={`r-parcel ${parcel ? '' : 'arrived'} ${unwrapId === album.id ? 'open' : ''}`}>
                       <i className="pk-tape h" />
                       <i className="pk-tape v" />
                       <div className="pk-stamp">
@@ -336,7 +390,16 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                   </button>
                 )}
 
-                {coverOn && !parcel && (
+                {coverOn && boxed && !parcel && (
+                  <button type="button" className="r-parcel-hit" style={{ top: cTop }} onClick={() => openArrived(album)} aria-label="Open parcel">
+                    <span className="r-transit">
+                      ARRIVED
+                      <b>TAP</b>
+                    </span>
+                  </button>
+                )}
+
+                {coverOn && !boxed && (
                   <>
                     <button type="button" className="r-pull" style={{ top: cTop + COVER.h / 2 - 17 }} onClick={commit}>
                       <span>
@@ -372,6 +435,9 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                   buttonLabel="Close"
                   onFinish={() => setMapOpen(false)}
                 />
+                <button type="button" className="r-trigger in-map" onClick={arriveNow}>
+                  ▶ 배송 도착시키기 (체험용)
+                </button>
               </MapScaled>
             </div>
           )}

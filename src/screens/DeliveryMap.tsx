@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 
 const W = 393
 const H = 852
-const MAP_TOP = 104
-// world-map.svg 안에서의 좌표 (Mercator, 393 × 373)
-const PARIS = { x: 52, y: MAP_TOP + 130 }
-const SEOUL = { x: 340, y: MAP_TOP + 166 }
-const CTRL = { x: 196, y: MAP_TOP + 40 }
-const SHIP = 0.46 // 지금 도착 경로의 어디쯤인지
+const MAP_TOP = 96
+// Figma 909:1451 의 호 (캔버스 393 × 852 기준)
+const PARIS = { x: 58, y: 271 }
+const SEOUL = { x: 316, y: 286 }
+const CTRL = { x: 188, y: 191 }
+const SHIP = 0.46 // 처음 보여줄 위치
+const DRIFT = 0.014 // 이후 초당 이동량 (천천히 계속 앞으로)
+const MAXP = 0.94
 
 const bez = (t: number) => {
   const u = 1 - t
@@ -39,16 +41,20 @@ export default function DeliveryMap({ city, startedAt, days, buttonLabel = 'Back
   useEffect(() => {
     const t0 = performance.now()
     const tick = (t: number) => {
-      const e = Math.min(1, (t - t0 - 600) / 3600)
+      const el = t - t0 - 600
+      const e = Math.min(1, el / 3600)
       const v = e <= 0 ? 0 : 1 - Math.pow(1 - e, 3)
-      setP(v * SHIP)
-      if (e < 1) raf.current = requestAnimationFrame(tick)
+      const extra = el > 3600 ? ((el - 3600) / 1000) * DRIFT : 0
+      setP(Math.min(MAXP, v * SHIP + extra))
+      if (v * SHIP + extra < MAXP) raf.current = requestAnimationFrame(tick)
     }
     raf.current = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf.current)
   }, [])
 
-  const DAYS = Math.max(0, Math.ceil((startedAt + days * 86400000 - Date.now()) / 86400000))
+  const left = Math.max(0, startedAt + days * 86400000 - Date.now())
+  const DAYS = Math.floor(left / 86400000)
+  const HOURS = Math.floor((left % 86400000) / 3600000)
   const fmtD = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   const now = new Date(startedAt)
   const arrive = new Date(startedAt + days * 86400000)
@@ -57,7 +63,7 @@ export default function DeliveryMap({ city, startedAt, days, buttonLabel = 'Back
 
   return (
     <div className="mp">
-            <img className="mp-map" src={`${import.meta.env.BASE_URL}img/world-map.svg`} alt="" style={{ top: MAP_TOP }} />
+            <img className="mp-map" src={`${import.meta.env.BASE_URL}img/map-new.png`} alt="" style={{ top: MAP_TOP }} />
             <svg className="mp-svg" viewBox={`0 0 ${W} ${H}`}>
               {dots.map((t) => {
                 const q = bez(t)
@@ -84,14 +90,12 @@ export default function DeliveryMap({ city, startedAt, days, buttonLabel = 'Back
 
             <div className="mp-sheet">
               <i className="mp-grab" />
-              <div className="mp-chip">
-                <b />
-                IN TRANSIT
-              </div>
               <p className="mp-lead">Your LP will arrive in</p>
               <div className="mp-days">
-                {DAYS}
-                <span>Days</span>
+                <b>{DAYS}</b>
+                <span>{DAYS === 1 ? 'day' : 'days'}</span>
+                <b>{HOURS}</b>
+                <span>{HOURS === 1 ? 'hour' : 'hours'}</span>
               </div>
 
               <div className="mp-route">
