@@ -4,15 +4,11 @@ import { useDesignScale } from '../useDesignScale'
 
 const W = 393
 const H = 852
-const CX = 196.5
-const CY = 363
 /** 시안용 가짜 감지 결과: 폰에서 재생 중인 곡 ↔ 녹음 속에서 들린 곡이 번갈아 나온다 */
 export const DETECTED = [
   { label: 'Now Playing', title: 'Summer', artist: 'The Volunteers' },
   { label: 'Heard in recording', title: 'La Vie en Rose', artist: 'Édith Piaf' },
 ]
-const R = 156
-const RR = 166
 
 interface Props {
   moment: FlowMoment
@@ -20,148 +16,149 @@ interface Props {
   peaks: number[]
   title: string
   index: number
-  onSave: (song?: { title: string; artist: string }) => void
+  onSave: (song?: { title: string; artist: string }, note?: string) => void
   onRetake: () => void
   onBack: () => void
 }
 
-/** 녹화가 끝난 뒤: 재생해서 살펴보고, 노래를 붙이고, 저장하거나 다시 찍는다 */
-export default function Review({ moment, dur, peaks, title, index, onSave, onRetake, onBack }: Props) {
+type Song = { title: string; artist: string; color: string; when?: string; why?: string }
+/** 노래 고르기: 방금 다른 앱에서 들은 곡 + 추천 곡 (실제 연동 전까지는 예시) */
+const RECENT: Song[] = [
+  { title: 'Paris in the rain', artist: 'Lauv', color: '#f5c518', when: '8 min ago' },
+  { title: 'La Vie en rose', artist: 'Édith Piaf', color: '#e58a8a', when: '32 min ago' },
+  { title: 'Clair de Lune', artist: 'Debussy', color: '#9fb4e6', when: '1 hr ago' },
+  { title: 'Golden Hour', artist: 'JVKE', color: '#f0a35e', when: 'This morning' },
+  { title: 'Sunday Morning', artist: 'Maroon 5', color: '#8fd1b5', when: 'Yesterday' },
+]
+const RECOMMENDED: Song[] = [
+  { title: 'Les Champs-Élysées', artist: 'Joe Dassin', color: '#c9a4f0', why: 'Paris · walking' },
+  { title: 'Je te laisserai des mots', artist: 'Patrick Watson', color: '#7fa7c9', why: 'Rainy afternoon' },
+  { title: 'Moon River', artist: 'Audrey Hepburn', color: '#b8c4d9', why: 'Slow tempo' },
+  { title: 'Coffee', artist: 'beabadoobee', color: '#d6a77a', why: 'Recorded at a café' },
+  { title: 'Riptide', artist: 'Vance Joy', color: '#86c2a0', why: 'Like your recent picks' },
+]
+const disc = (c: string) => `radial-gradient(circle, ${c} 0 18%, #000 19%)`
+
+/** 녹화가 끝난 뒤 (blue-vinyl): 원 안에서 다시 보고, 노래를 붙이고, 짧은 메모를 남긴 뒤 LP에 새긴다 */
+export default function Review({ moment, title, index, onSave, onRetake }: Props) {
   const { ref, k } = useDesignScale<HTMLDivElement>(W)
   const media = useRef<HTMLVideoElement & HTMLAudioElement>(null)
   const [playing, setPlaying] = useState(false)
-  const [p, setP] = useState(0)
-  const [song, setSong] = useState<{ title: string; artist: string } | null>(null)
-  const [cand, setCand] = useState(0)
+  const first = RECENT.find((s) => s.title === moment.song?.title) ?? RECENT[0]
+  const [song, setSong] = useState<Song>(first)
+  const [sheet, setSheet] = useState(false)
+  const [q, setQ] = useState('')
+  const [note, setNote] = useState(moment.note ?? '')
   const isVideo = moment.kind === 'video'
+  const src = isVideo ? moment.src : moment.audio
 
-  useEffect(() => {
-    if (song) return
-    const id = window.setInterval(() => setCand((c) => (c + 1) % DETECTED.length), 3200)
-    return () => clearInterval(id)
-  }, [song])
-
-  useEffect(() => {
-    media.current?.play().then(() => setPlaying(true)).catch(() => {})
-  }, [])
+  useEffect(() => () => media.current?.pause(), [])
 
   const toggle = () => {
     const m = media.current
     if (!m) return
-    if (m.ended || p >= 0.999) m.currentTime = 0
     if (m.paused) m.play().then(() => setPlaying(true)).catch(() => {})
     else {
       m.pause()
       setPlaying(false)
     }
   }
-
-  const ang = p * Math.PI * 2 - Math.PI / 2
-  const circ = 2 * Math.PI * RR
-  const src = isVideo ? moment.src : moment.audio
+  const match = (s: Song) => !q || (s.title + s.artist).toLowerCase().includes(q.toLowerCase())
+  const row = (s: Song, sub: string) => (
+    <button
+      type="button"
+      key={s.title}
+      className={`et-srow ${s.title === song.title ? 'sel' : ''}`}
+      onClick={() => {
+        setSong(s)
+        setSheet(false)
+      }}
+    >
+      <i className="et-sd" style={{ background: disc(s.color) }} />
+      <span className="et-st">
+        {s.title}
+        <small>{s.artist}</small>
+      </span>
+      <em>{sub}</em>
+    </button>
+  )
 
   return (
-    <div className="l-root cap" ref={ref}>
+    <div className="l-root cap et" ref={ref}>
       <div className="design" style={{ width: W, height: H, transform: `scale(${k})` }}>
-        <div className="cap-head">
+        <div className="et-head">
           <b>{title}</b>
           <span>MOMENT {index}</span>
         </div>
-        <button type="button" className="rv-save" onClick={() => onSave(song ?? undefined)}>
-          Save
-        </button>
 
-        {(() => {
-          const d = DETECTED[cand]
-          const shown = song ? { label: 'Added', title: song.title, artist: song.artist } : d
-          return (
-            <button
-              type="button"
-              className="rv-chip"
-              onClick={() => setSong(song ? null : { title: d.title, artist: d.artist })}
-            >
-              <i className="rv-art" />
-              <span key={shown.label + shown.title}>
-                <b>{shown.label}</b>
-                <em>
-                  {shown.title} - {shown.artist}
-                </em>
-              </span>
-              <u>{song ? '✓' : '+'}</u>
-            </button>
-          )
-        })()}
-
-        <div className="rv-disc" style={{ left: CX - R, top: CY - R, width: R * 2, height: R * 2 }}>
+        <div className="et-media" onClick={toggle}>
           {isVideo ? (
-            <video
-              ref={media}
-              src={src}
-              playsInline
-              onTimeUpdate={(e) => setP(Math.min(1, e.currentTarget.currentTime / dur))}
-              onEnded={() => {
-                setPlaying(false)
-                setP(1)
-              }}
-            />
+            <video ref={media} src={src} playsInline loop onEnded={() => setPlaying(false)} />
           ) : (
-            <>
-              <audio
-                ref={media}
-                src={src}
-                onTimeUpdate={(e) => setP(Math.min(1, e.currentTarget.currentTime / dur))}
-                onEnded={() => {
-                  setPlaying(false)
-                  setP(1)
-                }}
-              />
-              <div className="rv-wave">
-                {peaks.map((v, i) => (
-                  <i key={i} style={{ height: Math.max(4, v * 280), opacity: i / peaks.length <= p ? 1 : 0.45 }} />
-                ))}
-              </div>
-            </>
+            <audio ref={media} src={src} onEnded={() => setPlaying(false)} />
+          )}
+          {!playing && (
+            <span className="et-play">
+              <svg viewBox="0 0 24 24" width="20" height="20">
+                <path d="M8 5v14l11-7z" fill="#fff" />
+              </svg>
+            </span>
           )}
         </div>
 
-        <svg className="rv-ring" viewBox={`0 0 ${W} ${H}`}>
-          <circle cx={CX} cy={CY} r={RR} fill="none" stroke="rgba(255,255,255,.35)" strokeWidth="1.5" />
-          <circle
-            cx={CX}
-            cy={CY}
-            r={RR}
-            fill="none"
-            stroke="#fff"
-            strokeWidth="2.5"
-            strokeDasharray={`${circ * p} ${circ}`}
-            transform={`rotate(-90 ${CX} ${CY})`}
-          />
-          <circle cx={CX + RR * Math.cos(ang)} cy={CY + RR * Math.sin(ang)} r="5" fill="#fff" />
-        </svg>
-
-        <div className="rv-ctl">
-          <button type="button" onClick={toggle} aria-label={playing ? 'Pause' : 'Play'}>
-            {playing ? (
-              <svg viewBox="0 0 20 22" width="20" height="22">
-                <rect width="6" height="22" fill="#fff" />
-                <rect x="12" width="6" height="22" fill="#fff" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 20 22" width="20" height="22">
-                <path d="M2 1l16 10L2 21z" fill="#fff" />
-              </svg>
-            )}
+        <div className="et-song">
+          <i className={`et-d ${playing ? 'spin' : ''}`} style={{ background: disc(song.color) }} />
+          <span className="et-t" key={song.title}>
+            {song.title}
+            <small>{song.artist}</small>
+          </span>
+          <button type="button" className="et-b" onClick={toggle} aria-label="Play">
+            {playing ? '❚❚' : '▶'}
           </button>
-          <button type="button" className="re" onClick={onRetake} aria-label="Retake">
-            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#2c2c34" strokeWidth="2.2" strokeLinecap="round">
-              <path d="M20 12a8 8 0 11-2.6-5.9M20 3v5h-5" />
-            </svg>
+          <button type="button" className="et-b" onClick={() => setSheet(true)} aria-label="Change song">
+            ⇄
           </button>
         </div>
 
+        <label className="et-note">
+          NOTE
+          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Write this moment briefly..." maxLength={80} />
+        </label>
+
+        <button type="button" className="et-carve" onClick={() => onSave({ title: song.title, artist: song.artist }, note.trim() || undefined)}>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6">
+            <circle cx="12" cy="12" r="9" />
+            <circle cx="12" cy="12" r="5" />
+            <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+          </svg>
+          CARVE INTO LP
+        </button>
+
+        {sheet && (
+          <>
+            <div className="et-scrim" onClick={() => setSheet(false)} />
+            <div className="et-sheet">
+              <i className="et-grab" onClick={() => setSheet(false)} />
+              <div className="et-sh-title">Add a song to this moment</div>
+              <div className="et-search">
+                <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search songs, artists" />
+              </div>
+              <div className="et-list">
+                <div className="et-sec">
+                  JUST PLAYED <span>from your music app</span>
+                </div>
+                {RECENT.filter(match).map((s) => row(s, s.when ?? ''))}
+                <div className="et-sec">
+                  RECOMMENDED <span>for this moment</span>
+                </div>
+                {RECOMMENDED.filter(match).map((s) => row(s, s.why ?? ''))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
-      <button type="button" className="l-back" onClick={onBack} aria-label="Back">
+      <button type="button" className="l-back" onClick={onRetake} aria-label="Retake">
         <svg viewBox="0 0 24 24" width="22" height="22">
           <path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>

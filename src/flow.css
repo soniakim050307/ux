@@ -3450,3 +3450,262 @@
 .lv-list-sheet li .sub .th.s { width: 40px; height: 40px; border-radius: 10px; }
 .lv-list-sheet li .sub .tx b { font-size: 13px; }
 .lv-list-sheet li .sub .tx em { margin-top: 2px; font-size: 11px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ───────── 녹화 후 (blue-vinyl 버전) ───────── */
+.et .et-head {
+  position: absolute;
+  top: 34px;
+  left: 58px; /* 뒤로 가기 화살표와 겹치지 않게 */
+  right: 34px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  color: #fff;
+}
+.et .et-head b {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 700;
+}
+.et .et-head span {
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  opacity: 0.7;
+}
+.et-media {
+  position: absolute;
+  left: 59px;
+  top: 109px;
+  width: 275px;
+  height: 275px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(140deg, #7f8bbd, #2a2f4a);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.et-media video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.et-play {
+  position: relative;
+  z-index: 2;
+  width: 49px;
+  height: 49px;
+  border-radius: 50%;
+  background: #000;
+  display: grid;
+  place-items: center;
+}
+.et-song {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 422px;
+  width: 279px;
+  height: 56px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  padding: 0 10px 0 16px;
+  gap: 12px;
+  color: #fff;
+}
+.et-d {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex: none;
+}
+.et-d.spin {
+  animation: spin 3s linear infinite;
+}
+.et-t {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: rv-fade 0.5s ease;
+}
+.et-t small {
+  display: block;
+  font-size: 12px;
+  opacity: 0.7;
+}
+.et-b {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 13px;
+  opacity: 0.85;
+}
+.et-b:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+.et-note {
+  position: absolute;
+  left: 38px;
+  right: 38px;
+  top: 528px;
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.et-note input {
+  display: block;
+  margin-top: 18px;
+  width: 100%;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+  font-family: var(--serif);
+  font-size: 13px;
+  letter-spacing: 0;
+  padding: 0 0 8px;
+  outline: none;
+}
+.et-note input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+.et-carve {
+  position: absolute;
+  left: 31px;
+  right: 31px;
+  top: max(700px, calc(100% - 100px));
+  height: 48px;
+  border-radius: 999px;
+  background: #fff;
+  color: #1b1c29;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+.et-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 11, 20, 0.45);
+  z-index: 24;
+}
+.et-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 620px;
+  z-index: 25;
+  background: #f6f4ef;
+  color: #1b1c29;
+  border-radius: 22px 22px 0 0;
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  animation: et-up 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes et-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+.et-grab {
+  display: block;
+  width: 38px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.2);
+  margin: 0 auto 14px;
+  cursor: pointer;
+}
+.et-sh-title {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 600;
+  padding: 0 22px;
+}
+.et-search {
+  padding: 14px 22px 6px;
+}
+.et-search input {
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  border: 0;
+  background: #e9e6de;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+.et-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 12px 30px;
+}
+.et-sec {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #545c86;
+  padding: 18px 10px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.et-sec span {
+  font-weight: 400;
+  color: #8a8a95;
+  letter-spacing: 0;
+}
+.et-srow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  text-align: left;
+  color: #1b1c29;
+}
+.et-srow.sel,
+.et-srow:active {
+  background: #e7e3f3;
+}
+.et-sd {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex: none;
+}
+.et-st {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  line-height: 1.35;
+}
+.et-st small {
+  color: #7a7a85;
+  font-size: 12px;
+}
+.et-srow em {
+  font-style: normal;
+  font-size: 11px;
+  color: #8a8a95;
+  white-space: nowrap;
+}
