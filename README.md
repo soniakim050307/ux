@@ -57,3 +57,6 @@ Paris 외 도시 앨범(Lisbon·Kyoto·Reykjavik·Bangkok·New York·Barcelona·
 
 ## 소포 디자인
 - 팀 웹 프로토타입(blue-vinyl)의 소포(크래프트지·십자 끈·퍼포레이션 우표·소인·to/from)를 `src/Parcel.tsx` 로 이식해, 스택·홈·커버 화면의 소포에 공통 적용했습니다.
+
+## Claude 아티팩트용 빌드
+- `npx vite build -c vite.art.config.ts` → `dist-art/` (폰트는 Google Fonts 링크 사용, 오디오는 용량 때문에 별도 압축해서 게시).
