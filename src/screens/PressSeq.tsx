@@ -16,7 +16,7 @@ export default function PressSeq({ city, onFinish }: Props) {
   const [startedAt] = useState(() => Date.now())
 
   useEffect(() => {
-    const at = [500, 1000, 2600, 3700, 6100, 9700]
+    const at = [500, 1000, 2600, 3700, 6100, 12200]
     const ts = at.map((ms, i) => window.setTimeout(() => setStep(i + 1), ms))
     return () => ts.forEach(clearTimeout)
   }, [])
@@ -69,10 +69,28 @@ export default function PressSeq({ city, onFinish }: Props) {
         {packed && (
           <div className={`pk ${map ? 'off' : ''}`}>
             <div className="ps-title c on">Completed</div>
-            <div className="pk-box">
-              <i className="pk-tape h" />
-              <i className="pk-tape v" />
-              <div className="pk-stamp">
+            <div className="pk-pack">
+              <div className="pk-persp">
+                <div className="pk-3d">
+                  <div className="pk-base">
+                    <i className="pk-disc" />
+                    <i className="pk-disc-label" />
+                  </div>
+                  {(['l', 'r', 't', 'b'] as const).map((d) => (
+                    <div key={d} className={`pk-flap ${d}`}>
+                      <div className="face front">
+                        <i className="shade" />
+                      </div>
+                      <div className="face back">
+                        <i className="shade" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <i className="pkn-tape h" />
+              <i className="pkn-tape v" />
+              <div className="pkn-stamp">
                 <span>{city}</span>
                 <span>{stamp}</span>
                 <span>Seoul, Korea</span>

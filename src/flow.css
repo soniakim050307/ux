@@ -2782,3 +2782,64 @@
 @keyframes lv-fly { from { transform: translate(-14px, 14px) scale(.7); opacity: 0; } }
 .lv-send-done h3 { margin-top: 10px; }
 .lv-send-done p { margin: 6px 0 0; font-size: 12.5px; color: #7a7f9c; }
+
+/* ───── 종이 소포 포장: 종이가 들어와서 사방이 접힌다 ───── */
+.pk-pack {
+  position: absolute;
+  left: 46px;
+  top: 294px;
+  width: 300px;
+  height: 300px;
+  animation: pk-scale 5.8s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes pk-scale {
+  0%, 62% { transform: scale(0.6); }
+  72% { transform: scale(1); }
+  90% { transform: scale(1.035); }
+  100% { transform: scale(1); }
+}
+.pk-persp { position: absolute; inset: 0; perspective: 1100px; }
+.pk-3d { position: absolute; inset: 0; transform-style: preserve-3d; animation: pk-drop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes pk-drop {
+  from { opacity: 0; transform: translateY(-46px) rotateX(18deg); }
+}
+.pk-base, .pk-flap .face {
+  background:
+    repeating-linear-gradient(97deg, rgba(110, 70, 30, 0.07) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(8deg, rgba(255, 255, 255, 0.06) 0 1px, transparent 1px 5px),
+    linear-gradient(135deg, #dcb98f, #cfa67a);
+}
+.pk-base { position: absolute; inset: 0; box-shadow: 0 16px 34px rgba(0, 0, 0, 0.32); }
+.pk-disc { position: absolute; left: 25px; top: 25px; width: 250px; height: 250px; border-radius: 50%; background: repeating-radial-gradient(circle, #2a2a2c 0 5px, #343436 5px 6px); box-shadow: 0 4px 12px rgba(0,0,0,.35); }
+.pk-disc-label { position: absolute; left: 100px; top: 100px; width: 100px; height: 100px; border-radius: 50%; background: #f0a9c0; box-shadow: inset 0 0 0 3px rgba(255,255,255,.35); }
+.pk-disc-label::after { content: ''; position: absolute; left: 44px; top: 44px; width: 12px; height: 12px; border-radius: 50%; background: #2a2a2c; }
+.pk-flap { position: absolute; transform-style: preserve-3d; }
+.pk-flap .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: inset 0 0 0 1px rgba(90, 55, 20, 0.16); }
+.pk-flap .back { background: linear-gradient(135deg, #ecd7b6, #e2c8a0); }
+.pk-flap .shade { position: absolute; inset: 0; background: #2a1805; opacity: 0; }
+.pk-flap.l { left: -150px; top: 0; width: 150px; height: 300px; transform-origin: 100% 50%; animation: pk-fold-l 0.8s cubic-bezier(0.5, 0.05, 0.3, 1) 0.9s both; }
+.pk-flap.r { left: 300px; top: 0; width: 150px; height: 300px; transform-origin: 0 50%; animation: pk-fold-r 0.8s cubic-bezier(0.5, 0.05, 0.3, 1) 1.5s both; }
+.pk-flap.t { left: 0; top: -150px; width: 300px; height: 150px; transform-origin: 50% 100%; animation: pk-fold-t 0.8s cubic-bezier(0.5, 0.05, 0.3, 1) 2.1s both; }
+.pk-flap.b { left: 0; top: 300px; width: 300px; height: 150px; transform-origin: 50% 0; animation: pk-fold-b 0.8s cubic-bezier(0.5, 0.05, 0.3, 1) 2.7s both; }
+.pk-flap .back { transform: rotateY(180deg); }
+.pk-flap.t .back, .pk-flap.b .back { transform: rotateX(180deg); }
+@keyframes pk-fold-l { from { transform: translateZ(1px) rotateY(0); } to { transform: translateZ(1px) rotateY(180deg); } }
+@keyframes pk-fold-r { from { transform: translateZ(2px) rotateY(0); } to { transform: translateZ(2px) rotateY(-180deg); } }
+@keyframes pk-fold-t { from { transform: translateZ(3px) rotateX(0); } to { transform: translateZ(3px) rotateX(-180deg); } }
+@keyframes pk-fold-b { from { transform: translateZ(4px) rotateX(0); } to { transform: translateZ(4px) rotateX(180deg); } }
+.pk-flap.l .shade { animation: pk-shade 0.8s ease 0.9s both; }
+.pk-flap.r .shade { animation: pk-shade 0.8s ease 1.5s both; }
+.pk-flap.t .shade { animation: pk-shade 0.8s ease 2.1s both; }
+.pk-flap.b .shade { animation: pk-shade 0.8s ease 2.7s both; }
+@keyframes pk-shade { 0%, 100% { opacity: 0; } 50% { opacity: 0.3; } }
+.pkn-tape { position: absolute; background: rgba(246, 228, 205, 0.96); box-shadow: 0 1px 2px rgba(0,0,0,.18); }
+.pkn-tape.h { left: 0; top: 196px; width: 300px; height: 20px; transform-origin: 0 50%; animation: pk-h 0.6s ease 4.1s both; }
+.pkn-tape.v { left: 206px; top: 0; width: 20px; height: 300px; transform-origin: 50% 0; animation: pk-v 0.6s ease 4.45s both; }
+.pkn-stamp { position: absolute; left: 118px; top: 38px; width: 78px; height: 78px; border: 1.5px solid #6b4a2b; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: #6b4a2b; font-size: 7px; line-height: 9px; text-align: center; opacity: 0; animation: pkn-stamp 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) 5s both; }
+@keyframes pkn-stamp { from { opacity: 0; transform: rotate(-16deg) scale(1.8); } to { opacity: 0.88; transform: rotate(-12deg) scale(1); } }
+
+.lv-ui.on .lv-prog { pointer-events: auto; }
+.lv-prog { touch-action: none; cursor: grab; }
+.lv-prog::after { content: ''; position: absolute; inset: -18px -14px; }
+.lv-knob.scrub { animation: none; transition: none; }
+.lv-stop { cursor: pointer; }

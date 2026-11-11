@@ -69,6 +69,34 @@ export default function LpView({ album, active, onBack }: Props) {
   const [page, setPage] = useState<0 | 1 | 2>(0)
   const [pin, setPin] = useState<number | null>(null)
   const [detail, setDetail] = useState<number | null>(null)
+  // 경로를 옆으로 넘기면 가장 가까운 경유점(순간)으로 넘어간다
+  const [scrub, setScrub] = useState<number | null>(null)
+  const progRef = useRef<HTMLDivElement>(null)
+  const progX = (e: PointerEvent) => {
+    const r = progRef.current!.getBoundingClientRect()
+    return Math.max(0, Math.min(PROG_W, ((e.clientX - r.left) / r.width) * 290))
+  }
+  const onProgDown = (e: PointerEvent) => {
+    if (!moments.length) return
+    e.stopPropagation()
+    e.currentTarget.setPointerCapture(e.pointerId)
+    setScrub(progX(e))
+  }
+  const onProgMove = (e: PointerEvent) => {
+    if (scrub === null) return
+    e.stopPropagation()
+    setScrub(progX(e))
+  }
+  const onProgUp = (e: PointerEvent) => {
+    if (scrub === null) return
+    e.stopPropagation()
+    const n = moments.length
+    const i = Math.max(0, Math.min(n - 1, Math.round((progX(e) / PROG_W) * n - 0.5)))
+    setScrub(null)
+    setIdx(i)
+    if (playing) setRun((r) => r + 1)
+  }
+
   // 여행지로 LP 보내기
   const [sendOpen, setSendOpen] = useState(false)
   const [sent, setSent] = useState(false)
@@ -299,7 +327,14 @@ export default function LpView({ album, active, onBack }: Props) {
               </div>
 
               {/* 바늘이 판을 따라 가듯, 재생 위치 = 여행 경로 위의 비행기 */}
-              <div className="lv-prog">
+              <div
+                className="lv-prog"
+                ref={progRef}
+                onPointerDown={onProgDown}
+                onPointerMove={onProgMove}
+                onPointerUp={onProgUp}
+                onPointerCancel={onProgUp}
+              >
                 <i className="lv-line" />
                 {moments.length > 0 && (
                   <>
@@ -328,9 +363,10 @@ export default function LpView({ album, active, onBack }: Props) {
                 <i className="lv-end r" />
                 <i
                   key={`${idx}-${run}`}
-                  className="lv-knob"
+                  className={`lv-knob ${scrub !== null ? 'scrub' : ''}`}
                   style={
                     {
+                      ...(scrub !== null ? { transform: `translateX(${scrub}px)` } : {}),
                       '--from': `${(idx / Math.max(1, moments.length)) * PROG_W}px`,
                       '--to': `${((idx + 1) / Math.max(1, moments.length)) * PROG_W}px`,
                       animationDuration: `${MOMENT_MS}ms`,
@@ -343,8 +379,6 @@ export default function LpView({ album, active, onBack }: Props) {
                     <path d="M8 9.5 21 1" stroke="#8c9dde" strokeWidth="1" fill="none" />
                   </svg>
                 </i>
-                <span className="lv-city l">Seoul</span>
-                <span className="lv-city r">{album?.city.split(',')[0]}</span>
               </div>
 
               <button type="button" className="lv-ctl prev" onClick={() => step(-1)} aria-label="Previous moment">
