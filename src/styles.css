@@ -59,8 +59,10 @@ p {
 
 .app {
   position: relative;
-  width: min(100vw, 393px);
-  height: min(100dvh, 852px);
+  /* 창이 낮으면 폰 비율(393:852)을 유지한 채 같이 줄어든다 */
+  --h: min(100dvh, 852px);
+  width: min(100vw, calc(var(--h) * 393 / 852));
+  height: var(--h);
   overflow: hidden;
   border-radius: 28px;
   background: var(--bg);
