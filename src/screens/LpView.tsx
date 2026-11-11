@@ -236,6 +236,7 @@ export default function LpView({ album, active, onBack }: Props) {
 
   // 순간 i 가 시작될 때 비행기는 i번째 점 위에 있고, 재생하면 다음 점을 향해 천천히 날아간다.
   const nM = Math.max(1, moments.length)
+  const dayStarts = new Set(days.map((d) => d.idxs[0])) // 하루가 시작하는 모먼트 = 큰 원
   const stopX = (idx / nM) * PROG_W
   const stopNext = ((idx + 1) / nM) * PROG_W
   const rot = armDrag ?? (playing ? 0 : ARM_LIFT)
@@ -381,7 +382,7 @@ export default function LpView({ album, active, onBack }: Props) {
                       return (
                       <i
                         key={m.id}
-                        className={`lv-stop ${i <= idx ? 'seen' : ''}`}
+                        className={`lv-stop ${i <= idx ? 'seen' : ''} ${dayStarts.has(i) ? 'day' : ''}`}
                         style={{ left: (i / moments.length) * PROG_W }}
                       />
                       )
