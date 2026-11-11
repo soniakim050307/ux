@@ -8,6 +8,28 @@ const H = 852
 const UP = { x: 222, y: 388, a: 3 }
 const DOWN = { x: 262, y: 448, a: -22 }
 
+/** 판(타원) 중심·반지름: CSS .eg-disc (left -350, top 312, 726 × 238) 기준 */
+const DISC = { cx: -350 + 363, cy: 312 + 119, rx: 363, ry: 119 }
+/** 바늘 끝 위치: 팔은 (x, y)에서 a도 회전, 헤드는 (-26, 20) 만큼 옮겨 그려지고 바늘 끝은 헤드의 (0, 0) */
+const tip = (p: { x: number; y: number; a: number }) => {
+  const r = (p.a * Math.PI) / 180
+  return { x: p.x - 26 * Math.cos(r) - 20 * Math.sin(r), y: p.y - 26 * Math.sin(r) + 20 * Math.cos(r) }
+}
+/** 바늘 끝을 지나고 판과 중심이 같은 타원을 따라, 판이 도는 방향으로 새겨지는 홈 */
+const groovePath = () => {
+  const t = tip(DOWN)
+  const k = DISC.ry / DISC.rx
+  const dx = t.x - DISC.cx
+  const dy = t.y - DISC.cy
+  const rx = Math.hypot(dx, dy / k)
+  const ry = rx * k
+  const a0 = Math.atan2(dy / ry, dx / rx)
+  const a1 = a0 + (70 * Math.PI) / 180
+  const ex = DISC.cx + rx * Math.cos(a1)
+  const ey = DISC.cy + ry * Math.sin(a1)
+  return `M${t.x.toFixed(1)} ${t.y.toFixed(1)} A${rx.toFixed(1)} ${ry.toFixed(1)} 0 0 1 ${ex.toFixed(1)} ${ey.toFixed(1)}`
+}
+
 interface Props {
   city: string
   label: string
@@ -39,7 +61,7 @@ export default function Engrave({ city, label, onDone }: Props) {
         </div>
         <svg className="eg-groove" viewBox={`0 0 ${W} ${H}`}>
           <path
-            d={`M${DOWN.x + 8} ${DOWN.y + 10} C 220 485 130 492 0 496`}
+            d={groovePath()}
             fill="none"
             stroke="#a89f90"
             strokeWidth="2"
