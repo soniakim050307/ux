@@ -3794,3 +3794,8 @@
   transform: translateY(-8px);
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
+
+/* 녹화 중 판은 돌아도 가운데 정지 버튼(네모)은 돌지 않고 고정 */
+.cap-disc.on i {
+  animation: spin 2.4s linear infinite reverse;
+}
