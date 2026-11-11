@@ -3979,3 +3979,12 @@
   right: 58px;
   background: rgba(20, 22, 36, 0.45);
 }
+
+/* 핀 발(타원) 중심이 기준점(=새겨진 홈 위)에 오고, 막대는 발 중심까지 */
+.dl-foot {
+  top: -2.5px;
+}
+.dl-stem {
+  top: -28px;
+  height: 28px;
+}

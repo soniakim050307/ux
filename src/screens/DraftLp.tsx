@@ -265,8 +265,8 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
               key={m.id}
               className="dl-pin"
               style={{
-                left: LP.cx + (r + 3) * Math.cos(a),
-                top: LP.cy + (r + 3) * Math.sin(a),
+                left: LP.cx + r * Math.cos(a),
+                top: LP.cy + r * Math.sin(a),
               }}
             >
               <div className="dl-thumb" style={thumb ? { backgroundImage: `url(${thumb})` } : undefined}>
