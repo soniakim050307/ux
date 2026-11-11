@@ -1527,7 +1527,7 @@
 .rv-chip {
   position: absolute;
   left: 113px;
-  top: 114px;
+  top: 130px; /* 제목과 여백을 두도록 살짝 아래로 */
   width: 167px;
   height: 36px;
   display: flex;
