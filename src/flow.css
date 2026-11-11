@@ -3915,3 +3915,44 @@
   font-size: 12px;
   letter-spacing: 0.04em;
 }
+
+/* 녹화 버튼 양옆: 앨범에서 고르기 / 카메라 전환 */
+.cap-side {
+  position: absolute;
+  top: calc(max(560px, calc(100% - 188px)) + 26px);
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  z-index: 5;
+  animation: et-rise 0.4s ease both;
+}
+.cap-lib {
+  left: 76px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.85);
+}
+.cap-lib video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cap-flip {
+  right: 76px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+}
+.cap-flip svg {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.cap-flip.front svg {
+  transform: rotate(180deg);
+}
+
+/* 전면 카메라는 거울처럼 좌우 반전해서 보여줌 */
+.cap-circle > video.mirror {
+  transform: scaleX(-1);
+}

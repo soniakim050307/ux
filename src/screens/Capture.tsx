@@ -29,6 +29,7 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
   const [clip, setClip] = useState<string | null>(null) // 카메라가 없을 때 고른 영상
   const fileRef = useRef<HTMLInputElement | null>(null)
   const tick = useRef(0)
+  const [facing, setFacing] = useState<'environment' | 'user'>('environment') // 후면 / 전면
   const [rec, setRec] = useState(false)
   const [err, setErr] = useState('')
   const [shot, setShot] = useState(0)
@@ -54,7 +55,7 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
     peaks.current = []
     if (!cam && !mic) return
     navigator.mediaDevices
-      ?.getUserMedia({ video: cam ? { facingMode: 'environment' } : false, audio: mic })
+      ?.getUserMedia({ video: cam ? { facingMode: facing } : false, audio: mic })
       .then((s) => {
         if (dead) return s.getTracks().forEach((t) => t.stop())
         stream.current = s
@@ -74,7 +75,7 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
     return () => {
       dead = true
     }
-  }, [cam, mic, shot])
+  }, [cam, mic, shot, facing])
 
   useEffect(
     () => () => {
@@ -221,7 +222,7 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
         <div className="cap-take">{rec ? `${mmss(sec)} / ${mmss(MAX_S)}` : 'TAKE A MOMENT'}</div>
 
         <div className="cap-circle">
-          <video ref={video} muted playsInline className={live ? 'on' : ''} />
+          <video ref={video} muted playsInline className={`${live ? 'on' : ''} ${facing === 'user' ? 'mirror' : ''}`} />
           {!live && (
             <div className="cap-sim">
               {clip ? <video src={clip} muted playsInline autoPlay loop /> : <i className="cap-scene" />}
@@ -263,6 +264,34 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
         </button>
         <div className="cap-disc-cap">RECORD LP</div>
 
+        {/* 실제 카메라처럼: 왼쪽은 앨범에서 고르기, 오른쪽은 전면/후면 전환 */}
+        {!rec && (
+          <>
+            <button type="button" className="cap-side cap-lib" onClick={() => fileRef.current?.click()} aria-label="Choose from library">
+              {clip ? (
+                <video src={clip} muted playsInline />
+              ) : (
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round">
+                  <rect x="3.5" y="5" width="17" height="14" rx="2" />
+                  <path d="M3.5 16l5-5 4 4 3-3 5 5" />
+                  <circle cx="15.5" cy="9" r="1.4" />
+                </svg>
+              )}
+            </button>
+            <button
+              type="button"
+              className={`cap-side cap-flip ${facing === 'user' ? 'front' : ''}`}
+              onClick={() => setFacing((f) => (f === 'environment' ? 'user' : 'environment'))}
+              aria-label="Switch camera"
+            >
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 12a8 8 0 0113.7-5.6L20 8.5M20 4.5v4h-4" />
+                <path d="M20 12a8 8 0 01-13.7 5.6L4 15.5M4 19.5v-4h4" />
+              </svg>
+            </button>
+          </>
+        )}
+
         <input
           ref={fileRef}
           type="file"
@@ -270,7 +299,11 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
           hidden
           onChange={(e) => {
             const f = e.target.files?.[0]
-            if (f) setClip(URL.createObjectURL(f))
+            if (!f) return
+            const url = URL.createObjectURL(f)
+            setClip(url)
+            startAt.current = performance.now() - 1000
+            finish(url, 'video') // 앨범에서 고른 영상은 바로 다음 화면으로
           }}
         />
       </div>
