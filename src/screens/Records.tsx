@@ -1,3 +1,4 @@
+import Parcel from '../Parcel'
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import type { FlowAlbum } from '../data'
 import {
@@ -292,9 +293,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                 aria-label="Open arrived parcel"
               >
                 <span className="hp-box">
-                  <i className="pk-tape h" />
-                  <i className="pk-tape v" />
-                  <span className="hp-lid" />
+                  <Parcel city={arrivedAlbum.city} date={arrivedAlbum.date} cover={arrivedAlbum.cover} />
                   <span className="hp-disc" />
                 </span>
                 <em>Your LP has arrived · tap to open</em>
@@ -329,18 +328,13 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                     style={{
                       top: g.dir === 'down' ? SPINE_H - 1 : 0,
                       height: g.h,
-                      background: a ? (a.cover && !a.delivery ? `${a.tone} url(${a.cover}) center / cover no-repeat` : a.tone) : 'transparent',
+                      background: a ? (a.delivery ? '#c4a07a' : a.cover ? `${a.tone} url(${a.cover}) center / cover no-repeat` : a.tone) : 'transparent',
                       clipPath: clipFor(g.dir),
                     }}
                   >
                     {a?.delivery && (
                       <>
-                        <i className="sp-tape h" />
-                        <i className="sp-tape v" />
-                        <span className="sp-stamp">
-                          <b>{a.city || 'Paris'}</b>
-                          <b>→ Seoul</b>
-                        </span>
+                        <Parcel city={a.city} date={a.date} cover={a.cover} />
                       </>
                     )}
                     {!a && (
@@ -405,13 +399,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                 >
                   {boxed ? (
                     <div className={`r-parcel ${parcel ? '' : 'arrived'} ${unwrapId === album.id ? 'open' : ''}`}>
-                      <i className="pk-tape h" />
-                      <i className="pk-tape v" />
-                      <div className="pk-stamp">
-                        <span>{album.city}</span>
-                        <span>{album.date}</span>
-                        <span>Seoul, Korea</span>
-                      </div>
+                      <Parcel city={album.city} date={album.date} cover={album.cover} />
                     </div>
                   ) : album.cover ? (
                     <img src={album.cover} alt="" draggable={false} />

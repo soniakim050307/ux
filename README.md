@@ -54,3 +54,6 @@ Paris 외 도시 앨범(Lisbon·Kyoto·Reykjavik·Bangkok·New York·Barcelona·
 - 로고는 SVG 컴포넌트(`src/Logo.tsx`)로 재현했고, 홈 화면의 다른 앱 아이콘은 자체 제작한 단순 도형입니다.
 - `?boot=0` 을 주소 뒤에 붙이면 부팅 화면을 건너뜁니다.
 - AI 사용: 로고 SVG 재현, 부팅 애니메이션 코드는 Claude(Sonnet 5.5)가 작성했습니다.
+
+## 소포 디자인
+- 팀 웹 프로토타입(blue-vinyl)의 소포(크래프트지·십자 끈·퍼포레이션 우표·소인·to/from)를 `src/Parcel.tsx` 로 이식해, 스택·홈·커버 화면의 소포에 공통 적용했습니다.
