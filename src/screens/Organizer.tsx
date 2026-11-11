@@ -2,6 +2,7 @@ import { useRef, useState, type PointerEvent } from 'react'
 import type { FlowAlbum, FlowMoment } from '../data'
 import { useDesignScale } from '../useDesignScale'
 import { DETECTED } from './Review'
+import PressSeq from './PressSeq'
 
 const W = 393
 const H = 852
@@ -14,6 +15,7 @@ interface Props {
   album: FlowAlbum
   onChange: (moments: FlowMoment[]) => void
   onClose: () => void
+  onFinish: () => void
 }
 
 function Thumb({ m, size }: { m: FlowMoment; size: number }) {
@@ -34,10 +36,11 @@ function Thumb({ m, size }: { m: FlowMoment; size: number }) {
 }
 
 /** Save 를 누르면: 기록한 순간들을 한눈에 보고, 순서를 바꾸고, 하나씩 열어 메모·노래를 고친다 */
-export default function Organizer({ album, onChange, onClose }: Props) {
+export default function Organizer({ album, onChange, onClose, onFinish }: Props) {
   const { ref, k } = useDesignScale<HTMLDivElement>(W)
   const moments = album.moments
   const [open, setOpen] = useState<number | null>(null)
+  const [press, setPress] = useState(false)
   const [drag, setDrag] = useState<{ i: number; off: number } | null>(null)
   const st = useRef<{ x0: number; i: number; moved: number; id: string } | null>(null)
 
@@ -126,6 +129,12 @@ export default function Organizer({ album, onChange, onClose }: Props) {
           <path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
+
+      <button type="button" className="og-press-top" onClick={() => setPress(true)} disabled={moments.length === 0}>
+        Press
+      </button>
+
+      {press && <PressSeq city={album.city} onFinish={onFinish} />}
 
       {open !== null && moments[open] && (
         <Detail

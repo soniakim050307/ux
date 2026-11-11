@@ -108,7 +108,7 @@ export default function DraftLp({ album, active, onChange, onBack }: Props) {
         </button>
       )}
 
-      {org && <Organizer album={album} onChange={(moments) => onChange({ moments })} onClose={() => setOrg(false)} />}
+      {org && <Organizer album={album} onChange={(moments) => onChange({ moments })} onClose={() => setOrg(false)} onFinish={onBack} />}
 
       {cap && (
         <Capture
