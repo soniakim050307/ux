@@ -97,6 +97,8 @@ export default function LpView({ album, active, onBack }: Props) {
     if (playing) setRun((r) => r + 1)
   }
 
+  const [listOpen, setListOpen] = useState(false)
+
   // 여행지로 LP 보내기
   const [sendOpen, setSendOpen] = useState(false)
   const [sent, setSent] = useState(false)
@@ -394,6 +396,12 @@ export default function LpView({ album, active, onBack }: Props) {
                   <rect x="16" y="0" width="7" height="32" fill="#fff" />
                 </svg>
               </button>
+
+              <button type="button" className="lv-ctl list" onClick={() => setListOpen(true)} aria-label="Moment list" disabled={!moments.length}>
+                <svg viewBox="0 0 24 18" width="22" height="16" aria-hidden>
+                  <path d="M1 2h22M1 9h22M1 16h22" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
+                </svg>
+              </button>
             </div>
 
             {!moment ? (
@@ -430,6 +438,38 @@ export default function LpView({ album, active, onBack }: Props) {
             <path d="M21 3 3 10.5l6.2 2.3L11.5 19l2.3-4.2L21 3Z M9.2 12.8 21 3" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" />
           </svg>
         </button>
+      )}
+
+      {listOpen && (
+        <div className="lv-list" onClick={(e) => e.target === e.currentTarget && setListOpen(false)}>
+          <div className="lv-list-sheet" role="dialog" aria-modal="true">
+            <i className="mp-grab" />
+            <h3>
+              {album?.city} <span>{moments.length} moments</span>
+            </h3>
+            <ul>
+              {moments.map((m, i) => (
+                <li key={m.id}>
+                  <button
+                    type="button"
+                    className={i === idx ? 'on' : ''}
+                    onClick={() => {
+                      setIdx(i)
+                      if (playing) setRun((r) => r + 1)
+                      setListOpen(false)
+                    }}
+                  >
+                    <span className="th" style={{ backgroundImage: m.poster || m.kind !== 'video' ? `url(${m.poster ?? m.src})` : undefined }} />
+                    <span className="tx">
+                      <b>{m.time ?? `Moment ${i + 1}`}</b>
+                      <em>{m.note ?? ''}</em>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       )}
 
       {sendOpen && (
