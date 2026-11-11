@@ -3830,3 +3830,11 @@
   letter-spacing: 0.16em;
   color: rgba(255, 255, 255, 0.8);
 }
+
+/* 목록: 같은 날 모먼트를 한 묶음으로 전부 보여준다 */
+.lv-list-sheet > ul > li { margin-bottom: 10px; padding-bottom: 6px; border-radius: 16px; background: #fff; box-shadow: 0 1px 0 rgba(31,35,64,.05); }
+.lv-list-sheet > ul > li .row.on { background: #e8eaf5; }
+.lv-list-sheet li .sub { margin: 0 12px 6px 34px; }
+.lv-list-sheet li .sub li { background: none; box-shadow: none; margin: 0; padding: 0; }
+.lv-list-sheet li.open .more svg { transform: rotate(90deg); }
+.lv-list-sheet li .more svg { transition: transform .2s; }

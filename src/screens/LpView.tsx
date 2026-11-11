@@ -64,7 +64,7 @@ export default function LpView({ album, active, onBack }: Props) {
   const { ref, k } = useDesignScale<HTMLDivElement>(W)
   const moments = album?.moments ?? []
   const days = useMemo(() => buildDays(moments), [moments])
-  const [openDay, setOpenDay] = useState<number | null>(null)
+  const [collapsed, setCollapsed] = useState<Set<number>>(() => new Set()) // 기본: 모든 날의 모먼트를 다 펼쳐서 보여준다
   const [idx, setIdx] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [run, setRun] = useState(0) // 재생을 (다시) 시작할 때마다 +1 → 진행 막대 초기화
@@ -508,7 +508,7 @@ export default function LpView({ album, active, onBack }: Props) {
             <ul>
               {days.map((dt, di) => {
                 const first = moments[dt.idxs[0]]
-                const open = openDay === di
+                const open = !collapsed.has(di)
                 return (
                   <li key={dt.n} className={open ? 'open' : ''}>
                     <div className={`row ${di === dayIdx ? 'on' : ''}`}>
@@ -536,7 +536,14 @@ export default function LpView({ album, active, onBack }: Props) {
                         className="more"
                         aria-label={`Day ${dt.n} moments`}
                         aria-expanded={open}
-                        onClick={() => setOpenDay(open ? null : di)}
+                        onClick={() =>
+                          setCollapsed((c) => {
+                            const n = new Set(c)
+                            if (n.has(di)) n.delete(di)
+                            else n.add(di)
+                            return n
+                          })
+                        }
                       >
                         <span>{dt.idxs.length}</span>
                         <svg viewBox="0 0 8 14" width="8" height="14" aria-hidden>
