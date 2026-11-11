@@ -38,6 +38,9 @@ const ARM_PARTS: {
   { x: -133, y: 318, w: 60, h: 28, r: -35, c: '#d9d9d9', radius: '10px' },
 ]
 
+/** 앞의 2개는 LP 뒤에 고정된 받침, 나머지는 LP 위에서 돌아가는 암 */
+const BASE_N = 2
+
 /** 톤암이 판 위에 있을 때가 0°. 들어 올리면 바깥쪽(반시계)으로 돈다. */
 const ARM_LIFT = -25
 const ARM_DROP = -12
@@ -181,6 +184,27 @@ export default function LpView({ album, active, onBack }: Props) {
         <div className="lv-strip" style={{ transform: `translateX(${page === 2 ? -W : 0}px)` }}>
           {/* ───── 서 있는 LP: 플레이어 ↔ 크게 보기 ───── */}
           <div className="lv-sub" style={{ left: 0 }}>
+            {/* 톤암 받침 (LP 뒤) */}
+            <div
+              className="lv-arm lv-base"
+              style={{ left: scene.pivot.x, top: scene.pivot.y, transform: `scale(${scene.armScale})` }}
+            >
+              {ARM_PARTS.slice(0, BASE_N).map((p, i) => (
+                <i
+                  key={i}
+                  style={{
+                    left: p.x - p.w / 2,
+                    top: p.y - p.h / 2,
+                    width: p.w,
+                    height: p.h,
+                    background: p.c,
+                    borderRadius: p.radius,
+                    transform: `rotate(${p.r}deg)`,
+                  }}
+                />
+              ))}
+            </div>
+
             <div
               className={`lv-disc ${playing ? 'run' : ''} ${page === 1 ? 'still' : ''}`}
               style={{ left: d.cx - d.d / 2, top: d.cy - d.d / 2, width: d.d, height: d.d }}
@@ -223,7 +247,7 @@ export default function LpView({ album, active, onBack }: Props) {
               onPointerUp={page === 0 ? onArmUp : undefined}
               onPointerCancel={page === 0 ? onArmUp : undefined}
             >
-              {ARM_PARTS.map((p, i) => (
+              {ARM_PARTS.slice(BASE_N).map((p, i) => (
                 <i
                   key={i}
                   style={{
