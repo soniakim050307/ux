@@ -10,10 +10,11 @@ import {
   coverGeo,
   slabHeight,
   stackGeo,
+  setViewH,
   type Dir,
   type Geo,
 } from '../stackLayout'
-import { DESIGN_H, DESIGN_W, useDesignScale } from '../useDesignScale'
+import { DESIGN_W, useDesignScale } from '../useDesignScale'
 import LpView from './LpView'
 import DraftLp from './DraftLp'
 import DeliveryMap from './DeliveryMap'
@@ -76,7 +77,8 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
   const [pull, setPull] = useState(0)
   const [dragging, setDragging] = useState(false)
   const [page, setPage] = useState<0 | 1>(0)
-  const { ref, k } = useDesignScale<HTMLDivElement>()
+  const { ref, k, dh } = useDesignScale<HTMLDivElement>(DESIGN_W, 'width')
+  setViewH(dh) // 높이에 맞춰 슬랩을 다시 배치
 
   const drag = useRef<{ x: number; id: number } | null>(null)
   const swipe = useRef<{ y: number } | null>(null)
@@ -245,7 +247,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
 
           <div
             className="design"
-            style={{ width: DESIGN_W, height: DESIGN_H, transform: `scale(${k})` }}
+            style={{ width: DESIGN_W, height: dh, transform: `scale(${k})` }}
           >
             {/* 홈 일러스트: 턴테이블 + 종이비행기 */}
             <div className={`h-art ${mode !== 'home' ? 'gone' : ''}`} aria-hidden>

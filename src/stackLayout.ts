@@ -13,6 +13,13 @@ export interface Geo {
   hidden?: boolean
 }
 
+/** 화면의 실제 높이(디자인 px). Figma 는 799 기준이고, 더 짧거나 긴 화면에서는 슬랩 간격을 이 비율로 다시 배치한다. */
+let VIEW_H = 799
+export const setViewH = (h: number) => {
+  VIEW_H = Math.max(560, Math.min(1000, h))
+}
+const vf = () => VIEW_H / 799
+
 export const SPINE_H = 12
 export const SLAB_X = 33
 export const SLAB_W = 302
@@ -38,7 +45,8 @@ export const STACK_OFFSET = 43
 
 export function stackGeo(index: number, offset: number): Geo {
   const t = TABLE[Math.min(index, TABLE.length - 1)]
-  return { top: t.top + offset, h: t.h, dir: t.dir }
+  const f = vf()
+  return { top: (t.top + offset) * f, h: Math.max(8, Math.round(t.h * f)), dir: t.dir }
 }
 
 /** 선택된 앨범 커버 크기 (Figma). 위치는 선택한 슬랩 자리에서 정해진다. */
@@ -47,13 +55,13 @@ export const COVER = { x: 35, w: 208, h: 201 }
 const TITLE_H = 58
 const GAP = 10
 const MIN_TOP = 70
-const MAX_TOP = 799 - COVER.h - TITLE_H - 24
 
 /** 선택한 슬랩의 중앙에 커버가 서도록 한 커버의 top */
 export function coverTop(selected: number, offset = STACK_OFFSET): number {
   const g = stackGeo(selected, offset)
   const mid = g.top + slabHeight(g.h) / 2
-  return Math.max(MIN_TOP, Math.min(MAX_TOP, mid - COVER.h / 2))
+  const maxTop = VIEW_H - COVER.h - TITLE_H - 24
+  return Math.max(MIN_TOP, Math.min(maxTop, mid - COVER.h / 2))
 }
 
 /**
@@ -68,6 +76,6 @@ export function coverGeo(selected: number, count: number, offset = STACK_OFFSET)
   return base.map((g, i) => {
     if (i === selected) return { top, h: COVER.h, dir: 'down' as Dir }
     const t = i < selected ? g.top - upNeed : g.top + downNeed
-    return { ...g, top: t, hidden: t + slabHeight(g.h) < 0 || t > 799 }
+    return { ...g, top: t, hidden: t + slabHeight(g.h) < 0 || t > VIEW_H }
   })
 }

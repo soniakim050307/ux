@@ -4,9 +4,14 @@ import { useEffect, useRef, useState } from 'react'
 export const DESIGN_W = 368
 export const DESIGN_H = 799
 
-export function useDesignScale<T extends HTMLElement>(baseW: number = DESIGN_W) {
+/**
+ * mode 'contain' : 가로·세로 모두 들어가게 줄이고 남는 쪽은 가운데 (기본)
+ * mode 'width'   : 가로에 맞추고, 화면의 실제 높이(dh, 디자인 px)를 돌려줘서 레이아웃이 높이에 맞춰 다시 배치된다
+ */
+export function useDesignScale<T extends HTMLElement>(baseW: number = DESIGN_W, mode: 'contain' | 'width' = 'contain') {
   const ref = useRef<T | null>(null)
   const [k, setK] = useState(1)
+  const [dh, setDh] = useState(DESIGN_H)
 
   useEffect(() => {
     const el = ref.current
@@ -17,6 +22,14 @@ export function useDesignScale<T extends HTMLElement>(baseW: number = DESIGN_W) 
       const w = el.clientWidth
       const h = el.clientHeight
       if (w <= 0) return
+      if (mode === 'width') {
+        const kw = w / baseW
+        setK(kw)
+        if (h > 0) setDh(h / kw)
+        el.style.setProperty('--ox', '0px')
+        el.style.setProperty('--oy', '0px')
+        return
+      }
       const kk = h > 0 ? Math.min(w / baseW, h / baseH) : w / baseW
       setK(kk)
       el.style.setProperty('--ox', `${Math.max(0, (w - baseW * kk) / 2)}px`)
@@ -26,7 +39,7 @@ export function useDesignScale<T extends HTMLElement>(baseW: number = DESIGN_W) 
     const ro = new ResizeObserver(update)
     ro.observe(el)
     return () => ro.disconnect()
-  }, [baseW])
+  }, [baseW, mode])
 
-  return { ref, k }
+  return { ref, k, dh }
 }
