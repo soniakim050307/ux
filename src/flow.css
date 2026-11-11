@@ -3293,10 +3293,10 @@
 }
 .cap-circle {
   position: absolute;
-  left: 58px;
-  top: 212px;
-  width: 277px;
-  height: 277px;
+  left: 71.5px; /* 원을 조금 줄임 (277 → 250), 중심은 그대로 */
+  top: 225.5px;
+  width: 250px;
+  height: 250px;
   border-radius: 50%;
   overflow: hidden;
   background: #2f3350;
