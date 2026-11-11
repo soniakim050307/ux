@@ -6,8 +6,12 @@ import Engrave from './Engrave'
 
 const W = 393
 const H = 852
-const MAX_S = 10
-const RING_R = 91
+const MAX_S = 15
+const RING_R = 152 // 원형 뷰파인더를 감싸는 흰 진행 링
+const RING_LEN = 2 * Math.PI * RING_R
+/** 지금 듣고 있는 노래 (실제 연동 전까지는 최근 재생곡으로 대신) */
+const NOW_PLAYING = { title: 'Paris in the rain', artist: 'Lauv' }
+const SAMPLE_CLIP = `${import.meta.env.BASE_URL}video/jeju-1.mp4`
 
 interface Props {
   title: string
@@ -16,26 +20,15 @@ interface Props {
   onDone: (m: FlowMoment) => void
 }
 
-const CamIcon = ({ off }: { off: boolean }) => (
-  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 8h3l1.5-2h7L17 8h3v11H4z" />
-    <circle cx="12" cy="13.5" r="3.2" />
-    {off && <path d="M3 3l18 18" />}
-  </svg>
-)
-const MicIcon = ({ off }: { off: boolean }) => (
-  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="9" y="3" width="6" height="11" rx="3" />
-    <path d="M5.5 11.5a6.5 6.5 0 0013 0M12 18v3" />
-    {off && <path d="M3 3l18 18" />}
-  </svg>
-)
-
-/** 지금 이 순간을 최대 10초 기록 — 카메라·마이크를 함께 또는 하나만 */
+/** 지금 이 순간을 최대 15초 영상으로 기록 (blue-vinyl 녹화 화면: 원형 뷰파인더 + 흰 진행 링 + 지금 듣는 노래) */
 export default function Capture({ title, index, onClose, onDone }: Props) {
   const { ref, k } = useDesignScale<HTMLDivElement>(W)
-  const [cam, setCam] = useState(true)
-  const [mic, setMic] = useState(true)
+  const cam = true
+  const mic = true
+  const [sec, setSec] = useState(0)
+  const [clip, setClip] = useState<string | null>(null) // 카메라가 없을 때 고른 영상
+  const fileRef = useRef<HTMLInputElement | null>(null)
+  const tick = useRef(0)
   const [rec, setRec] = useState(false)
   const [err, setErr] = useState('')
   const [shot, setShot] = useState(0)
@@ -125,46 +118,66 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
     return () => cancelAnimationFrame(raf)
   }, [cam, mic])
 
+  const finish = (url: string, kind: 'video' | 'audio') => {
+    const now = new Date()
+    const pad = (n: number) => String(n).padStart(2, '0')
+    const dur = Math.max(1, (performance.now() - startAt.current) / 1000)
+    stream.current?.getTracks().forEach((t) => t.stop())
+    stream.current = null
+    setTaken({
+      dur,
+      peaks: peaks.current.slice(),
+      m: {
+        id: `m-${now.getTime()}`,
+        src: kind === 'video' ? url : '',
+        kind,
+        audio: kind === 'video' ? undefined : url,
+        time: `${now.getFullYear()}.${pad(now.getMonth() + 1)}.${pad(now.getDate())} · ${pad(now.getHours())}:${pad(now.getMinutes())}`,
+        song: NOW_PLAYING,
+      },
+    })
+    setStage('review')
+  }
+  const runClock = () => {
+    setSec(0)
+    clearInterval(tick.current)
+    tick.current = window.setInterval(() => setSec((performance.now() - startAt.current) / 1000), 100)
+  }
   const start = () => {
     const s = stream.current
-    if (!s) return
+    if (!s) {
+      // 카메라를 못 쓰는 환경(미리보기 등): 고른 영상이나 예시 영상으로 녹화를 흉내 낸다
+      startAt.current = performance.now()
+      setRec(true)
+      runClock()
+      stopTimer.current = window.setTimeout(stop, MAX_S * 1000)
+      return
+    }
     const chunks: Blob[] = []
     const r = new MediaRecorder(s)
     recorder.current = r
     r.ondataavailable = (e) => e.data.size && chunks.push(e.data)
     r.onstop = () => {
-      const blob = new Blob(chunks, { type: r.mimeType || (cam ? 'video/webm' : 'audio/webm') })
-      const url = URL.createObjectURL(blob)
-      const now = new Date()
-      const pad = (n: number) => String(n).padStart(2, '0')
-      const dur = Math.max(1, (performance.now() - startAt.current) / 1000)
-      stream.current?.getTracks().forEach((t) => t.stop())
-      stream.current = null
-      setTaken({
-        dur,
-        peaks: peaks.current.slice(),
-        m: {
-          id: `m-${now.getTime()}`,
-          src: cam ? url : '',
-          kind: cam ? 'video' : 'audio',
-          audio: cam ? undefined : url,
-          time: `${now.getFullYear()}.${pad(now.getMonth() + 1)}.${pad(now.getDate())} · ${pad(now.getHours())}:${pad(now.getMinutes())}`,
-        },
-      })
-      setStage('review')
+      const blob = new Blob(chunks, { type: r.mimeType || 'video/webm' })
+      finish(URL.createObjectURL(blob), 'video')
     }
     startAt.current = performance.now()
     r.start()
     setRec(true)
+    runClock()
     stopTimer.current = window.setTimeout(stop, MAX_S * 1000)
   }
   const stop = () => {
     clearTimeout(stopTimer.current)
+    clearInterval(tick.current)
     if (recorder.current?.state === 'recording') recorder.current.stop()
+    else if (!stream.current) finish(clip || SAMPLE_CLIP, 'video')
     setRec(false)
   }
 
-  const canRec = (cam || mic) && !err
+  const live = !err
+  const prog = Math.min(1, sec / MAX_S)
+  const mmss = (v: number) => `00:${String(Math.floor(v)).padStart(2, '0')}`
 
   if (stage === 'review' && taken)
     return (
@@ -181,7 +194,7 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
           setShot((n) => n + 1)
         }}
         onSave={(song) => {
-          setTaken({ ...taken, m: { ...taken.m, song } })
+          setTaken({ ...taken, m: { ...taken.m, song: song ?? taken.m.song } })
           setStage('engrave')
         }}
       />
@@ -190,43 +203,76 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
     return <Engrave city={title} label={`moment${index}`} onDone={() => onDone(taken.m)} />
 
   return (
-    <div className="l-root cap" ref={ref}>
+    <div className="l-root cap bv" ref={ref}>
       <div className="design" style={{ width: W, height: H, transform: `scale(${k})` }}>
         <div className="cap-head">
           <b>{title}</b>
           <span>MOMENT {index}</span>
         </div>
 
-        {cam ? (
-          <div className="cap-view">
-            <video ref={video} muted playsInline />
-            <i className="cap-mask" />
-            <i className="cap-grid" />
-          </div>
-        ) : (
-          <div className="cap-wave">
-            <canvas ref={canvas} width={393} height={393} />
-          </div>
-        )}
-
-        {err && <p className="cap-err">{err}</p>}
-
-        <div className="cap-tools">
-          <button type="button" disabled={rec} onClick={() => setCam((v) => !v)} aria-label="Camera">
-            <CamIcon off={!cam} />
-          </button>
-          <button type="button" disabled={rec} onClick={() => setMic((v) => !v)} aria-label="Microphone">
-            <MicIcon off={!mic} />
-          </button>
+        <div className="cap-np">
+          <i className="cap-np-disc" />
+          <span>
+            <small>NOW PLAYING</small>
+            {NOW_PLAYING.title} · {NOW_PLAYING.artist}
+          </span>
         </div>
 
-        <button type="button" className="cap-rec" disabled={!canRec} onClick={rec ? stop : start} aria-label={rec ? 'Stop' : 'Record'}>
-          <svg viewBox="-100 -100 200 200" className="cap-ring">
-            <circle r={RING_R} fill="none" stroke="rgba(255,255,255,.18)" strokeWidth="3" />
-            {rec && <circle r={RING_R} className="cap-prog" pathLength={1} />}
-          </svg>
-          <i className={rec ? 'on' : ''} />
+        <div className="cap-take">{rec ? `${mmss(sec)} / ${mmss(MAX_S)}` : 'TAKE A MOMENT'}</div>
+
+        <div className="cap-circle">
+          <video ref={video} muted playsInline className={live ? 'on' : ''} />
+          {!live && (
+            <div className="cap-sim">
+              {clip ? <video src={clip} muted playsInline autoPlay loop /> : <i className="cap-scene" />}
+              {!rec && (
+                <div className="cap-hint">
+                  <b>▶</b>
+                  <span>UP TO 15 SECONDS</span>
+                  <em>Live camera works in the web app.{'\n'}Here it's simulated.</em>
+                  <button type="button" className="cap-pick" onClick={() => fileRef.current?.click()}>
+                    or choose a clip
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        <svg className="cap-ring2" viewBox="-160 -160 320 320">
+          <circle r={RING_R} className="cap-track" />
+          <circle
+            r={RING_R}
+            className="cap-fill"
+            transform="rotate(-90)"
+            style={{ strokeDasharray: RING_LEN, strokeDashoffset: RING_LEN * (1 - prog), opacity: rec ? 1 : 0 }}
+          />
+          {rec && (
+            <circle
+              r={5}
+              fill="#fff"
+              cx={RING_R * Math.cos(prog * 2 * Math.PI - Math.PI / 2)}
+              cy={RING_R * Math.sin(prog * 2 * Math.PI - Math.PI / 2)}
+            />
+          )}
+        </svg>
+
+        {!rec && <div className="cap-mode">VIDEO</div>}
+
+        <button type="button" className={`cap-disc ${rec ? 'on' : ''}`} onClick={rec ? stop : start} aria-label={rec ? 'Stop' : 'Record'}>
+          <i />
         </button>
+        <div className="cap-disc-cap">RECORD LP</div>
+
+        <input
+          ref={fileRef}
+          type="file"
+          accept="video/*"
+          hidden
+          onChange={(e) => {
+            const f = e.target.files?.[0]
+            if (f) setClip(URL.createObjectURL(f))
+          }}
+        />
       </div>
 
       <button type="button" className="l-back" onClick={onClose} aria-label="Back">

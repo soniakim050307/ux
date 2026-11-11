@@ -3246,3 +3246,192 @@
 .cv2-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .cv2-city { font-family: 'Lora', serif; font-weight: 600; font-size: 22px; fill: #fff; }
 .cv2-sub { font-family: 'Inter', sans-serif; font-size: 20px; fill: #fff; }
+
+/* ───────── 녹화 화면 (blue-vinyl 버전) ───────── */
+.cap.bv .cap-head {
+  top: 34px;
+}
+.cap-np {
+  position: absolute;
+  left: 50%;
+  top: 104px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px 7px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  white-space: nowrap;
+  color: #fff;
+  font-size: 12px;
+}
+.cap-np-disc {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f3c94f 0 18%, #111 19%);
+  animation: spin 3s linear infinite;
+}
+.cap-np small {
+  display: block;
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  opacity: 0.7;
+}
+.cap-take {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 166px;
+  text-align: center;
+  color: #fff;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+.cap-circle {
+  position: absolute;
+  left: 58px;
+  top: 212px;
+  width: 277px;
+  height: 277px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #2f3350;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+  z-index: 3;
+}
+.cap-circle > video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+}
+.cap-circle > video.on {
+  opacity: 1;
+}
+.cap-sim,
+.cap-sim video,
+.cap-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cap-scene {
+  background:
+    radial-gradient(circle at 70% 52%, #f6e7c3 0 9%, transparent 9.5%),
+    linear-gradient(180deg, #8fa3c9 0%, #c9b9a8 52%, #4a5f80 52.5%, #2f3e5c 100%);
+}
+.cap-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.18), transparent 70%);
+}
+.cap-hint b {
+  font-size: 26px;
+  font-weight: 400;
+}
+.cap-hint span {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+}
+.cap-hint em {
+  font-style: normal;
+  font-size: 9px;
+  opacity: 0.85;
+  white-space: pre-line;
+  line-height: 1.4;
+}
+.cap-pick {
+  color: #fff;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-decoration: underline;
+}
+.cap-ring2 {
+  position: absolute;
+  left: 36.5px;
+  top: 190.5px;
+  width: 320px;
+  height: 320px;
+  z-index: 4;
+  pointer-events: none;
+  overflow: visible;
+}
+.cap-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 1.2;
+}
+.cap-fill {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.1s linear, opacity 0.3s;
+}
+.cap-mode {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 524px;
+  text-align: center;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+}
+.cap-disc {
+  position: absolute;
+  left: 50%;
+  top: max(560px, calc(100% - 188px));
+  width: 96px;
+  height: 96px;
+  margin-left: -48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: repeating-radial-gradient(circle, #1d1d20 0 2px, #2a2a2e 2px 4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  z-index: 5;
+}
+.cap-disc i {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #d93b2e;
+  transition: all 0.3s;
+}
+.cap-disc.on {
+  animation: spin 2.4s linear infinite;
+}
+.cap-disc.on i {
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+}
+.cap-disc-cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(max(560px, calc(100% - 188px)) + 108px);
+  text-align: center;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  opacity: 0.85;
+}
