@@ -35,6 +35,19 @@ const clipFor = (dir: Dir) =>
 // ?fast=초 로 열면 배송이 그 초 만에 도착한다 (체험용)
 const FAST = Number(new URLSearchParams(window.location.search).get('fast')) || 0
 
+// 슬랩 이름표 색: 각 표지 사진의 평균 색을 옅게 만든 톤
+const SPINE: Record<string, string> = {
+  barcelona: '#e4ded2',
+  newyork: '#d2d9e4',
+  reykjavik: '#d2e4e4',
+  bangkok: '#e4e2d2',
+  paris: '#d2dbe4',
+  kyoto: '#efd6c8',
+  lisbon: '#e4dad2',
+  jeju: '#cee2e8',
+}
+const spineColor = (a: FlowAlbum | null) => (a ? (a.delivery ? '#f3e6d6' : SPINE[a.id]) : undefined)
+
 export default function Records({ albums }: { albums: FlowAlbum[] }) {
   // 슬랩 0 = "Add New Album", 1.. = 최신 → 오래된 앨범
   const [created, setCreated] = useState<FlowAlbum[]>([])
@@ -332,7 +345,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                   </div>
                   <div
                     className="s-spine"
-                    style={{ top: g.dir === 'down' ? 0 : g.h - 1, width: SLAB_W, height: SPINE_H }}
+                    style={{ top: g.dir === 'down' ? 0 : g.h - 1, width: SLAB_W, height: SPINE_H, background: spineColor(a) }}
                   >
                     {a ? (
                       <>
