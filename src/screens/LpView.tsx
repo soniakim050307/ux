@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
+import { buildDays } from '../days'
 import type { FlowAlbum } from '../data'
 import { playMusic } from '../music'
 import { useDesignScale } from '../useDesignScale'
@@ -62,6 +63,8 @@ interface Props {
 export default function LpView({ album, active, onBack }: Props) {
   const { ref, k } = useDesignScale<HTMLDivElement>(W)
   const moments = album?.moments ?? []
+  const days = useMemo(() => buildDays(moments), [moments])
+  const [openDay, setOpenDay] = useState<number | null>(null)
   const [idx, setIdx] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [run, setRun] = useState(0) // 재생을 (다시) 시작할 때마다 +1 → 진행 막대 초기화
@@ -144,10 +147,14 @@ export default function LpView({ album, active, onBack }: Props) {
   }
 
   // 재생 중이면 음악도 함께. moment 가 바뀌면 곡도 바뀐다.
+  // 하루에 한 트랙: 같은 날의 moment 로 넘어갈 땐 노래가 이어지고, 다른 날로 넘어가면 새 노래가 나온다.
+  const dayIdx = Math.max(0, days.findIndex((d) => d.idxs.includes(idx)))
+  const dayFirst = moments[days[dayIdx]?.idxs[0] ?? 0]
   useEffect(() => {
-    if (!playing || !moment) return
-    return playMusic({ src: moment.audio, seed: idx, start: moment.audioStart })
-  }, [playing, moment, idx])
+    if (!playing || !dayFirst) return
+    return playMusic({ src: dayFirst.audio, seed: dayIdx, start: dayFirst.audioStart })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playing, dayIdx, album?.id])
 
   // 재생 중엔 다음 moment 로 이어서
   useEffect(() => {
@@ -160,9 +167,11 @@ export default function LpView({ album, active, onBack }: Props) {
     return () => clearTimeout(t)
   }, [playing, idx, moments.length, run, repeat])
 
+  // 이전곡·다음곡: 핀이 아니라 하루 단위 트랙(새로운 노래)으로 넘어간다
   const step = (d: number) => {
-    if (!moments.length) return
-    setIdx((i) => (i + d + moments.length) % moments.length)
+    if (!days.length) return
+    const to = days[(dayIdx + d + days.length) % days.length]
+    setIdx(to.idxs[0])
     if (playing) setRun((r) => r + 1)
   }
 
@@ -339,6 +348,7 @@ export default function LpView({ album, active, onBack }: Props) {
               <div className="lv-meta">
                 <b>{album?.city}</b>
                 <span>{album?.date}</span>
+                {days[dayIdx] && <span className="day">Day {days[dayIdx].n}</span>}
               </div>
 
               {/* 바늘이 판을 따라 가듯, 재생 위치 = 여행 경로 위의 비행기 */}
@@ -412,7 +422,7 @@ export default function LpView({ album, active, onBack }: Props) {
                 </svg>
               </button>
 
-              <button type="button" className="lv-ctl prev" onClick={() => step(-1)} aria-label="Previous moment">
+              <button type="button" className="lv-ctl prev" onClick={() => step(-1)} aria-label="Previous track">
                 <svg viewBox="0 0 23 32" width="23" height="32">
                   <g transform="scale(-1 1) translate(-23 0)">
                     <path d="M0 0 L16 16 L0 32 Z" fill="#fff" />
@@ -437,7 +447,7 @@ export default function LpView({ album, active, onBack }: Props) {
                   </svg>
                 )}
               </button>
-              <button type="button" className="lv-ctl next" onClick={() => step(1)} aria-label="Next moment">
+              <button type="button" className="lv-ctl next" onClick={() => step(1)} aria-label="Next track">
                 <svg viewBox="0 0 23 32" width="23" height="32">
                   <path d="M0 0 L16 16 L0 32 Z" fill="#fff" />
                   <rect x="16" y="0" width="7" height="32" fill="#fff" />
@@ -492,29 +502,75 @@ export default function LpView({ album, active, onBack }: Props) {
           <div className="lv-list-sheet" role="dialog" aria-modal="true">
             <i className="mp-grab" />
             <h3>
-              {album?.city} <span>{moments.length} moments</span>
+              {album?.city} <span>{days.length} days · {moments.length} moments</span>
             </h3>
             <ul>
-              {moments.map((m, i) => (
-                <li key={m.id}>
-                  <button
-                    type="button"
-                    className={i === idx ? 'on' : ''}
-                    onClick={() => {
-                      setIdx(i)
-                      if (playing) setRun((r) => r + 1)
-                      setListOpen(false)
-                    }}
-                  >
-                    <span className="th" style={{ backgroundImage: m.poster || m.kind !== 'video' ? `url(${m.poster ?? m.src})` : undefined }} />
-                    <span className="tx">
-                      <b>{m.song?.title ?? 'Music'}</b>
-                      <i>{m.song?.artist ?? ''}</i>
-                      <em>{m.time ?? `Moment ${i + 1}`}</em>
-                    </span>
-                  </button>
-                </li>
-              ))}
+              {days.map((dt, di) => {
+                const first = moments[dt.idxs[0]]
+                const open = openDay === di
+                return (
+                  <li key={dt.n} className={open ? 'open' : ''}>
+                    <div className={`row ${di === dayIdx ? 'on' : ''}`}>
+                      <button
+                        type="button"
+                        className="main"
+                        onClick={() => {
+                          setIdx(dt.idxs[0])
+                          if (playing) setRun((r) => r + 1)
+                          setListOpen(false)
+                        }}
+                      >
+                        <span className="th" style={{ backgroundImage: first.poster || first.kind !== 'video' ? `url(${first.poster ?? first.src})` : undefined }} />
+                        <span className="tx">
+                          <b>{dt.song.title}</b>
+                          <i>{dt.song.artist}</i>
+                          <em>
+                            Day {dt.n}
+                            {dt.date ? ` · ${dt.date}` : ''}
+                          </em>
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        className="more"
+                        aria-label={`Day ${dt.n} moments`}
+                        aria-expanded={open}
+                        onClick={() => setOpenDay(open ? null : di)}
+                      >
+                        <span>{dt.idxs.length}</span>
+                        <svg viewBox="0 0 8 14" width="8" height="14" aria-hidden>
+                          <path d="M1 1l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </button>
+                    </div>
+                    {open && (
+                      <ul className="sub">
+                        {dt.idxs.map((mi) => {
+                          const m = moments[mi]
+                          return (
+                            <li key={m.id}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setListOpen(false)
+                                  setDetail(mi)
+                                  setPin(mi)
+                                }}
+                              >
+                                <span className="th s" style={{ backgroundImage: `url(${m.poster ?? m.src})` }} />
+                                <span className="tx">
+                                  <b>{m.time?.split('·')[1]?.trim() ?? `Moment ${mi + 1}`}</b>
+                                  <em>{m.note ?? ''}</em>
+                                </span>
+                              </button>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    )}
+                  </li>
+                )
+              })}
             </ul>
           </div>
         </div>
