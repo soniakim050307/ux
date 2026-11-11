@@ -2678,3 +2678,29 @@
   76% { translate: 0 0; rotate: .6deg; }
   80% { translate: 0 0; rotate: 0deg; }
 }
+
+/* 여행지로 LP 보내기 */
+.lv-send-btn { position: absolute; right: 12px; top: 38px; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; color: rgba(255,255,255,.9); z-index: 25; }
+.lv-send { position: absolute; inset: 0; z-index: 60; display: grid; place-items: center; padding: 0 28px; background: rgba(18, 20, 40, 0.55); animation: l-fade .25s ease both; }
+.lv-send-card { width: 100%; max-width: 340px; padding: 26px 22px 20px; border-radius: 26px; background: #f5f5f9; color: #1f2340; box-shadow: 0 20px 50px rgba(0,0,0,.4); animation: lv-send-in .35s cubic-bezier(.2,1.1,.3,1) both; }
+@keyframes lv-send-in { from { opacity: 0; transform: translateY(16px) scale(.96); } }
+.lv-send-card h3 { margin: 0; font-size: 17px; line-height: 1.4; font-weight: 600; }
+.lv-send-sub { margin: 6px 0 14px; font-size: 12.5px; color: #7a7f9c; }
+.lv-send-card ul { list-style: none; margin: 0; padding: 0; }
+.lv-send-card li { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-top: 1px solid #e3e5f0; }
+.lv-send-card li b { display: block; font-size: 14.5px; font-weight: 600; }
+.lv-send-card li span { display: block; margin-top: 2px; font-size: 11.5px; color: #8a8fac; }
+.lv-switch { position: relative; width: 46px; height: 28px; border-radius: 999px; background: #cfd2e2; transition: background .2s; flex: none; }
+.lv-switch i { position: absolute; left: 3px; top: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .22s cubic-bezier(.3,1.3,.5,1); }
+.lv-switch.on { background: #373d56; }
+.lv-switch.on i { transform: translateX(18px); }
+.lv-send-acts { display: flex; gap: 10px; margin-top: 16px; }
+.lv-send-acts button { flex: 1; height: 46px; border-radius: 999px; font-size: 14.5px; font-weight: 600; }
+.lv-send-acts .ghost { background: #e7e9f3; color: #3a3f5e; }
+.lv-send-acts .go { background: #373d56; color: #fff; }
+.lv-send-acts .go:disabled { opacity: .4; }
+.lv-send-done { text-align: center; padding: 14px 0 8px; animation: l-fade .3s ease both; }
+.lv-send-done svg { animation: lv-fly .9s ease-out both; }
+@keyframes lv-fly { from { transform: translate(-14px, 14px) scale(.7); opacity: 0; } }
+.lv-send-done h3 { margin-top: 10px; }
+.lv-send-done p { margin: 6px 0 0; font-size: 12.5px; color: #7a7f9c; }

@@ -69,6 +69,23 @@ export default function LpView({ album, active, onBack }: Props) {
   const [page, setPage] = useState<0 | 1 | 2>(0)
   const [pin, setPin] = useState<number | null>(null)
   const [detail, setDetail] = useState<number | null>(null)
+  // 여행지로 LP 보내기
+  const [sendOpen, setSendOpen] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [what, setWhat] = useState({ music: true, photo: true, memo: true })
+  const sendList = [
+    ['music', '음악', '녹음한 소리와 노래'],
+    ['photo', '사진 · 영상', '기록한 사진과 영상'],
+    ['memo', '메모', '순간마다 적은 글'],
+  ] as const
+  const closeSend = () => {
+    setSendOpen(false)
+    setTimeout(() => setSent(false), 300)
+  }
+  const doSend = () => {
+    setSent(true)
+    setTimeout(closeSend, 2200)
+  }
 
   const swipe = useRef<{ x: number } | null>(null)
   const swiped = useRef(false)
@@ -353,6 +370,68 @@ export default function LpView({ album, active, onBack }: Props) {
           <path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
+
+      {page === 2 && album && !album.draft && (
+        <button type="button" className="lv-send-btn" onClick={() => setSendOpen(true)} aria-label="Send my LP to the destination">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
+            <path d="M21 3 3 10.5l6.2 2.3L11.5 19l2.3-4.2L21 3Z M9.2 12.8 21 3" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" />
+          </svg>
+        </button>
+      )}
+
+      {sendOpen && (
+        <div className="lv-send" onClick={(e) => e.target === e.currentTarget && !sent && closeSend()}>
+          <div className="lv-send-card" role="dialog" aria-modal="true">
+            {sent ? (
+              <div className="lv-send-done">
+                <svg viewBox="0 0 24 24" width="40" height="40" aria-hidden>
+                  <path d="M21 3 3 10.5l6.2 2.3L11.5 19l2.3-4.2L21 3Z M9.2 12.8 21 3" fill="none" stroke="#373d56" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+                </svg>
+                <h3>{album?.city}로 보냈어요</h3>
+                <p>
+                  {sendList
+                    .filter(([k]) => what[k])
+                    .map(([, label]) => label)
+                    .join(' · ') || '선택한 것 없음'}
+                </p>
+              </div>
+            ) : (
+              <>
+                <h3>자신의 LP를 여행지로 보내겠습니까?</h3>
+                <p className="lv-send-sub">{album?.city} · 함께 보낼 것을 골라주세요</p>
+                <ul>
+                  {sendList.map(([k, label, desc]) => (
+                    <li key={k}>
+                      <div>
+                        <b>{label}</b>
+                        <span>{desc}</span>
+                      </div>
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={what[k]}
+                        aria-label={label}
+                        className={`lv-switch ${what[k] ? 'on' : ''}`}
+                        onClick={() => setWhat((w) => ({ ...w, [k]: !w[k] }))}
+                      >
+                        <i />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <div className="lv-send-acts">
+                  <button type="button" className="ghost" onClick={closeSend}>
+                    취소
+                  </button>
+                  <button type="button" className="go" onClick={doSend} disabled={!what.music && !what.photo && !what.memo}>
+                    보내기
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {album && detail !== null && (
         <MomentDetail
