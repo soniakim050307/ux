@@ -51,9 +51,11 @@ export default function LaidLp({ album, selected, onSelect, onOpen }: Props) {
 
       <div className="lp2-edge" style={{ transform: tf(g.edge) }} />
       <div className="lp2-disc" style={{ transform: tf(0) }}>
-        {[0.913, 0.887, 0.778, 0.61].map((f) => (
-          <i key={f} className="lp2-ring" style={{ inset: `${((1 - f) / 2) * 100}%` }} />
-        ))}
+        <svg className="lp2-grooves" viewBox="0 0 800 800" aria-hidden>
+          {Array.from({ length: 27 }, (_, i) => (
+            <circle key={i} cx="400" cy="400" r={84 + i * 11} fill="none" stroke="rgba(255,255,255,0.09)" strokeWidth="1.6" />
+          ))}
+        </svg>
         <i className="lp2-label" />
       </div>
 
