@@ -40,6 +40,16 @@ const TABLE: { top: number; h: number; dir: Dir }[] = [
   { top: 700, h: 58, dir: 'up' },
 ]
 
+// 슬랩 두께는 그대로 두고, 슬랩 사이 틈을 모두 같은 간격으로 촘촘하게 다시 배치
+const SLAB_GAP = 10
+{
+  let y = TABLE[0].top
+  for (const t of TABLE) {
+    t.top = y
+    y += t.h + SPINE_H + SLAB_GAP
+  }
+}
+
 /** 홈에서는 스택이 화면 아래쪽에 살짝 걸쳐 있고, 스택 화면에서는 위로 올라온다. */
 export const HOME_OFFSET = 440
 export const STACK_OFFSET = 43
