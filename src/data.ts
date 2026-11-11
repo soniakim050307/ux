@@ -30,6 +30,8 @@ export interface FlowAlbum {
   draft?: boolean
   /** 앨범 이름 */
   name?: string
+  /** 배송 중인 LP (소포 상태) */
+  delivery?: { startedAt: number; days: number }
 }
 
 const img = (name: string) => `${import.meta.env.BASE_URL}img/${name}`

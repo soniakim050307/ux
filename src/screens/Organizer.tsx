@@ -134,7 +134,7 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
         Press
       </button>
 
-      {press && <PressSeq city={album.city} onFinish={onFinish} />}
+      {press && <PressSeq city={album.city} onFinish={() => onFinish()} />}
 
       {open !== null && moments[open] && (
         <Detail

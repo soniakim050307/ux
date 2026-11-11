@@ -16,6 +16,7 @@ interface Props {
   active: boolean
   onChange: (p: Partial<FlowAlbum>) => void
   onBack: () => void
+  onFinish: () => void
 }
 
 const fmt = (iso: string) => {
@@ -26,7 +27,7 @@ const fmt = (iso: string) => {
 }
 
 /** 새 앨범: 줄무늬 없는 빈 LP → 글자를 눌러 정보 입력 → 장소/일정이 보인다 */
-export default function DraftLp({ album, active, onChange, onBack }: Props) {
+export default function DraftLp({ album, active, onChange, onBack, onFinish }: Props) {
   const { ref, k } = useDesignScale<HTMLDivElement>(W)
   const [form, setForm] = useState(false)
   const [cap, setCap] = useState(false)
@@ -108,7 +109,7 @@ export default function DraftLp({ album, active, onChange, onBack }: Props) {
         </button>
       )}
 
-      {org && <Organizer album={album} onChange={(moments) => onChange({ moments })} onClose={() => setOrg(false)} onFinish={onBack} />}
+      {org && <Organizer album={album} onChange={(moments) => onChange({ moments })} onClose={() => setOrg(false)} onFinish={onFinish} />}
 
       {cap && (
         <Capture

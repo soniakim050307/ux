@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } fr
 import type { FlowAlbum } from '../data'
 import {
   COVER,
+  coverTop,
   HOME_OFFSET,
   SLAB_W,
   SPINE_H,
@@ -15,6 +16,7 @@ import {
 import { DESIGN_H, DESIGN_W, useDesignScale } from '../useDesignScale'
 import LpView from './LpView'
 import DraftLp from './DraftLp'
+import DeliveryMap from './DeliveryMap'
 
 type Mode = 'home' | 'stack' | 'cover'
 
@@ -36,7 +38,8 @@ const PLANES = [
 
 export default function Records({ albums }: { albums: FlowAlbum[] }) {
   // 슬랩 0 = "Add New Album", 1.. = 최신 → 오래된 앨범
-  const list = [...albums].reverse()
+  const [created, setCreated] = useState<FlowAlbum[]>([])
+  const list = [...albums, ...created].reverse()
   const [draft, setDraft] = useState<FlowAlbum | null>(null)
   const slotIdx = Array.from({ length: list.length + 1 }, (_, i) => i)
 
@@ -59,7 +62,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
 
   const geos: Geo[] =
     mode === 'cover' && sel !== null
-      ? coverGeo(sel)
+      ? coverGeo(sel, slotIdx.length)
       : slotIdx.map((i) => stackGeo(i, mode === 'home' ? HOME_OFFSET : STACK_OFFSET))
 
   /* ---------- 홈: 위/아래로 쓸어서 앨범 스택 열기 ---------- */
@@ -141,6 +144,31 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
   }
 
   const coverOn = mode === 'cover' && album !== null
+  const [mapOpen, setMapOpen] = useState(false)
+  const parcel = !!album?.delivery
+  const cTop = sel !== null ? coverTop(sel) : 0
+  const daysLeft = album?.delivery
+    ? Math.max(0, Math.ceil((album.delivery.startedAt + album.delivery.days * 86400000 - Date.now()) / 86400000))
+    : 0
+
+  const finishDraft = () => {
+    if (!draft) return
+    const now = new Date()
+    const a: FlowAlbum = {
+      ...draft,
+      id: `new-${now.getTime()}`,
+      draft: false,
+      date: `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}`,
+      tone: '#c9a77b',
+      delivery: { startedAt: now.getTime(), days: 3 },
+    }
+    setCreated((c) => [...c, a])
+    setDraft(null)
+    setPull(0)
+    setSel(1)
+    setMode('cover')
+    setPage(0)
+  }
 
   return (
     <div className="r-root">
@@ -258,36 +286,59 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
             {/* 선택한 앨범: 커버가 서고, LP가 옆으로 빠진다 */}
             {album && (
               <>
-                <div
-                  className={`r-lp ${coverOn ? 'on' : ''} ${album.draft ? 'blank' : ''}`}
-                  style={{
-                    transform: `translateX(${pull * PULL_MAX}px)`,
-                    transition: dragging ? 'none' : undefined,
-                  }}
-                  aria-hidden
-                >
-                  <i className="r-lp-label" />
-                  <i className="r-lp-hole" />
-                </div>
+                {!parcel && (
+                  <div
+                    className={`r-lp ${coverOn ? 'on' : ''} ${album.draft ? 'blank' : ''}`}
+                    style={{
+                      top: cTop + (COVER.h - 165) / 2,
+                      transform: `translateX(${pull * PULL_MAX}px)`,
+                      transition: dragging ? 'none' : undefined,
+                    }}
+                    aria-hidden
+                  >
+                    <i className="r-lp-label" />
+                    <i className="r-lp-hole" />
+                  </div>
+                )}
 
                 <div
                   className={`r-sel ${coverOn ? 'on' : ''}`}
-                  style={{ left: COVER.x, top: COVER.y, width: COVER.w, height: COVER.h }}
+                  style={{ left: COVER.x, top: cTop, width: COVER.w, height: COVER.h }}
                 >
-                  {album.cover ? (
+                  {parcel ? (
+                    <div className="r-parcel">
+                      <i className="pk-tape h" />
+                      <i className="pk-tape v" />
+                      <div className="pk-stamp">
+                        <span>{album.city}</span>
+                        <span>{album.date}</span>
+                        <span>Seoul, Korea</span>
+                      </div>
+                    </div>
+                  ) : album.cover ? (
                     <img src={album.cover} alt="" draggable={false} />
                   ) : (
                     <div className="r-sel-blank" />
                   )}
-                  <div className="r-sel-title">
-                    <h2>{album.city}</h2>
-                    <span>{album.date}</span>
-                  </div>
                 </div>
 
-                {coverOn && (
+                <div className={`r-sel-title ${coverOn ? 'on' : ''}`} style={{ top: cTop + COVER.h + 14 }}>
+                  <h2>{album.city || 'New Album'}</h2>
+                  <span>{album.date}</span>
+                </div>
+
+                {coverOn && parcel && (
+                  <button type="button" className="r-parcel-hit" style={{ top: cTop }} onClick={() => setMapOpen(true)} aria-label="Track delivery">
+                    <span className="r-transit">
+                      IN TRANSIT
+                      <b>D-{daysLeft}</b>
+                    </span>
+                  </button>
+                )}
+
+                {coverOn && !parcel && (
                   <>
-                    <button type="button" className="r-pull" onClick={commit}>
+                    <button type="button" className="r-pull" style={{ top: cTop + COVER.h / 2 - 17 }} onClick={commit}>
                       <span>
                         PULL OUT
                         <br />
@@ -299,6 +350,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                     </button>
                     <div
                       className="r-drag"
+                      style={{ top: cTop }}
                       onPointerDown={onDragStart}
                       onPointerMove={onDragMove}
                       onPointerUp={onDragEnd}
@@ -309,6 +361,20 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
               </>
             )}
           </div>
+
+          {mapOpen && album?.delivery && (
+            <div className="l-root cap" style={{ zIndex: 40 }}>
+              <MapScaled>
+                <DeliveryMap
+                  city={album.city}
+                  startedAt={album.delivery.startedAt}
+                  days={album.delivery.days}
+                  buttonLabel="Close"
+                  onFinish={() => setMapOpen(false)}
+                />
+              </MapScaled>
+            </div>
+          )}
         </section>
 
         {/* ───────── 페이지 1: LP 화면 ───────── */}
@@ -319,11 +385,23 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
               active={page === 1}
               onChange={(p) => setDraft((d) => (d ? { ...d, ...p } : d))}
               onBack={backFromLp}
+              onFinish={finishDraft}
             />
           ) : (
             <LpView album={album} active={page === 1} onBack={backFromLp} />
           )}
         </section>
+      </div>
+    </div>
+  )
+}
+
+function MapScaled({ children }: { children: React.ReactNode }) {
+  const { ref, k } = useDesignScale<HTMLDivElement>(393)
+  return (
+    <div ref={ref} style={{ position: 'absolute', inset: 0 }}>
+      <div className="design" style={{ width: 393, height: 852, transform: `scale(${k})`, background: '#545e85' }}>
+        {children}
       </div>
     </div>
   )

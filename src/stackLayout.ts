@@ -29,6 +29,7 @@ const TABLE: { top: number; h: number; dir: Dir }[] = [
   { top: 443, h: 61, dir: 'up' },
   { top: 516, h: 68, dir: 'up' },
   { top: 596, h: 69, dir: 'up' },
+  { top: 676, h: 58, dir: 'up' },
 ]
 
 /** 홈에서는 스택이 화면 아래쪽에 살짝 걸쳐 있고, 스택 화면에서는 위로 올라온다. */
@@ -40,37 +41,33 @@ export function stackGeo(index: number, offset: number): Geo {
   return { top: t.top + offset, h: t.h, dir: t.dir }
 }
 
-/** 선택된 앨범 커버 영역 (Figma main 프레임) */
-export const COVER = { x: 35, y: 270, w: 296, h: 282 }
+/** 선택된 앨범 커버 크기 (Figma). 위치는 선택한 슬랩 자리에서 정해진다. */
+export const COVER = { x: 35, w: 208, h: 201 }
+/** 커버 아래 제목 영역 */
+const TITLE_H = 58
+const GAP = 10
+const MIN_TOP = 70
+const MAX_TOP = 799 - COVER.h - TITLE_H - 24
 
-const GAP_ABOVE = 6
-const GAP_BELOW = 12
-const FIRST_GAP_ABOVE = 24
-const FIRST_OVERLAP_BELOW = 15
+/** 선택한 슬랩의 중앙에 커버가 서도록 한 커버의 top */
+export function coverTop(selected: number, offset = STACK_OFFSET): number {
+  const g = stackGeo(selected, offset)
+  const mid = g.top + slabHeight(g.h) / 2
+  return Math.max(MIN_TOP, Math.min(MAX_TOP, mid - COVER.h / 2))
+}
 
 /**
- * 앨범을 선택했을 때의 배치. 스택이 선택한 앨범을 기준으로 위아래가 뒤집힌다:
- * 스택에서 위에 있던 앨범은 커버 아래로, 아래에 있던 앨범은 커버 위로 간다.
+ * 앨범을 선택했을 때의 배치. 제자리에서 커버가 서고, 위쪽 앨범은 위로 / 아래쪽 앨범은 아래로 살짝 밀린다.
  */
-export function coverGeo(selected: number): Geo[] {
-  const out: Geo[] = TABLE.map(() => ({ top: 0, h: 0, dir: 'down' as Dir }))
-  out[selected] = { top: COVER.y, h: COVER.h, dir: 'down' }
-
-  // 스택에서 아래에 있던 앨범(index > selected) → 커버 위쪽, 가까운 것부터
-  let bottom = COVER.y - FIRST_GAP_ABOVE
-  for (let i = selected + 1; i < TABLE.length; i++) {
-    const { h } = TABLE[i]
-    const top = bottom - slabHeight(h)
-    out[i] = { top, h, dir: 'down', hidden: bottom < 30 }
-    bottom = top - GAP_ABOVE
-  }
-
-  // 스택에서 위에 있던 앨범(index < selected) → 커버 아래쪽, 가까운 것부터
-  let top = COVER.y + COVER.h - FIRST_OVERLAP_BELOW
-  for (let i = selected - 1; i >= 0; i--) {
-    const { h } = TABLE[i]
-    out[i] = { top, h, dir: 'up', hidden: i === 0 || top > 760 }
-    top = top + slabHeight(h) + GAP_BELOW
-  }
-  return out
+export function coverGeo(selected: number, count: number, offset = STACK_OFFSET): Geo[] {
+  const base = Array.from({ length: count }, (_, i) => stackGeo(i, offset))
+  const s = base[selected]
+  const top = coverTop(selected, offset)
+  const upNeed = Math.max(0, s.top - top) + GAP
+  const downNeed = Math.max(0, top + COVER.h + TITLE_H - (s.top + slabHeight(s.h))) + GAP
+  return base.map((g, i) => {
+    if (i === selected) return { top, h: COVER.h, dir: 'down' as Dir }
+    const t = i < selected ? g.top - upNeed : g.top + downNeed
+    return { ...g, top: t, hidden: t + slabHeight(g.h) < 0 || t > 799 }
+  })
 }
