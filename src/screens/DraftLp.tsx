@@ -342,8 +342,11 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
               Save
             </button>
           </div>
+          {/* 입력하는 대로 재킷에 바로 찍혀 나오는 미리보기 */}
           <div className="df-lp">
             <i />
+            <b>{name.trim() || place.trim() || 'New Journey'}</b>
+            <small>{from ? fmt(from).slice(0, 7) : 'BLANK LP'} · SIDE A</small>
           </div>
           <label className="df-l">
             LP Name <em>{name.length}/50</em>

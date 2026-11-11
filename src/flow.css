@@ -3799,3 +3799,34 @@
 .cap-disc.on i {
   animation: spin 2.4s linear infinite reverse;
 }
+
+/* 정보 입력 화면의 재킷: 입력한 이름·날짜가 바로 찍혀 보이는 미리보기 */
+.df-lp {
+  position: relative;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 10px;
+  text-align: left;
+  overflow: hidden;
+}
+.df-lp b {
+  font-family: var(--serif);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  max-width: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  animation: rv-fade 0.4s ease;
+}
+.df-lp small {
+  margin-top: 3px;
+  font-size: 6px;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.8);
+}
