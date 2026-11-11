@@ -1,5 +1,6 @@
 import { FLOW_ALBUMS } from './data'
 import Records from './screens/Records'
+import Boot from './screens/Boot'
 
 /**
  * 플로우: 홈 → (쓸어내리기) 앨범 스택 → (앨범 선택) 커버 + LP 빼기 → (옆으로 전환) LP 화면
@@ -9,7 +10,9 @@ export default function App() {
   return (
     <div className="stage">
       <div className="app">
-        <Records albums={FLOW_ALBUMS} />
+        <Boot>
+          <Records albums={FLOW_ALBUMS} />
+        </Boot>
       </div>
     </div>
   )

@@ -48,3 +48,9 @@ Figma 에 한두 번만 쓰인 Manrope · Roboto · SF Pro · Crimson Text · IB
 
 ## 사진 출처
 Paris 외 도시 앨범(Lisbon·Kyoto·Reykjavik·Bangkok·New York·Barcelona·Jeju)의 사진은 [Unsplash](https://unsplash.com) 무료 사진(Unsplash License)입니다. 체험용 더미이며 실제 서비스에서는 사용자의 사진으로 대체됩니다.
+
+## Blue Vinyl 부팅 화면
+- 앱을 처음 열면 iPhone 스타일 홈 화면이 나오고, Blue Vinyl 아이콘을 누르면 확대 → 단색 배경 → LP 로고 → "Blue Vinyl" 텍스트 순서의 스플래시 후 앱으로 진입합니다. (`src/screens/Boot.tsx`)
+- 로고는 SVG 컴포넌트(`src/Logo.tsx`)로 재현했고, 홈 화면의 다른 앱 아이콘은 자체 제작한 단순 도형입니다.
+- `?boot=0` 을 주소 뒤에 붙이면 부팅 화면을 건너뜁니다.
+- AI 사용: 로고 SVG 재현, 부팅 애니메이션 코드는 Claude(Sonnet 5.5)가 작성했습니다.
