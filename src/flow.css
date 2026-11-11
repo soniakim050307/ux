@@ -794,6 +794,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .lv-disc,
+  .lv-disc.still::before,
   .lv-hint,
   .lv-knob,
   .h-plane,
@@ -1170,9 +1171,31 @@
   pointer-events: all;
 }
 
-/* 크게 보기에서는 영상이 바로 보이도록 판이 돌지 않는다 */
+/* 크게 보기에서는 영상이 바로 보이도록 판 전체는 돌지 않고,
+   검은 판 부분의 빛 반사만 천천히 돈다 */
 .lv-disc.still {
   animation: none;
+  position: absolute;
+}
+.lv-disc.still::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0 8%,
+    rgba(255, 255, 255, 0.16) 13%,
+    transparent 19% 50%,
+    rgba(255, 255, 255, 0.16) 63%,
+    transparent 69%
+  );
+  animation: l-spin 7s linear infinite;
+  pointer-events: none;
+}
+.lv-disc.still .lv-photo {
+  position: relative;
+  z-index: 1;
 }
 
 .df input {
