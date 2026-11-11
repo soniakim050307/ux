@@ -98,6 +98,7 @@ export default function LpView({ album, active, onBack }: Props) {
   }
 
   const [listOpen, setListOpen] = useState(false)
+  const [repeat, setRepeat] = useState(false)
 
   // 여행지로 LP 보내기
   const [sendOpen, setSendOpen] = useState(false)
@@ -151,9 +152,13 @@ export default function LpView({ album, active, onBack }: Props) {
   // 재생 중엔 다음 moment 로 이어서
   useEffect(() => {
     if (!playing || moments.length < 2) return
-    const t = window.setTimeout(() => setIdx((i) => (i + 1) % moments.length), MOMENT_MS)
+    const t = window.setTimeout(() => {
+      if (idx < moments.length - 1) setIdx(idx + 1)
+      else if (repeat) setIdx(0)
+      else setPlaying(false) // 반복이 꺼져 있으면 마지막에서 멈춘다
+    }, MOMENT_MS)
     return () => clearTimeout(t)
-  }, [playing, idx, moments.length, run])
+  }, [playing, idx, moments.length, run, repeat])
 
   const step = (d: number) => {
     if (!moments.length) return
@@ -394,6 +399,18 @@ export default function LpView({ album, active, onBack }: Props) {
                   </svg>
                 </i>
               </div>
+
+              <button
+                type="button"
+                className={`lv-ctl rep ${repeat ? 'on' : ''}`}
+                onClick={() => setRepeat((r) => !r)}
+                aria-label="Repeat"
+                aria-pressed={repeat}
+              >
+                <svg viewBox="0 0 24 20" width="22" height="18" aria-hidden>
+                  <path d="M4 9V7a3 3 0 013-3h12M16 1l3 3-3 3M20 11v2a3 3 0 01-3 3H5M8 19l-3-3 3-3" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
 
               <button type="button" className="lv-ctl prev" onClick={() => step(-1)} aria-label="Previous moment">
                 <svg viewBox="0 0 23 32" width="23" height="32">

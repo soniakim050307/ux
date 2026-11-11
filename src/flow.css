@@ -2898,3 +2898,8 @@
 .lv-list-sheet .tx b { font-size: 16px; font-weight: 700; line-height: 1.3; }
 .lv-list-sheet .tx i { display: block; margin-top: 1px; font-style: normal; font-size: 13px; color: #4a5072; }
 .lv-list-sheet .tx em { display: block; margin-top: 5px; font-size: 10.5px; color: #a0a4bd; -webkit-line-clamp: unset; }
+
+.lv-ctl.rep { left: 24px; width: 48px; }
+.lv-ctl.rep svg { transform: none; opacity: 0.5; transition: opacity .2s; }
+.lv-ctl.rep.on svg { opacity: 1; }
+.lv-ctl.rep.on::after { content: ''; position: absolute; bottom: 8px; left: 50%; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: #fff; }
