@@ -102,10 +102,19 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
   const closeStack = () => {
     if (mode === 'stack') setMode('home')
   }
+  const lastWheel = useRef(-Infinity)
   const onWheel = (e: React.WheelEvent) => {
     if (Math.abs(e.deltaY) < 8) return
+    // 트랙패드 관성 스크롤이 연달아 들어와 열자마자 닫히는 걸 막는다
+    const now = performance.now()
+    if (now - lastWheel.current < 900) {
+      lastWheel.current = now
+      return
+    }
+    lastWheel.current = now
+    // 홈 ↔ 스택: 위로 올리든 내리든(트랙패드 방향 설정과 무관하게) 스택에서는 홈으로 돌아간다
     if (mode === 'home') openStack()
-    else if (mode === 'stack' && e.deltaY < 0) closeStack()
+    else if (mode === 'stack') closeStack()
   }
   const onPageDown = (e: PointerEvent) => {
     if (mode === 'home' || mode === 'stack' || mode === 'cover') swipe.current = { y: e.clientY, x: e.clientX }
