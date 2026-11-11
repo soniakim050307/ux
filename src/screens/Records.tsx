@@ -81,7 +81,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
   setViewH(dh) // 높이에 맞춰 슬랩을 다시 배치
 
   const drag = useRef<{ x: number; id: number } | null>(null)
-  const swipe = useRef<{ y: number } | null>(null)
+  const swipe = useRef<{ y: number; x: number } | null>(null)
   const timers = useRef<number[]>([])
   useEffect(() => () => timers.current.forEach(clearTimeout), [])
   const later = (fn: () => void, ms: number) => {
@@ -108,12 +108,22 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
     else if (mode === 'stack' && e.deltaY < 0) closeStack()
   }
   const onPageDown = (e: PointerEvent) => {
-    if (mode === 'home' || mode === 'stack') swipe.current = { y: e.clientY }
+    if (mode === 'home' || mode === 'stack' || mode === 'cover') swipe.current = { y: e.clientY, x: e.clientX }
   }
   const onPageMove = (e: PointerEvent) => {
     const s = swipe.current
     if (!s) return
     const dy = (e.clientY - s.y) / k
+    const dx = (e.clientX - s.x) / k
+    if (mode === 'cover') {
+      // 앨범을 연 상태에서 위로 올리면 홈으로 (옆으로 LP 빼는 동작과는 구분)
+      if (dy < -SWIPE_PX * 1.6 && Math.abs(dx) < Math.abs(dy) * 0.6 && !dragging && pull === 0) {
+        swipe.current = null
+        setPull(0)
+        setMode('home')
+      }
+      return
+    }
     if (mode === 'home' && Math.abs(dy) > SWIPE_PX) {
       swipe.current = null
       openStack()
