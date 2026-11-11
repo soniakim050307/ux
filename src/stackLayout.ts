@@ -31,12 +31,13 @@ const TABLE: { top: number; h: number; dir: Dir }[] = [
   { top: 95, h: 67, dir: 'down' },
   { top: 177, h: 44, dir: 'down' },
   { top: 259, h: 15, dir: 'down' },
-  { top: 332, h: 10, dir: 'up' },
-  { top: 385, h: 37, dir: 'up' },
-  { top: 443, h: 61, dir: 'up' },
-  { top: 516, h: 68, dir: 'up' },
-  { top: 596, h: 69, dir: 'up' },
-  { top: 676, h: 58, dir: 'up' },
+  // 가운데(308.5)를 기준으로 위쪽 슬랩과 같은 높이·간격으로 대칭 배치
+  { top: 332, h: 15, dir: 'up' },
+  { top: 385, h: 44, dir: 'up' },
+  { top: 444, h: 67, dir: 'up' },
+  { top: 529, h: 71, dir: 'up' },
+  { top: 616, h: 69, dir: 'up' },
+  { top: 700, h: 58, dir: 'up' },
 ]
 
 /** 홈에서는 스택이 화면 아래쪽에 살짝 걸쳐 있고, 스택 화면에서는 위로 올라온다. */
