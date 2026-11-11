@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import type { FlowAlbum } from '../data'
 import { playMusic } from '../music'
 import { useDesignScale } from '../useDesignScale'
@@ -91,7 +91,7 @@ export default function LpView({ album, active, onBack }: Props) {
     if (scrub === null) return
     e.stopPropagation()
     const n = moments.length
-    const i = Math.max(0, Math.min(n - 1, Math.round((progX(e) / PROG_W) * n - 0.5)))
+    const i = Math.max(0, Math.min(n - 1, Math.round((progX(e) / PROG_W) * n)))
     setScrub(null)
     setIdx(i)
     if (playing) setRun((r) => r + 1)
@@ -216,8 +216,10 @@ export default function LpView({ album, active, onBack }: Props) {
     if (page === 1) play(!playing) // 크게 보기에서는 판을 탭해서 재생/정지
   }
 
-  // 비행기는 항상 경유점(순간) 위에 앉는다. 순간이 바뀌면 다음 점으로 날아간다.
-  const stopX = moments.length ? ((idx + 0.5) / moments.length) * PROG_W : 0
+  // 순간 i 가 시작될 때 비행기는 i번째 점 위에 있고, 재생하면 다음 점을 향해 천천히 날아간다.
+  const nM = Math.max(1, moments.length)
+  const stopX = (idx / nM) * PROG_W
+  const stopNext = ((idx + 1) / nM) * PROG_W
   const rot = armDrag ?? (playing ? 0 : ARM_LIFT)
   // 크게 보기(2번째 화면)에서는 영상이 각각 바로 재생된다. 작게 볼 때는 재생 중일 때만.
   const vref = useRef<HTMLVideoElement>(null)
@@ -342,21 +344,45 @@ export default function LpView({ album, active, onBack }: Props) {
                 <i className="lv-line" />
                 {moments.length > 0 && (
                   <>
-                    <i className={`lv-done ${scrub !== null ? 'scrub' : ''}`} style={{ width: scrub ?? stopX }} />
-                    {moments.map((m, i) => (
+                    <i
+                      key={`d-${idx}-${run}`}
+                      className={`lv-done ${scrub !== null ? 'scrub' : ''}`}
+                      style={
+                        {
+                          '--from': `${stopX}px`,
+                          '--to': `${stopNext}px`,
+                          ...(scrub !== null ? { width: scrub } : {}),
+                          animationDuration: `${MOMENT_MS}ms`,
+                          animationPlayState: playing ? 'running' : 'paused',
+                        } as CSSProperties
+                      }
+                    />
+                    {moments.slice(1).map((m, j) => {
+                      const i = j + 1
+                      return (
                       <i
                         key={m.id}
                         className={`lv-stop ${i <= idx ? 'seen' : ''}`}
-                        style={{ left: ((i + 0.5) / moments.length) * PROG_W }}
+                        style={{ left: (i / moments.length) * PROG_W }}
                       />
-                    ))}
+                      )
+                    })}
                   </>
                 )}
                 <i className="lv-end l" />
                 <i className="lv-end r" />
                 <i
+                  key={`${idx}-${run}`}
                   className={`lv-knob ${scrub !== null ? 'scrub' : ''}`}
-                  style={{ transform: `translateX(${scrub ?? stopX}px)` }}
+                  style={
+                    {
+                      '--from': `${stopX}px`,
+                      '--to': `${stopNext}px`,
+                      transform: `translateX(${scrub ?? stopX}px)`,
+                      animationDuration: `${MOMENT_MS}ms`,
+                      animationPlayState: playing ? 'running' : 'paused',
+                    } as CSSProperties
+                  }
                 >
                   <svg viewBox="0 0 22 16" width="22" height="16" aria-hidden>
                     <path d="M21 1 1 7l7 2.5L10.5 15 13 10.5 21 1Z" fill="#fff" />
@@ -461,8 +487,9 @@ export default function LpView({ album, active, onBack }: Props) {
                   >
                     <span className="th" style={{ backgroundImage: m.poster || m.kind !== 'video' ? `url(${m.poster ?? m.src})` : undefined }} />
                     <span className="tx">
-                      <b>{m.time ?? `Moment ${i + 1}`}</b>
-                      <em>{m.note ?? ''}</em>
+                      <b>{m.song?.title ?? 'Music'}</b>
+                      <i>{m.song?.artist ?? ''}</i>
+                      <em>{m.time ?? `Moment ${i + 1}`}</em>
                     </span>
                   </button>
                 </li>

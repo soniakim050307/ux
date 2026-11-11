@@ -521,7 +521,7 @@
   height: 4px;
   width: var(--from, 0px);
   background: radial-gradient(circle, #fff 1.4px, transparent 1.8px) 0 50% / 7px 4px repeat-x;
-  transition: width 1.1s cubic-bezier(0.45, 0.05, 0.25, 1);
+  animation: lv-done linear forwards;
 }
 
 @keyframes lv-done {
@@ -575,7 +575,7 @@
   height: 16px;
   margin-left: -11px;
   transform: translateX(var(--from, 0px));
-  transition: transform 1.1s cubic-bezier(0.45, 0.05, 0.25, 1);
+  animation: lv-prog linear forwards;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
 }
 
@@ -584,6 +584,9 @@
 }
 
 @keyframes lv-prog {
+  from {
+    transform: translateX(var(--from, 0px));
+  }
   to {
     transform: translateX(var(--to, 280px));
   }
@@ -635,7 +638,7 @@
 }
 
 .lv-ctl.list {
-  left: 304px;
+  left: 320px;
   width: 48px;
 }
 
@@ -2878,3 +2881,13 @@
 .lv-list-sheet .tx { min-width: 0; }
 .lv-list-sheet .tx b { display: block; font-size: 13px; font-weight: 600; }
 .lv-list-sheet .tx em { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 2px; font-style: normal; font-size: 11.5px; line-height: 1.4; color: #7a7f9c; }
+
+@keyframes lv-done {
+  from { width: var(--from, 0px); }
+  to { width: var(--to, 280px); }
+}
+.lv-done.scrub, .lv-knob.scrub { animation: none; }
+
+.lv-list-sheet .tx b { font-size: 16px; font-weight: 700; line-height: 1.3; }
+.lv-list-sheet .tx i { display: block; margin-top: 1px; font-style: normal; font-size: 13px; color: #4a5072; }
+.lv-list-sheet .tx em { display: block; margin-top: 5px; font-size: 10.5px; color: #a0a4bd; -webkit-line-clamp: unset; }

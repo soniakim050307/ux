@@ -138,3 +138,23 @@ export const FLOW_ALBUMS: FlowAlbum[] = [
     ['2025.09.22 · 18:40', '해가 바다로 내려앉는 시간. 하늘이 주황빛으로 물들었다.'],
   ]),
 ]
+
+/** 체험용 임시 곡 (실제로는 기록할 때 감지된 노래가 들어간다) */
+const SONGS: Record<string, [string, string][]> = {
+  paris: [['La Vie en Rose', 'Édith Piaf'], ['Les Champs-Élysées', 'Joe Dassin'], ["Comptine d'un autre été", 'Yann Tiersen']],
+  barcelona: [['Barcelona', 'Freddie Mercury & Montserrat Caballé'], ['Me gustas tú', 'Manu Chao'], ['Bamboleo', 'Gipsy Kings']],
+  newyork: [['New York, New York', 'Frank Sinatra'], ['Empire State of Mind', 'Jay-Z ft. Alicia Keys'], ['New York State of Mind', 'Billy Joel']],
+  reykjavik: [['Hoppípolla', 'Sigur Rós'], ['Jóga', 'Björk'], ['Near Light', 'Ólafur Arnalds']],
+  bangkok: [['Maria También', 'Khruangbin'], ['White Gloves', 'Khruangbin'], ['Evan Finds the Third Room', 'Khruangbin']],
+  kyoto: [['Summer', 'Joe Hisaishi'], ['Merry Christmas Mr. Lawrence', 'Ryuichi Sakamoto'], ['First Love', 'Hikaru Utada']],
+  lisbon: [['O Pastor', 'Madredeus'], ['Estranha Forma de Vida', 'Amália Rodrigues'], ['Gente da Minha Terra', 'Mariza']],
+  jeju: [['Palette', 'IU'], ['Little Star', 'Standing Egg'], ['Wi Ing Wi Ing', 'HYUKOH']],
+}
+for (const a of FLOW_ALBUMS) {
+  const list = SONGS[a.id]
+  if (!list) continue
+  a.moments.forEach((m, i) => {
+    const t = list[i % list.length]
+    if (!m.song) m.song = { title: t[0], artist: t[1] }
+  })
+}
