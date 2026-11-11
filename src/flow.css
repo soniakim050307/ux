@@ -67,6 +67,13 @@
   opacity: 0;
 }
 
+/* 돌아올 때 턴테이블은 LP들이 먼저 비켜난 뒤 살짝 늦게 내려옴 */
+.h-art:not(.gone) {
+  transition:
+    transform 0.95s cubic-bezier(0.25, 0.8, 0.25, 1) 0.12s,
+    opacity 0.6s ease 0.12s;
+}
+
 .h-vinyl {
   position: absolute;
   left: -188px;

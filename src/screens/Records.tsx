@@ -118,9 +118,11 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
       return
     }
     lastWheel.current = now
-    // 홈 ↔ 스택: 위로 올리든 내리든(트랙패드 방향 설정과 무관하게) 스택에서는 홈으로 돌아간다
-    if (mode === 'home') openStack()
-    else if (mode === 'stack') closeStack()
+    // 아래로 굴리면 리스트로, 위로 굴리면 턴테이블로 (방향을 지켜야 관성 스크롤에 되돌아가지 않음)
+    if (e.deltaY > 0) {
+      if (mode === 'home') openStack()
+    } else if (mode === 'stack') closeStack()
+    else if (mode === 'cover' && !dragging && pull === 0) setMode('home')
   }
   const onPageDown = (e: PointerEvent) => {
     if (mode === 'home' || mode === 'stack' || mode === 'cover') swipe.current = { y: e.clientY, x: e.clientX }
@@ -131,20 +133,21 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
     const dy = (e.clientY - s.y) / k
     const dx = (e.clientX - s.x) / k
     if (mode === 'cover') {
-      // 앨범을 연 상태에서 위로 올리면 홈으로 (옆으로 LP 빼는 동작과는 구분)
-      if (dy < -SWIPE_PX * 1.6 && Math.abs(dx) < Math.abs(dy) * 0.6 && !dragging && pull === 0) {
+      // 앨범을 연 상태에서 아래로 끌어내리면 홈으로 (옆으로 LP 빼는 동작과는 구분)
+      if (dy > SWIPE_PX * 1.6 && Math.abs(dx) < Math.abs(dy) * 0.6 && !dragging && pull === 0) {
         swipe.current = null
         setPull(0)
         setMode('home')
       }
       return
     }
-    if (mode === 'home' && Math.abs(dy) > SWIPE_PX) {
+    if (Math.abs(dx) > Math.abs(dy)) return
+    if (mode === 'home' && dy < -SWIPE_PX) {
       swipe.current = null
-      openStack()
-    } else if (mode === 'stack' && dy < -SWIPE_PX) {
+      openStack() // 손가락을 위로 밀면(스크롤 다운) 리스트로
+    } else if (mode === 'stack' && dy > SWIPE_PX) {
       swipe.current = null
-      closeStack() // 위로 올리면 홈으로
+      closeStack() // 아래로 끌어내리면 턴테이블로
     }
   }
   const onPageUp = () => {
@@ -319,7 +322,8 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                 height: slabHeight(g.h),
                 opacity: g.hidden || isSel ? 0 : 1,
                 pointerEvents: g.hidden || isSel ? 'none' : 'auto',
-                '--i': i,
+                // 리스트로 갈 땐 위에서부터, 턴테이블로 돌아올 땐 아래에서부터 움직여야 서로 겹치지 않음
+                '--i': mode === 'home' ? slotIdx.length - 1 - i : i,
               } as CSSProperties
               return (
                 <div
