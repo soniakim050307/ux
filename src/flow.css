@@ -3283,7 +3283,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 166px;
+  top: 158px;
   text-align: center;
   color: #fff;
   font-size: 13px;
@@ -3293,10 +3293,10 @@
 }
 .cap-circle {
   position: absolute;
-  left: 71.5px; /* 원을 조금 줄임 (277 → 250), 중심은 그대로 */
-  top: 225.5px;
-  width: 250px;
-  height: 250px;
+  left: 60.5px; /* 원 크기 272, 중심(196.5, 350.5)은 그대로 */
+  top: 214.5px;
+  width: 272px;
+  height: 272px;
   border-radius: 50%;
   overflow: hidden;
   background: #2f3350;

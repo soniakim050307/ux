@@ -7,7 +7,7 @@ import Engrave from './Engrave'
 const W = 393
 const H = 852
 const MAX_S = 15
-const RING_R = 138 // 원형 뷰파인더를 감싸는 흰 진행 링
+const RING_R = 149 // 원형 뷰파인더를 감싸는 흰 진행 링
 const RING_LEN = 2 * Math.PI * RING_R
 /** 지금 듣고 있는 노래 (실제 연동 전까지는 최근 재생곡으로 대신) */
 const NOW_PLAYING = { title: 'Paris in the rain', artist: 'Lauv' }
