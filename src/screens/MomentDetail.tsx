@@ -17,6 +17,21 @@ export default function MomentDetail({ album, index, onIndex, onClose }: Props) 
   const m = moments[index]
   const [musicOn, setMusicOn] = useState(true)
   const start = useRef<number | null>(null)
+  const [dir, setDir] = useState<1 | -1>(1)
+  const go = (i: number) => {
+    if (i < 0 || i >= moments.length || i === index) return
+    setDir(i > index ? 1 : -1)
+    onIndex(i)
+  }
+
+  useEffect(() => {
+    const f = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') go(index + 1)
+      else if (e.key === 'ArrowLeft') go(index - 1)
+    }
+    window.addEventListener('keydown', f)
+    return () => window.removeEventListener('keydown', f)
+  })
 
   useEffect(() => {
     if (!musicOn) return
@@ -30,8 +45,8 @@ export default function MomentDetail({ album, index, onIndex, onClose }: Props) 
     if (start.current === null) return
     const dx = (e.clientX - start.current) / k
     start.current = null
-    if (dx < -40 && index < moments.length - 1) onIndex(index + 1)
-    else if (dx > 40 && index > 0) onIndex(index - 1)
+    if (dx < -40 && index < moments.length - 1) go(index + 1)
+    else if (dx > 40 && index > 0) go(index - 1)
   }
 
   return (
@@ -44,13 +59,24 @@ export default function MomentDetail({ album, index, onIndex, onClose }: Props) 
           </p>
         </header>
 
-        <div className="d-media" key={m.id}>
+        <div className={`d-media slide${dir > 0 ? 'r' : 'l'}`} key={m.id}>
           {m.kind === 'video' ? (
             <video src={m.src} muted loop playsInline autoPlay controls />
           ) : (
             <img src={m.src} alt="" draggable={false} />
           )}
         </div>
+
+        {index > 0 && (
+          <button type="button" className="d-arrow prev" onClick={() => go(index - 1)} aria-label="Previous moment">
+            ‹
+          </button>
+        )}
+        {index < moments.length - 1 && (
+          <button type="button" className="d-arrow next" onClick={() => go(index + 1)} aria-label="Next moment">
+            ›
+          </button>
+        )}
 
         {(m.song || m.audio) && (
           <div className="d-song">
@@ -80,14 +106,16 @@ export default function MomentDetail({ album, index, onIndex, onClose }: Props) 
           </div>
         )}
 
-        <div className="d-memo">
+        <div className={`d-memo slide${dir > 0 ? 'r' : 'l'}`} key={`n-${m.id}`}>
           <span>MEMO</span>
           <p>{m.note || '남겨둔 메모가 없어요.'}</p>
         </div>
 
         <div className="d-dots">
           {moments.map((x, i) => (
-            <i key={x.id} className={i === index ? 'on' : ''} />
+            <button key={x.id} type="button" className={i === index ? 'on' : ''} onClick={() => go(i)} aria-label={`Moment ${i + 1}`}>
+              <i />
+            </button>
           ))}
         </div>
       </div>

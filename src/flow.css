@@ -954,6 +954,17 @@
   gap: 3px;
 }
 
+.d-dots button {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 28px;
+}
+
+.d-dots button.on {
+  width: 46px;
+}
+
 .d-dots i {
   display: block;
   width: 7px;
@@ -965,7 +976,7 @@
     background 0.3s ease;
 }
 
-.d-dots i.on {
+.d-dots button.on i {
   width: 31px;
   background: #fff;
 }
@@ -2013,4 +2024,58 @@
   font-size: 12px;
   color: #545e85;
   font-weight: 600;
+}
+
+/* 모먼트 넘기기 */
+.d-root {
+  touch-action: pan-y;
+}
+
+.d-arrow {
+  position: absolute;
+  top: 290px;
+  z-index: 3;
+  width: 34px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  line-height: 1;
+  color: #fff;
+  background: rgba(30, 34, 60, 0.35);
+  backdrop-filter: blur(4px);
+}
+
+.d-arrow.prev {
+  left: 24px;
+  border-radius: 0 12px 12px 0;
+}
+
+.d-arrow.next {
+  right: 24px;
+  border-radius: 12px 0 0 12px;
+}
+
+.d-media.slider,
+.d-memo.slider {
+  animation: d-in-r 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.d-media.slidel,
+.d-memo.slidel {
+  animation: d-in-l 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes d-in-r {
+  from {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+}
+
+@keyframes d-in-l {
+  from {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
 }
