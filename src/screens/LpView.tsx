@@ -247,7 +247,7 @@ export default function LpView({ album, active, onBack }: Props) {
       >
         <div className="lv-strip" style={{ transform: `translateX(${page === 2 ? -W : 0}px)` }}>
           {/* ───── 서 있는 LP: 플레이어 ↔ 크게 보기 ───── */}
-          <div className="lv-sub" style={{ left: 0 }}>
+          <div className={`lv-sub ${page === 2 ? 'off' : ''}`} style={{ left: 0 }}>
             {/* 톤암 받침 (LP 뒤) */}
             <div
               className="lv-arm lv-base"
@@ -442,7 +442,7 @@ export default function LpView({ album, active, onBack }: Props) {
           </div>
 
           {/* ───── 눕힌 LP: 순간마다 핀 ───── */}
-          <div className="lv-sub" style={{ left: W }}>
+          <div className={`lv-sub ${page === 2 ? '' : 'off'}`} style={{ left: W }}>
             <LaidLp album={album} selected={pin} onSelect={setPin} onOpen={setDetail} />
           </div>
         </div>

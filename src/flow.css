@@ -47,8 +47,8 @@
 
 .design {
   position: absolute;
-  left: 0;
-  top: 0;
+  left: var(--ox, 0px);
+  top: var(--oy, 0px);
   transform-origin: 0 0;
 }
 
@@ -382,7 +382,14 @@
   top: 0;
   width: 393px;
   height: 852px;
-  overflow: hidden;
+  transition: opacity 0.25s ease;
+}
+
+/* 화면이 세로로 짧아 좌우에 여백이 생겨도 옆 화면이 비쳐 보이지 않게 */
+.lv-sub.off {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease 0.45s;
 }
 
 .lv-disc {
