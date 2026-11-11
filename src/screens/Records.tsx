@@ -108,21 +108,25 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
   const closeStack = () => {
     if (mode === 'stack') setMode('home')
   }
-  const lastWheel = useRef(-Infinity)
+  const lastSwitch = useRef(-Infinity)
   const onWheel = (e: React.WheelEvent) => {
-    if (Math.abs(e.deltaY) < 8) return
-    // 트랙패드 관성 스크롤이 연달아 들어와 열자마자 닫히는 걸 막는다
+    if (Math.abs(e.deltaY) < 4) return
+    // 화면이 막 바뀐 직후(전환 애니메이션 중)만 잠깐 무시한다.
+    // 예전엔 휠 이벤트가 올 때마다 대기 시간을 늘려서, 관성 스크롤이 이어지는 동안 반대 방향 스크롤이 계속 먹혔다.
     const now = performance.now()
-    if (now - lastWheel.current < 900) {
-      lastWheel.current = now
-      return
-    }
-    lastWheel.current = now
-    // 아래로 굴리면 리스트로, 위로 굴리면 턴테이블로 (방향을 지켜야 관성 스크롤에 되돌아가지 않음)
+    if (now - lastSwitch.current < 650) return
+    // 아래로 굴리면 리스트로, 위로 굴리면 턴테이블로. 같은 방향의 관성 이벤트는 아무 일도 하지 않는다.
     if (e.deltaY > 0) {
-      if (mode === 'home') openStack()
-    } else if (mode === 'stack') closeStack()
-    else if (mode === 'cover' && !dragging && pull === 0) setMode('home')
+      if (mode !== 'home') return
+      lastSwitch.current = now
+      openStack()
+    } else if (mode === 'stack') {
+      lastSwitch.current = now
+      closeStack()
+    } else if (mode === 'cover' && !dragging && pull === 0) {
+      lastSwitch.current = now
+      setMode('home')
+    }
   }
   const onPageDown = (e: PointerEvent) => {
     if (mode === 'home' || mode === 'stack' || mode === 'cover') swipe.current = { y: e.clientY, x: e.clientX }
