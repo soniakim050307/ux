@@ -73,6 +73,11 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
   const arrivedAlbum = created.find(isArrived) ?? null
   const slotIdx = Array.from({ length: list.length + 1 }, (_, i) => i)
 
+  const [armDown, setArmDown] = useState(false)
+  useEffect(() => {
+    const t = setTimeout(() => setArmDown(true), 400)
+    return () => clearTimeout(t)
+  }, [])
   const [mode, setMode] = useState<Mode>('home')
   const [sel, setSel] = useState<number | null>(null)
   const [pull, setPull] = useState(0)
@@ -274,8 +279,12 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
               <div className="h-vinyl" />
               <div className="h-label" />
               <div className="h-hole" />
-              <div className="h-arm-bar" />
-              <div className="h-arm-head" />
+              <svg className="h-arm" viewBox="0 0 393 260">
+                <g className={`h-arm-g ${armDown ? 'up' : 'off'}`}>
+                  <line x1="404" y1="-20" x2="290" y2="160" stroke="#d9d9d9" strokeWidth="11" />
+                  <rect x="262" y="146" width="36" height="50" fill="#7b7b80" transform="rotate(32 280 171)" />
+                </g>
+              </svg>
             </div>
 
             {transitAlbum && page === 0 && !mapOpen && (

@@ -74,7 +74,23 @@
   width: 514px;
   height: 514px;
   border-radius: 50%;
-  background: #242327;
+  background: radial-gradient(circle, #2a2a2e 0 36%, #232326 36.5%);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.h-vinyl::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 40deg, rgba(255, 255, 255, 0.05) 60deg, transparent 80deg 220deg, rgba(255, 255, 255, 0.04) 240deg, transparent 260deg);
+  animation: h-sheen 9s linear infinite;
+}
+
+@keyframes h-sheen {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .h-label {
@@ -97,26 +113,28 @@
   background: #000;
 }
 
-.h-arm-bar,
-.h-arm-head {
+.h-arm {
   position: absolute;
-  transform: rotate(31deg);
+  left: -12px;
+  top: 0;
+  width: 393px;
+  height: 260px;
+  overflow: visible;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.3));
 }
 
-.h-arm-bar {
-  left: 356px;
-  top: -191.5px;
-  width: 10px;
-  height: 383px;
-  background: #d9d9d9;
+.h-arm-g {
+  transform-box: view-box;
+  transform-origin: 404px -20px;
+  transition: transform 1.4s cubic-bezier(0.45, 0, 0.2, 1);
 }
 
-.h-arm-head {
-  left: 238.5px;
-  top: 143.5px;
-  width: 39px;
-  height: 59px;
-  background: #797979;
+.h-arm-g.off {
+  transform: rotate(-50deg);
+}
+
+.h-arm-g.up {
+  transform: rotate(-16deg);
 }
 
 .h-plane {
