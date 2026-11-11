@@ -95,6 +95,8 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
   }
 
   const album = sel === 0 ? draft : sel !== null ? list[sel - 1] : null
+  // 만들다가 나온 앨범: 정보나 moment가 하나라도 있으면 '기록 중'으로 홈과 스택에 계속 보인다 (blue-vinyl)
+  const recording = !!draft && (draft.city !== '' || draft.moments.length > 0)
 
   const geos: Geo[] =
     mode === 'cover' && sel !== null
@@ -294,6 +296,18 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
               </svg>
             </div>
 
+            {/* 기록 중인 앨범으로 바로 돌아가기 */}
+            {recording && draft && (
+              <button type="button" className={`h-rec ${mode === 'home' ? '' : 'gone'}`} onClick={() => tapSlab(0)}>
+                <i />
+                <span>
+                  <b>NOW RECORDING</b>
+                  {draft.city || 'New Journey'} · {draft.moments.length} moment{draft.moments.length === 1 ? '' : 's'}
+                </span>
+                <em>›</em>
+              </button>
+            )}
+
             {transitAlbum && page === 0 && !mapOpen && (
               <button type="button" className="r-trigger" onClick={arriveNow}>
                 ▶ 배송 도착시키기 (체험용)
@@ -354,7 +368,19 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                         <Parcel city={a.city} date={a.date} cover={a.cover} />
                       </>
                     )}
-                    {!a && (
+                    {!a && recording && draft && (
+                      <svg viewBox={`0 0 ${SLAB_W} ${g.h}`} preserveAspectRatio="none" width="100%" height="100%">
+                        <polygon
+                          points={`1,0.5 ${SLAB_W - 1},0.5 ${SLAB_W - 11},${g.h - 0.5} 11,${g.h - 0.5}`}
+                          fill="rgba(229,72,77,0.16)"
+                          stroke="rgba(255,150,150,0.85)"
+                          strokeDasharray="4 4"
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      </svg>
+                    )}
+                    {!a && recording && <span className="s-rec-cta">Continue recording ›</span>}
+                    {!a && !recording && (
                       <svg
                         viewBox={`0 0 ${SLAB_W} ${g.h}`}
                         preserveAspectRatio="none"
@@ -383,6 +409,12 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                       <>
                         <b>{a.city}</b>
                         <span>{a.date}</span>
+                      </>
+                    ) : recording && draft ? (
+                      <>
+                        <i className="s-rec-dot" />
+                        <b>{draft.city || 'New Journey'}</b>
+                        <span>REC · {draft.moments.length} moment{draft.moments.length === 1 ? '' : 's'}</span>
                       </>
                     ) : (
                       <b>+&nbsp; Add New Album</b>
