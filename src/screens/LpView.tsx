@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import type { FlowAlbum } from '../data'
 import { playMusic } from '../music'
 import { useDesignScale } from '../useDesignScale'
@@ -298,16 +298,53 @@ export default function LpView({ album, active, onBack }: Props) {
                 <span>{album?.date}</span>
               </div>
 
+              {/* 바늘이 판을 따라 가듯, 재생 위치 = 여행 경로 위의 비행기 */}
               <div className="lv-prog">
                 <i className="lv-line" />
+                {moments.length > 0 && (
+                  <>
+                    <i
+                      key={`d-${idx}-${run}`}
+                      className="lv-done"
+                      style={
+                        {
+                          '--from': `${(idx / moments.length) * PROG_W}px`,
+                          '--to': `${((idx + 1) / moments.length) * PROG_W}px`,
+                          animationDuration: `${MOMENT_MS}ms`,
+                          animationPlayState: playing ? 'running' : 'paused',
+                        } as CSSProperties
+                      }
+                    />
+                    {moments.map((m, i) => (
+                      <i
+                        key={m.id}
+                        className={`lv-stop ${i <= idx ? 'seen' : ''}`}
+                        style={{ left: ((i + 0.5) / moments.length) * PROG_W }}
+                      />
+                    ))}
+                  </>
+                )}
+                <i className="lv-end l" />
+                <i className="lv-end r" />
                 <i
                   key={`${idx}-${run}`}
                   className="lv-knob"
-                  style={{
-                    animationDuration: `${MOMENT_MS}ms`,
-                    animationPlayState: playing ? 'running' : 'paused',
-                  }}
-                />
+                  style={
+                    {
+                      '--from': `${(idx / Math.max(1, moments.length)) * PROG_W}px`,
+                      '--to': `${((idx + 1) / Math.max(1, moments.length)) * PROG_W}px`,
+                      animationDuration: `${MOMENT_MS}ms`,
+                      animationPlayState: playing ? 'running' : 'paused',
+                    } as CSSProperties
+                  }
+                >
+                  <svg viewBox="0 0 22 16" width="22" height="16" aria-hidden>
+                    <path d="M21 1 1 7l7 2.5L10.5 15 13 10.5 21 1Z" fill="#fff" />
+                    <path d="M8 9.5 21 1" stroke="#8c9dde" strokeWidth="1" fill="none" />
+                  </svg>
+                </i>
+                <span className="lv-city l">Seoul</span>
+                <span className="lv-city r">{album?.city.split(',')[0]}</span>
               </div>
 
               <button type="button" className="lv-ctl prev" onClick={() => step(-1)} aria-label="Previous moment">
