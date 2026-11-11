@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import type { FlowAlbum } from '../data'
 import { playMusic } from '../music'
 import { useDesignScale } from '../useDesignScale'
@@ -214,6 +214,8 @@ export default function LpView({ album, active, onBack }: Props) {
     if (page === 1) play(!playing) // 크게 보기에서는 판을 탭해서 재생/정지
   }
 
+  // 비행기는 항상 경유점(순간) 위에 앉는다. 순간이 바뀌면 다음 점으로 날아간다.
+  const stopX = moments.length ? ((idx + 0.5) / moments.length) * PROG_W : 0
   const rot = armDrag ?? (playing ? 0 : ARM_LIFT)
   // 크게 보기(2번째 화면)에서는 영상이 각각 바로 재생된다. 작게 볼 때는 재생 중일 때만.
   const vref = useRef<HTMLVideoElement>(null)
@@ -338,18 +340,7 @@ export default function LpView({ album, active, onBack }: Props) {
                 <i className="lv-line" />
                 {moments.length > 0 && (
                   <>
-                    <i
-                      key={`d-${idx}-${run}`}
-                      className="lv-done"
-                      style={
-                        {
-                          '--from': `${(idx / moments.length) * PROG_W}px`,
-                          '--to': `${((idx + 1) / moments.length) * PROG_W}px`,
-                          animationDuration: `${MOMENT_MS}ms`,
-                          animationPlayState: playing ? 'running' : 'paused',
-                        } as CSSProperties
-                      }
-                    />
+                    <i className={`lv-done ${scrub !== null ? 'scrub' : ''}`} style={{ width: scrub ?? stopX }} />
                     {moments.map((m, i) => (
                       <i
                         key={m.id}
@@ -362,17 +353,8 @@ export default function LpView({ album, active, onBack }: Props) {
                 <i className="lv-end l" />
                 <i className="lv-end r" />
                 <i
-                  key={`${idx}-${run}`}
                   className={`lv-knob ${scrub !== null ? 'scrub' : ''}`}
-                  style={
-                    {
-                      ...(scrub !== null ? { transform: `translateX(${scrub}px)` } : {}),
-                      '--from': `${(idx / Math.max(1, moments.length)) * PROG_W}px`,
-                      '--to': `${((idx + 1) / Math.max(1, moments.length)) * PROG_W}px`,
-                      animationDuration: `${MOMENT_MS}ms`,
-                      animationPlayState: playing ? 'running' : 'paused',
-                    } as CSSProperties
-                  }
+                  style={{ transform: `translateX(${scrub ?? stopX}px)` }}
                 >
                   <svg viewBox="0 0 22 16" width="22" height="16" aria-hidden>
                     <path d="M21 1 1 7l7 2.5L10.5 15 13 10.5 21 1Z" fill="#fff" />
