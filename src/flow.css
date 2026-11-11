@@ -2918,7 +2918,7 @@
 .bt-ic{width:60px;height:60px;border-radius:14px;display:grid;place-items:center;font-size:26px;color:rgba(255,255,255,.92);box-shadow:0 1px 3px rgba(0,0,0,.18)}
 .bt-app:nth-child(2) .bt-ic{color:#d44}
 .bt-bv{cursor:pointer;animation:bt-hint 2.4s ease-in-out 1.2s infinite}
-.bt-ic-bv{padding:0;overflow:hidden;background:none}
+.bt-ic-bv{padding:0;overflow:hidden;background:none;box-shadow:none}
 @keyframes bt-hint{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
 .bt-dots{position:absolute;bottom:128px;left:0;right:0;display:flex;justify-content:center;gap:8px}
 .bt-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.4)}
@@ -2932,16 +2932,16 @@
 .bt-zoom svg{width:100%;height:100%}
 @keyframes bt-zoom{to{top:0;left:0;width:100%;height:100%;border-radius:0}}
 
-.bt-splash{background:#f2eee9;animation:bt-bg 4.3s ease forwards;display:grid;place-items:center}
-@keyframes bt-bg{0%,12%{background:#c9cbe6}38%,100%{background:#f2eee9}}
+.bt-splash{background:#fefefe;animation:bt-bg 4.3s ease forwards;display:grid;place-items:center}
+@keyframes bt-bg{0%,12%{background:#747fa3}38%,100%{background:#fefefe}}
 .bt-splash{animation:bt-bg 4.3s ease forwards,bt-out .5s ease 3.8s forwards}
 @keyframes bt-out{to{opacity:0}}
 .bt-lock{display:flex;align-items:center;gap:0}
 .bt-disc{opacity:0;transform:scale(.6) rotate(-120deg);animation:bt-disc 1.1s cubic-bezier(.2,.8,.2,1) .7s forwards}
 @keyframes bt-disc{to{opacity:1;transform:scale(1) rotate(0)}}
 .bt-word{overflow:hidden;max-width:0;animation:bt-word 1s cubic-bezier(.3,.7,.2,1) 1.9s forwards;white-space:nowrap}
-.bt-word span{display:block;padding-left:12px;font-family:'Lora',serif;font-style:italic;font-weight:500;font-size:34px;color:#262d4b;letter-spacing:.01em;opacity:0;transform:translateX(-20px);animation:bt-wtxt 1s ease 1.9s forwards}
-@keyframes bt-word{to{max-width:220px}}
+.bt-word span{display:block;padding-left:14px;opacity:0;transform:translateX(-20px);animation:bt-wtxt 1s ease 1.9s forwards}
+@keyframes bt-word{to{max-width:240px}}
 @keyframes bt-wtxt{to{opacity:1;transform:none}}
 
 /* ===== 소포 (팀 웹 프로토타입 디자인 이식) ===== */
@@ -2970,3 +2970,5 @@
 .h-parcel.open .pc-tw { animation: hp-tape .4s ease-in both; }
 .r-parcel.open .pc-tw { animation: hp-tape .4s ease-in both; }
 .h-parcel.open .pc-wrap { animation: hp-lid .7s .35s ease-in both; }
+.bt-zoom img{width:100%;height:100%;object-fit:cover}
+.bt-zoom{background:transparent}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BlueVinylDisc, BlueVinylIcon } from '../Logo'
+import { BlueVinylDisc, BlueVinylIcon, BlueVinylWord } from '../Logo'
 
 /** 가짜 홈 화면 아이콘 (실제 앱 아이콘 대신 단순한 자체 도형) */
 const APPS: { name: string; c: string; g: string }[] = [
@@ -49,10 +49,10 @@ export default function Boot({ children }: { children: React.ReactNode }) {
             <div className="bt-splash">
               <div className="bt-lock">
                 <div className="bt-disc">
-                  <BlueVinylDisc size={86} color="#7378b0" label="#f4efe6" />
+                  <BlueVinylDisc size={92} />
                 </div>
                 <div className="bt-word">
-                  <span>Blue Vinyl</span>
+                  <span><BlueVinylWord height={50} /></span>
                 </div>
               </div>
             </div>
@@ -91,7 +91,7 @@ export default function Boot({ children }: { children: React.ReactNode }) {
                 ))}
               </div>
               {stage === 'opening' && (
-                <div className="bt-zoom"><BlueVinylIcon size={60} rounded={false} /></div>
+                <div className="bt-zoom"><BlueVinylIcon size={60} /></div>
               )}
             </div>
           )}
