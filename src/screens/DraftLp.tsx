@@ -79,7 +79,7 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
     if (!V || !Sl) return
     const ease = 'cubic-bezier(.45,0,.2,1)'
     if (stage === 'split') {
-      const D = 2600
+      const D = 1900
       anims.current.push(
         V.animate(
           [
@@ -120,13 +120,13 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
               { duration: 400, fill: 'forwards' },
             ),
             Sl.animate([{ transform: SL_SIDE }, { transform: SL_FORM }], {
-              duration: 650,
+              duration: 520,
               easing: 'cubic-bezier(.4,0,.2,1)',
               fill: 'forwards',
             }),
           )
-          tms.current.push(window.setTimeout(() => setForm(true), 620))
-        }, D + 1300),
+          tms.current.push(window.setTimeout(() => setForm(true), 480))
+        }, D + 700),
       )
     }
     if (stage === 'back') {
@@ -159,7 +159,7 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
               offset: 1,
             },
           ],
-          { duration: 4800, fill: 'both' },
+          { duration: 3400, fill: 'both' },
         ),
       )
       const a = V.animate(
@@ -169,7 +169,7 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
           { transform: TV(286, 388, 180, 340), offset: 0.55, easing: ease },
           { transform: TV(LP.cx, LP.cy, LP.r * 2, 520), offset: 1 },
         ],
-        { duration: 4800, fill: 'both' },
+        { duration: 3400, fill: 'both' },
       )
       anims.current.push(a)
       a.onfinish = () => setStage(null)

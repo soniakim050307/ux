@@ -3228,7 +3228,7 @@
 }
 
 .dl-intro.back .dl-ihead {
-  animation: dl-ihead-out 4.8s ease both;
+  animation: dl-ihead-out 3.4s ease both;
 }
 @keyframes dl-ihead-out {
   0%,
