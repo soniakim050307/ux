@@ -316,7 +316,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
             style={{ width: DESIGN_W, height: dh, transform: `scale(${k})` }}
           >
             {/* 홈 일러스트: 턴테이블 + 종이비행기 */}
-            <div className={`h-art ${mode !== 'home' ? 'gone' : ''}`} aria-hidden>
+            <div className={`h-art ${mode !== 'home' ? 'gone' : ''} ${armDown ? 'spinning' : ''}`} aria-hidden>
               <div className="h-vinyl" />
               <div
                 className="h-label"

@@ -5033,3 +5033,7 @@
 @keyframes bt-bg-s{0%{background:#747fa3}35%,100%{background:#fefefe}}
 .bt-splash.short .bt-disc{animation-duration:.7s;animation-delay:.1s}
 .bt-splash.short .bt-word{display:none}
+
+/* 침이 판 위에 없을 때는 판이 돌아가는 듯한 빛 애니메이션을 멈춘다 */
+.h-vinyl::before{animation-play-state:paused}
+.h-art.spinning .h-vinyl::before{animation-play-state:running}
