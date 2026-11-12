@@ -609,7 +609,7 @@ export default function LpView({ album, active, onBack }: Props) {
       </button>
 
       <div className="lv-pagetitle" key={page}>
-        {['LP 음반 재생', '여행 비디오', '모먼트별 회고 텍스트'][page]}
+        {['LP Record Playback', 'Trip Video', 'Moment Reflections'][page]}
       </div>
 
       {page === 2 && album && !album.draft && (
