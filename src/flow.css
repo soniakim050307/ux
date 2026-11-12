@@ -4437,8 +4437,8 @@
 .lv-vc .mute {
   position: absolute;
   right: 0;
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -4504,4 +4504,4 @@
 }
 
 .lv-vc .pill svg { width: 11px; height: 13px; }
-.lv-vc .mute svg { width: 17px; height: 15px; }
+.lv-vc .mute svg { width: 14px; height: 12px; }
