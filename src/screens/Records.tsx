@@ -52,6 +52,9 @@ const SPINE: Record<string, string> = {
 }
 const spineColor = (a: FlowAlbum | null) => (a ? (a.delivery ? '#f3e6d6' : SPINE[a.id]) : undefined)
 
+/** 새 앨범 인트로의 빈 커버(dl-isleeve)와 같은 색 */
+const BLANK_COVER = 'linear-gradient(160deg, #9a9fb8, #6d7292)'
+
 export default function Records({ albums }: { albums: FlowAlbum[] }) {
   // 슬랩 0 = "Add New Album", 1.. = 최신 → 오래된 앨범
   const [created, setCreated] = useState<FlowAlbum[]>([])
@@ -401,7 +404,15 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                     style={{
                       top: g.dir === 'down' ? SPINE_H - 1 : 0,
                       height: g.h,
-                      background: a ? (a.delivery ? '#c4a07a' : a.cover ? `${a.tone} url(${a.cover}) center / cover no-repeat` : a.tone) : 'transparent',
+                      background: a
+                        ? a.delivery
+                          ? '#c4a07a'
+                          : a.cover
+                            ? `${a.tone} url(${a.cover}) center / cover no-repeat`
+                            : a.tone
+                        : recording
+                          ? BLANK_COVER // 기록 중인 앨범: 새 앨범을 만들 때 나왔던 빈 커버 그대로
+                          : 'transparent',
                       clipPath: clipFor(g.dir),
                     }}
                   >
@@ -410,18 +421,6 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                         <Parcel city={a.city} date={a.date} cover={a.cover} />
                       </>
                     )}
-                    {!a && recording && draft && (
-                      <svg viewBox={`0 0 ${SLAB_W} ${g.h}`} preserveAspectRatio="none" width="100%" height="100%">
-                        <polygon
-                          points={`1,0.5 ${SLAB_W - 1},0.5 ${SLAB_W - 11},${g.h - 0.5} 11,${g.h - 0.5}`}
-                          fill="rgba(229,72,77,0.16)"
-                          stroke="rgba(255,150,150,0.85)"
-                          strokeDasharray="4 4"
-                          vectorEffect="non-scaling-stroke"
-                        />
-                      </svg>
-                    )}
-                    {!a && recording && <span className="s-rec-cta">Continue recording ›</span>}
                     {!a && !recording && (
                       <svg
                         viewBox={`0 0 ${SLAB_W} ${g.h}`}
