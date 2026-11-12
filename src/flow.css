@@ -4062,3 +4062,14 @@
 .et .et-place {
   animation: et-rise 0.6s ease 0.64s both;
 }
+
+/* 제목을 왼쪽 위 뒤로 가기 버튼(가운데 y=58)과 같은 높이에 맞춤 */
+.et .et-head {
+  top: 42px;
+}
+.cap.bv .cap-head {
+  top: 48px;
+}
+.cap-np {
+  top: 102px;
+}
