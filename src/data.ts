@@ -36,6 +36,8 @@ export interface FlowAlbum {
   name?: string
   /** 배송 중인 LP (소포 상태) */
   delivery?: { startedAt: number; days: number }
+  /** 종이비행기로 받은 LP: 보낸 사람 아이디 */
+  sharedBy?: string
 }
 
 const img = (name: string) => `${import.meta.env.BASE_URL}img/${name}`

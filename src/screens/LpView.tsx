@@ -459,7 +459,7 @@ export default function LpView({ album, active, onBack }: Props) {
             <div className={`lv-ui ${page === 0 ? 'on' : ''}`}>
               <div className="lv-meta">
                 <b>{album?.city}</b>
-                <span>{album?.date}</span>
+                <span>{album?.sharedBy ? `@${album.sharedBy} · ${album.date}` : album?.date}</span>
                 {moments.length > 0 && <span className="day">Day {dayNo[idx]}</span>}
               </div>
 

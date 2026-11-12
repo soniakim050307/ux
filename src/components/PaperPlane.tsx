@@ -1,27 +1,53 @@
 import { useEffect, useRef, useState } from 'react'
+import { FLOW_ALBUMS, type FlowAlbum } from '../data'
 
 /** 근처 사람이 공유한 LP (실제 공유 기능 전까지는 예시) */
+/** base: 영상·노래는 기존 예시 앨범의 것을 빌려 쓴다 */
 const SHARED = [
-  { city: 'Ttukseom, Seoul', owner: 'minji', date: '2026.10', dist: '240m', img: 'img/jeju-3.jpg', moments: 3 },
-  { city: 'Seongsu-dong, Seoul', owner: 'jun', date: '2026.09', dist: '1.1km', img: 'img/lisbon-2.jpg', moments: 2 },
-  { city: 'Bukchon, Seoul', owner: 'yeon', date: '2026.08', dist: '3.4km', img: 'img/kyoto-1.jpg', moments: 4 },
+  { city: 'Ttukseom, Seoul', owner: 'minji', date: '2026.10', dist: '240m', img: 'img/jeju-3.jpg', base: 'jeju' },
+  { city: 'Seongsu-dong, Seoul', owner: 'jun', date: '2026.09', dist: '1.1km', img: 'img/lisbon-2.jpg', base: 'lisbon' },
+  { city: 'Bukchon, Seoul', owner: 'yeon', date: '2026.08', dist: '3.4km', img: 'img/kyoto-1.jpg', base: 'kyoto' },
 ]
+type Shared = (typeof SHARED)[number]
+
+/** 공유받은 LP 를 앨범 형태로 만든다 (재생·목록 추가에 그대로 쓰임) */
+function toAlbum(sh: Shared): FlowAlbum {
+  const base = FLOW_ALBUMS.find((a) => a.id === sh.base)!
+  return {
+    ...base,
+    id: `shared-${sh.owner}-${Date.now()}`,
+    city: sh.city,
+    date: sh.date,
+    tone: '#8a8fae',
+    cover: url(sh.img),
+    sharedBy: sh.owner,
+  }
+}
 const url = (p: string) => `${import.meta.env.BASE_URL}${p}`
+const base = (sh: { base: string }) => FLOW_ALBUMS.find((a) => a.id === sh.base)!
+/** 봉투 크기·위치 (디자인 좌표) */
+const ENV = 236
+const ENV_TOP = 178
 
 interface Props {
   /** 홈(턴테이블) 화면일 때만 날아다님 */
   active: boolean
   w: number
   h: number
+  /** Play now: 받은 LP 를 바로 재생 화면으로 */
+  onPlay: (a: FlowAlbum) => void
+  /** add to list: 내 앨범 목록(스택)에 꽂아 둔다 */
+  onAdd: (a: FlowAlbum) => void
 }
 
 /** 종이비행기: 가끔 화면을 가로질러 날아가고, 지나가는 동안 잡으면(탭) 근처 사람이 공유한 LP가 펼쳐진다. 놓치면 그냥 지나감 */
-export default function PaperPlane({ active, w, h }: Props) {
+export default function PaperPlane({ active, w, h, onPlay, onAdd }: Props) {
   const planeRef = useRef<HTMLButtonElement>(null)
   const anim = useRef<Animation | null>(null)
   const timer = useRef(0)
   const [flying, setFlying] = useState(false)
   const [caught, setCaught] = useState<{ x: number; y: number; i: number } | null>(null)
+  const [leaving, setLeaving] = useState<'' | 'play' | 'add' | 'discard'>('')
   const idx = useRef(-1)
 
   const schedule = (ms: number) => {
@@ -88,6 +114,26 @@ export default function PaperPlane({ active, w, h }: Props) {
     if (navigator.vibrate) navigator.vibrate(8)
   }
 
+  const [toast, setToast] = useState('')
+  const leave = (k: 'play' | 'add' | 'discard') => {
+    if (!caught || leaving) return
+    const a = toAlbum(SHARED[caught.i])
+    setLeaving(k)
+    if (k === 'play') window.setTimeout(() => onPlay(a), 380)
+    window.setTimeout(
+      () => {
+        if (k === 'add') {
+          onAdd(a)
+          setToast('Added to your records')
+          window.setTimeout(() => setToast(''), 2200)
+        }
+        setCaught(null)
+        setLeaving('')
+      },
+      k === 'play' ? 900 : 700,
+    )
+  }
+
   const sh = caught ? SHARED[caught.i] : null
   return (
     <>
@@ -103,32 +149,48 @@ export default function PaperPlane({ active, w, h }: Props) {
       </button>
 
       {caught && sh && (
-        <div className="pp-ov" style={{ height: h }} onPointerDown={(e) => e.stopPropagation()}>
-          {/* 1. 잡은 자리에서 가운데로 날아옴 → 2. 펼쳐지며 종이(카드)가 됨 */}
+        <div
+          className={`pp-ov ${leaving ? `out-${leaving}` : ''}`}
+          style={{ height: h }}
+          onPointerDown={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
+        >
+          {/* 1. 잡은 자리에서 가운데로 날아옴 → 2. 펼쳐지며 봉투가 됨 → 3. 봉투에서 LP가 올라옴 */}
           <img
             className="pp-fly"
             src={url('img/plane.png')}
             alt=""
-            style={{ '--sx': `${caught.x - w / 2}px`, '--sy': `${caught.y - h * 0.42}px` } as React.CSSProperties}
+            style={{ '--sx': `${caught.x - w / 2}px`, '--sy': `${caught.y - ENV_TOP - ENV / 2}px` } as React.CSSProperties}
           />
-          <div className="pp-card" style={{ top: h * 0.42 - 150 }}>
-            <div className="pp-cover" style={{ backgroundImage: `url(${url(sh.img)})` }} />
+          <div className="pp-env" style={{ top: ENV_TOP, width: ENV, height: ENV, marginLeft: -ENV / 2 }}>
+            <svg className="pp-fold" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+              <path d="M0 0L100 100M100 0L0 100" />
+            </svg>
+            <div className="pp-photo" style={{ backgroundImage: `url(${url(sh.img)})` }} />
             <div className="pp-vinyl">
               <i style={{ backgroundImage: `url(${url(sh.img)})` }} />
             </div>
           </div>
-          <div className="pp-cap" style={{ top: h * 0.42 + 120 }}>
-            <small>A PAPER AIRPLANE FROM SOMEONE NEARBY</small>
+          <div className="pp-cap" style={{ top: ENV_TOP + ENV + 22 }}>
             <b>{sh.city}</b>
             <span>
-              @{sh.owner} · {sh.date} · {sh.moments} moments · {sh.dist} away
+              @{sh.owner} · {sh.date} · {base(sh).moments.length} moments · {sh.dist} away
             </span>
           </div>
-          <button type="button" className="pp-go" onClick={() => setCaught(null)}>
-            Let it fly on
-          </button>
+          <div className="pp-acts" style={{ top: ENV_TOP + ENV + 98 }}>
+            <button type="button" className="pp-btn play" onClick={() => leave('play')}>
+              Play now
+            </button>
+            <button type="button" className="pp-btn add" onClick={() => leave('add')}>
+              add to list
+            </button>
+            <button type="button" className="pp-btn discard" onClick={() => leave('discard')}>
+              discard
+            </button>
+          </div>
         </div>
       )}
+      {toast && <div className="pp-toast">{toast}</div>}
     </>
   )
 }

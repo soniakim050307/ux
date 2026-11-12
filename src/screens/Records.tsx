@@ -56,6 +56,8 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
   const [created, setCreated] = useState<FlowAlbum[]>([])
   const list = [...albums, ...created].reverse()
   const [draft, setDraft] = useState<FlowAlbum | null>(null)
+  // 종이비행기로 받아서 바로 재생 중인 LP (목록에는 없음)
+  const [guest, setGuest] = useState<FlowAlbum | null>(null)
   const [, setTick] = useState(0)
   const [unwrapId, setUnwrapId] = useState<string | null>(null)
   // 배송 중인 소포가 있을 때만, 도착 시각에 딱 한 번 다시 그린다
@@ -74,7 +76,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
   const arrivedAlbum = created.find(isArrived) ?? null
   const slotIdx = Array.from({ length: list.length + 1 }, (_, i) => i)
   // 홈 턴테이블에 올라가는 LP = 가장 최근에 만든(배송 중이 아닌) 앨범
-  const latest = list.find((a) => !a.delivery && a.moments.length > 0) ?? null
+  const latest = list.find((a) => !a.delivery && !a.sharedBy && a.moments.length > 0) ?? null
 
   const [armDown, setArmDown] = useState(false)
   useEffect(() => {
@@ -97,7 +99,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
     timers.current.push(window.setTimeout(fn, ms))
   }
 
-  const album = sel === 0 ? draft : sel !== null ? list[sel - 1] : null
+  const album = guest ?? (sel === 0 ? draft : sel !== null ? list[sel - 1] : null)
   // 만들다가 나온 앨범: 정보나 moment가 하나라도 있으면 '기록 중'으로 홈과 스택에 계속 보인다 (blue-vinyl)
   const recording = !!draft && (draft.city !== '' || draft.moments.length > 0)
 
@@ -216,6 +218,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
 
   const backFromLp = () => {
     setPage(0)
+    if (guest) later(() => setGuest(null), 700)
     later(() => setPull(0), 700)
   }
 
@@ -320,7 +323,16 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
             </div>
 
             {/* 종이비행기: 가끔 지나가고, 잡으면 근처 사람이 공유한 LP */}
-            <PaperPlane active={mode === 'home' && page === 0 && !mapOpen} w={DESIGN_W} h={dh} />
+            <PaperPlane
+              active={mode === 'home' && page === 0 && !mapOpen}
+              w={DESIGN_W}
+              h={dh}
+              onPlay={(a) => {
+                setGuest(a)
+                setPage(1)
+              }}
+              onAdd={(a) => setCreated((c) => [...c, a])}
+            />
 
             {/* 기록 중인 앨범으로 바로 돌아가기 */}
             {recording && draft && (
