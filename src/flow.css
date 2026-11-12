@@ -510,6 +510,17 @@
   display: block;
 }
 
+.lv-arm.grab {
+  touch-action: none;
+}
+
+/* 손가락으로도 잡기 쉽게 보이지 않는 터치 영역을 넓힌다 */
+.lv-arm.grab i::after {
+  content: '';
+  position: absolute;
+  inset: -16px;
+}
+
 .lv-arm.grab i {
   pointer-events: auto;
   cursor: grab;
