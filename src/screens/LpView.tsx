@@ -273,6 +273,7 @@ export default function LpView({ album, active, onBack }: Props) {
     if (page !== 1) return
     const id = window.setInterval(() => {
       const el = vref.current
+      if (jogRef.current) return
       if (el) setClock({ t: el.currentTime, dur: isFinite(el.duration) ? el.duration : 0 })
       else if (playing) setClock((c) => ({ ...c, t: Math.min(c.dur, c.t + 0.15) }))
     }, 150)
@@ -320,6 +321,9 @@ export default function LpView({ album, active, onBack }: Props) {
       const dur = el.duration
       el.currentTime = (((el.currentTime + (delta / 360) * dur) % dur) + dur) % dur
       setClock({ t: el.currentTime, dur })
+    } else {
+      // 사진 모먼트: 시계만 돌린 만큼 이동
+      setClock((c) => (c.dur ? { ...c, t: (((c.t + (delta / 360) * c.dur) % c.dur) + c.dur) % c.dur } : c))
     }
   }
   const onJogUp = () => {
