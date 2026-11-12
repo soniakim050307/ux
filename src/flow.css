@@ -5218,25 +5218,3 @@
 .lp2-pin.dim .lp2-pinhead,.lp2-pin.dim .lp2-stem,.lp2-pin.dim .lp2-foot{opacity:.5}
 .lp2-pin.on .lp2-pinhead{opacity:1}
 .lp2-pinhead,.lp2-stem,.lp2-foot{transition-property:width,height,left,top,opacity}
-
-/* 위계: 판은 앞으로 떠오르고 톤암은 그 위로, 받침은 뒤로 — 뒤쪽 빛과 그림자 */
-.lv-discshadow {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  box-shadow:
-    0 24px 30px -8px rgba(0, 0, 0, 0.4),
-    0 0 70px 8px rgba(255, 255, 255, 0.08);
-  transition:
-    left 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
-    top 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
-    width 0.7s cubic-bezier(0.3, 0.7, 0.2, 1),
-    height 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
-}
-.lv-arm.lv-base {
-  filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.2));
-}
-/* 톤암은 filter 대신 가벼운 그림자 레이어를 쓰지 않고, 끄는 중에는 그림자를 끈다 */
-.lv-arm:not(.lv-base):not(.drag) {
-  filter: drop-shadow(4px 8px 5px rgba(0, 0, 0, 0.3));
-}

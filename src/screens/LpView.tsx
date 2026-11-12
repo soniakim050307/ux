@@ -385,11 +385,6 @@ export default function LpView({ album, active, onBack }: Props) {
               ))}
             </div>
 
-            {/* 돌지 않는 그림자 (돌아가는 판에 직접 걸면 그림자도 같이 돌고 느려진다) */}
-            <div
-              className="lv-discshadow"
-              style={{ left: d.cx - d.d / 2, top: d.cy - d.d / 2, width: d.d, height: d.d }}
-            />
             <div
               className={`lv-disc ${playing ? 'run' : ''} ${page === 1 ? 'still' : ''}`}
               style={{ left: d.cx - d.d / 2, top: d.cy - d.d / 2, width: d.d, height: d.d }}
