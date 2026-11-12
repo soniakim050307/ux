@@ -156,22 +156,24 @@ export default function LpView({ album, active, onBack }: Props) {
   // 트랙은 하나로 이어진 믹스: 노래가 바뀌는 지점에서만 곡이 바뀐다 (모먼트·날짜가 바뀌어도 같은 곡이면 이어짐)
   const songIdx = Math.max(0, songs.findIndex((d) => d.idxs.includes(idx)))
   const songFirst = moments[songs[songIdx]?.idxs[0] ?? 0]
+  // 모먼트 상세가 열려 있는 동안은 상세 화면이 자기 음악을 트니까, 여기 음악은 꺼서 섞이지 않게 한다
+  const inDetail = detail !== null
   useEffect(() => {
-    if (!playing || !songFirst) return
+    if (!playing || !songFirst || inDetail) return
     return playMusic({ src: songFirst.audio, seed: songIdx, start: songFirst.audioStart })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playing, songIdx, album?.id])
+  }, [playing, songIdx, album?.id, inDetail])
 
   // 재생 중엔 다음 moment 로 이어서
   useEffect(() => {
-    if (!playing || moments.length < 2) return
+    if (!playing || moments.length < 2 || detail !== null) return
     const t = window.setTimeout(() => {
       if (idx < moments.length - 1) setIdx(idx + 1)
       else if (repeat) setIdx(0)
       else setPlaying(false) // 반복이 꺼져 있으면 마지막에서 멈춘다
     }, MOMENT_MS)
     return () => clearTimeout(t)
-  }, [playing, idx, moments.length, run, repeat])
+  }, [playing, idx, moments.length, run, repeat, detail])
 
   // 이전곡·다음곡: 핀이 아니라 믹스된 노래 단위로 넘어간다
   const step = (d: number) => {
