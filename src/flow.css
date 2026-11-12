@@ -5002,7 +5002,7 @@
 .cap-side { top: calc(620px + 22px); }
 
 /* 홈 화면 오른쪽 가장자리에 반쯤 걸쳐 있는 LP (PiP) — 누르면 바로 기록 화면 */
-.bt-pip{position:absolute;right:-40px;top:330px;width:80px;height:80px;border-radius:50%;border:0;padding:0;cursor:pointer;z-index:4;background:radial-gradient(circle,#6f7ba3 0 100%);box-shadow:0 6px 18px rgba(60,70,120,.35),inset 0 0 0 1px rgba(255,255,255,.18);display:grid;place-items:center;animation:bt-pip-in .6s cubic-bezier(.2,.8,.2,1) .4s backwards,bt-pip-hint 3s ease-in-out 1.6s infinite}
+.bt-pip{position:absolute;right:-40px;top:330px;width:80px;height:80px;border-radius:50%;border:0;padding:0;cursor:pointer;z-index:4;background:radial-gradient(circle,#6f7ba3 0 100%);box-shadow:0 6px 18px rgba(60,70,120,.35),inset 0 0 0 1px rgba(255,255,255,.18);display:grid;place-items:center;animation:bt-pip-in .6s cubic-bezier(.2,.8,.2,1) .4s backwards}
 .bt-pip::before{content:'';position:absolute;inset:7px;border-radius:50%;border:1px solid rgba(255,255,255,.28);box-shadow:inset 0 0 0 5px rgba(255,255,255,0),0 0 0 0 transparent}
 .bt-pip::after{content:'';position:absolute;inset:15px;border-radius:50%;border:1px solid rgba(255,255,255,.2)}
 .bt-pip i{display:block;width:30px;height:30px;border-radius:50%;background:#f4f0e9;position:relative;z-index:1}
