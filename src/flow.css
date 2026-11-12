@@ -5216,3 +5216,17 @@
 .lp2-pin.dim .lp2-pinhead,.lp2-pin.dim .lp2-stem,.lp2-pin.dim .lp2-foot{opacity:.5}
 .lp2-pin.on .lp2-pinhead{opacity:1}
 .lp2-pinhead,.lp2-stem,.lp2-foot{transition-property:width,height,left,top,opacity}
+
+/* 위계: 판은 앞으로 떠오르고 톤암은 그 위로, 받침은 뒤로 — 뒤쪽 빛과 그림자 */
+.lv-disc {
+  box-shadow:
+    0 26px 38px -8px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(0, 0, 0, 0.25),
+    0 0 110px 18px rgba(255, 255, 255, 0.1);
+}
+.lv-arm:not(.lv-base) {
+  filter: drop-shadow(5px 10px 7px rgba(0, 0, 0, 0.32));
+}
+.lv-arm.lv-base {
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.22));
+}
