@@ -21,7 +21,7 @@ function Base({ id, a, b, children }: { id: string; a: string; b: string; childr
 
 export type IconKind =
   | 'messages' | 'calendar' | 'photos' | 'camera' | 'maps' | 'weather' | 'clock'
-  | 'notes' | 'music' | 'books' | 'settings' | 'files' | 'phone' | 'browser' | 'mail'
+  | 'tv' | 'stocks' | 'appstore' | 'health' | 'home' | 'news' | 'notes' | 'music' | 'books' | 'settings' | 'files' | 'phone' | 'browser' | 'mail'
 
 const WEEK = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -90,6 +90,47 @@ export function AppIcon({ kind }: { kind: IconKind }) {
           <line x1="30" y1="30" x2="30" y2="14" stroke="#222" strokeWidth="2" strokeLinecap="round" transform="rotate(122 30 30)" />
           <line x1="30" y1="34" x2="30" y2="12" stroke="#f08a24" strokeWidth="1.2" transform="rotate(200 30 30)" />
           <circle cx="30" cy="30" r="2" fill="#f08a24" />
+        </Base>
+      )
+    case 'tv':
+      return (
+        <Base id={kind} a="#2a2a2e" b="#0a0a0c">
+          <text x="30" y="37" textAnchor="middle" fontSize="17" fontWeight="600" fill="#fff" fontFamily="Inter, sans-serif">tv</text>
+        </Base>
+      )
+    case 'stocks':
+      return (
+        <Base id={kind} a="#26262a" b="#0a0a0c">
+          <path d="M6 36l8-6 7 4 8-12 8 10 7-8 8 5" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round" />
+          {[16, 26, 36, 46].map((y) => <line key={y} x1="6" x2="54" y1={y} y2={y} stroke="#555" strokeWidth=".6" />)}
+          <line x1="29" y1="8" x2="29" y2="52" stroke="#4aa3ff" strokeWidth="1" />
+        </Base>
+      )
+    case 'appstore':
+      return (
+        <Base id={kind} a="#5ac8fa" b="#1a74f0">
+          <g stroke="#fff" strokeWidth="4.6" strokeLinecap="round">
+            <path d="M30 14 19 43M30 14l11 29M17 36h26" fill="none" />
+          </g>
+        </Base>
+      )
+    case 'health':
+      return (
+        <Base id={kind} a="#ffffff" b="#f4f4f6">
+          <path d="M30 47C14 36 12 27 12 23a9 9 0 0 1 18-2 9 9 0 0 1 18 2c0 4-2 13-18 24Z" fill="#fb4b6a" />
+        </Base>
+      )
+    case 'home':
+      return (
+        <Base id={kind} a="#ffffff" b="#f4f4f6">
+          <path d="M10 31 30 12l20 19h-5v16H15V31Z" fill="#f6a928" />
+          <rect x="26" y="36" width="8" height="11" rx="1" fill="#fff" />
+        </Base>
+      )
+    case 'news':
+      return (
+        <Base id={kind} a="#ffffff" b="#f4f4f6">
+          <path d="M12 46V14l12 0 12 20V14h12v32H36L24 26v20Z" fill="#f43f5e" />
         </Base>
       )
     case 'notes':

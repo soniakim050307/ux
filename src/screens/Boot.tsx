@@ -2,22 +2,14 @@ import { useEffect, useState } from 'react'
 import { BlueVinylDisc, BlueVinylIcon, BlueVinylWord } from '../Logo'
 import { AppIcon, type IconKind } from './BootIcons'
 
-/** 가짜 홈 화면 아이콘 (실제 앱 아이콘 대신 단순한 자체 글리프) */
-const APPS: { name: string; kind: IconKind }[] = [
-  { name: '메시지', kind: 'messages' },
-  { name: '캘린더', kind: 'calendar' },
-  { name: '사진', kind: 'photos' },
-  { name: '카메라', kind: 'camera' },
-  { name: '지도', kind: 'maps' },
-  { name: '날씨', kind: 'weather' },
-  { name: '시계', kind: 'clock' },
-  { name: '메모', kind: 'notes' },
-  { name: '음악', kind: 'music' },
-  { name: '책', kind: 'books' },
-  { name: '설정', kind: 'settings' },
-  { name: '파일', kind: 'files' },
-]
-const DOCK: IconKind[] = ['phone', 'browser', 'mail', 'music']
+const DOCK: IconKind[] = ['phone', 'browser', 'messages', 'music']
+const ICON = (kind: IconKind, name: string, extra = '') => (
+  <div className={`bt-app ${extra}`} key={name}>
+    <div className="bt-ic"><AppIcon kind={kind} /></div>
+    <span>{name}</span>
+  </div>
+)
+const photo = (n: string) => `${import.meta.env.BASE_URL}img/${n}`
 
 type Stage = 'home' | 'opening' | 'splash' | 'done'
 
@@ -72,28 +64,50 @@ export default function Boot({ children }: { children: React.ReactNode }) {
                 </span>
               </div>
               <div className="bt-grid">
-                {APPS.slice(0, 8).map((a) => (
-                  <div className="bt-app" key={a.name}>
-                    <div className="bt-ic"><AppIcon kind={a.kind} /></div>
-                    <span>{a.name}</span>
+                {ICON('clock', '시계')}
+                {ICON('camera', '카메라')}
+                <div className="bt-wcell">
+                  <div className="bt-w bt-act">
+                    <svg viewBox="0 0 60 60" width="62" height="62" aria-hidden>
+                      {[['#fa114f', 26, 0.75], ['#a6ff00', 19, 0.63], ['#00e0ff', 12, 0.34]].map(([c, r, f]) => (
+                        <g key={String(c)} fill="none" strokeWidth="6" strokeLinecap="round">
+                          <circle cx="30" cy="30" r={r as number} stroke={String(c)} opacity=".25" />
+                          <circle cx="30" cy="30" r={r as number} stroke={String(c)} strokeDasharray={`${2 * Math.PI * (r as number) * (f as number)} 999`} transform="rotate(-90 30 30)" />
+                        </g>
+                      ))}
+                    </svg>
+                    <div><b style={{ color: '#fa114f' }}>375/500<small>CAL</small></b><b style={{ color: '#a6ff00' }}>19/30<small>MIN</small></b><b style={{ color: '#00e0ff' }}>4/12<small>HRS</small></b></div>
                   </div>
-                ))}
+                  <span className="bt-wl">활동</span>
+                </div>
+                {ICON('tv', 'TV')}
+                {ICON('stocks', '주식')}
+                <div className="bt-wcell bt-wphoto">
+                  <div className="bt-w bt-pic" style={{ backgroundImage: `url(${photo('reykjavik-1.jpg')})` }}>
+                    <b>REYKJAVIK</b><small>Feb 18, 2024</small>
+                  </div>
+                  <span className="bt-wl">사진</span>
+                </div>
+                {ICON('mail', '메일')}
+                {ICON('files', '파일')}
                 <button className="bt-app bt-bv" onClick={() => stage === 'home' && setStage('opening')} aria-label="Blue Vinyl 열기">
                   <div className="bt-ic bt-ic-bv"><BlueVinylIcon size={60} /></div>
                   <span>Blue Vinyl</span>
                 </button>
-                {APPS.slice(8).map((a) => (
-                  <div className="bt-app" key={a.name}>
-                    <div className="bt-ic"><AppIcon kind={a.kind} /></div>
-                    <span>{a.name}</span>
+                {ICON('weather', '날씨')}
+                {ICON('health', '건강')}
+                {ICON('home', '홈')}
+                <div className="bt-wcell bt-wmusic">
+                  <div className="bt-w bt-mus">
+                    <div className="bt-alb"><BlueVinylDisc size={44} /></div>
+                    <b>Hoppípolla</b><small>Sigur Rós</small>
                   </div>
-                ))}
+                  <span className="bt-wl">음악</span>
+                </div>
+                {ICON('news', '뉴스')}
+                {ICON('photos', '사진')}
               </div>
               <div className="bt-dots"><i className="on" /><i /></div>
-              <div className="bt-search">
-                <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden><circle cx="6.500" cy="6.500" r="4.800" fill="none" stroke="#fff" strokeWidth="1.600" /><path d="m10.200 10.200 4 4" stroke="#fff" strokeWidth="1.600" strokeLinecap="round" /></svg>
-                검색
-              </div>
               <div className="bt-dock">
                 {DOCK.map((a, i) => (
                   <div className="bt-ic" key={i}><AppIcon kind={a} /></div>
