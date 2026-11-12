@@ -34,7 +34,7 @@ const nowSong = (sh: { base: string }) => {
 }
 /** 봉투 크기·위치 (디자인 좌표) */
 const ENV = 236
-const ENV_TOP = 178
+const ENV_TOP = 132
 
 interface Props {
   /** 홈(턴테이블) 화면일 때만 날아다님 */
@@ -176,6 +176,7 @@ export default function PaperPlane({ active, w, h, onPlay, onAdd }: Props) {
           style={{ height: h }}
           onPointerDown={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
+          onClick={(e) => e.target === e.currentTarget && leave('discard')} // 빈 곳을 누르면 discard 와 같이 닫힘
         >
           {/* 1. 잡은 자리에서 가운데로 날아옴 → 2. 펼쳐지며 봉투가 됨 → 3. 봉투에서 LP가 올라옴 */}
           <img
