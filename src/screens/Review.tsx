@@ -16,7 +16,7 @@ interface Props {
   peaks: number[]
   title: string
   index: number
-  onSave: (song?: { title: string; artist: string }, note?: string) => void
+  onSave: (song?: { title: string; artist: string }, note?: string, place?: string) => void
   onRetake: () => void
   onBack: () => void
 }
@@ -49,6 +49,30 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
   const [sheet, setSheet] = useState(false)
   const [q, setQ] = useState('')
   const [note, setNote] = useState(moment.note ?? '')
+  const [place, setPlace] = useState(moment.place ?? '')
+  const [locating, setLocating] = useState(false)
+  // 지금 있는 곳의 동네·거리 이름으로 채우기
+  const fillHere = () => {
+    if (!navigator.geolocation) return
+    setLocating(true)
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          const r = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${coords.latitude}&longitude=${coords.longitude}&localityLanguage=en`,
+          )
+          const d = await r.json()
+          const parts = [d.locality, d.city].filter((v: string, i: number, a: string[]) => v && a.indexOf(v) === i)
+          setPlace(parts.join(', ') || `${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)}`)
+        } catch {
+          setPlace(`${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)}`)
+        }
+        setLocating(false)
+      },
+      () => setLocating(false),
+      { timeout: 10000, maximumAge: 300000 },
+    )
+  }
   const isVideo = moment.kind === 'video'
   const src = isVideo ? moment.src : moment.audio
 
@@ -125,7 +149,26 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
           <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Write this moment briefly..." maxLength={80} />
         </label>
 
-        <button type="button" className="et-carve" onClick={() => onSave({ title: song.title, artist: song.artist }, note.trim() || undefined)}>
+        {/* 세부 위치: 직접 쓰거나 지금 있는 곳으로 */}
+        <label className="et-note et-place">
+          PLACE
+          <span className="et-place-row">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0113 0c0 5.4-6.5 11-6.5 11z" />
+              <circle cx="12" cy="10" r="2.3" />
+            </svg>
+            <input value={place} onChange={(e) => setPlace(e.target.value)} placeholder="Add a spot (café, street, view...)" maxLength={60} />
+            <button type="button" className="et-here" onClick={fillHere} disabled={locating}>
+              {locating ? '…' : 'Here'}
+            </button>
+          </span>
+        </label>
+
+        <button
+          type="button"
+          className="et-carve"
+          onClick={() => onSave({ title: song.title, artist: song.artist }, note.trim() || undefined, place.trim() || undefined)}
+        >
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6">
             <circle cx="12" cy="12" r="9" />
             <circle cx="12" cy="12" r="5" />

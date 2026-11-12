@@ -15,6 +15,8 @@ export interface FlowMoment {
   time?: string
   /** 메모 */
   note?: string
+  /** 세부 위치 (예: 카페 이름, 거리) */
+  place?: string
   /** 같이 담은 노래 (표시용) */
   song?: { title: string; artist: string }
 }

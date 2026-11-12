@@ -195,8 +195,8 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
           setStage('cap')
           setShot((n) => n + 1)
         }}
-        onSave={(song, note) => {
-          setTaken({ ...taken, m: { ...taken.m, song: song ?? taken.m.song, note: note ?? taken.m.note } })
+        onSave={(song, note, place) => {
+          setTaken({ ...taken, m: { ...taken.m, song: song ?? taken.m.song, note: note ?? taken.m.note, place: place ?? taken.m.place } })
           setStage('engrave')
         }}
       />

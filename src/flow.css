@@ -3415,7 +3415,7 @@
 .cap-disc {
   position: absolute;
   left: 50%;
-  top: max(560px, calc(100% - 188px));
+  top: 592px;
   width: 96px;
   height: 96px;
   margin-left: -48px;
@@ -3445,7 +3445,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(max(560px, calc(100% - 188px)) + 108px);
+  top: calc(592px + 108px);
   text-align: center;
   color: #fff;
   font-size: 11px;
@@ -3919,7 +3919,7 @@
 /* 녹화 버튼 양옆: 앨범에서 고르기 / 카메라 전환 */
 .cap-side {
   position: absolute;
-  top: calc(max(560px, calc(100% - 188px)) + 26px);
+  top: calc(592px + 26px);
   width: 44px;
   height: 44px;
   display: grid;
@@ -3961,7 +3961,7 @@
 .cap-side {
   width: 52px;
   height: 52px;
-  top: calc(max(560px, calc(100% - 188px)) + 22px);
+  top: calc(592px + 22px);
 }
 .cap-lib {
   left: 58px;
@@ -4029,4 +4029,36 @@
   margin-top: 6px;
   font-size: 11px;
   color: #ffb3b3;
+}
+
+/* 녹화 후: 세부 위치 */
+.et-place {
+  top: 610px;
+}
+.et-place-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  padding-bottom: 6px;
+  opacity: 0.95;
+}
+.et-place-row input {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  flex: 1;
+}
+.et-here {
+  flex: none;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.et .et-place {
+  animation: et-rise 0.6s ease 0.64s both;
 }
