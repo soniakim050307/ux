@@ -5132,3 +5132,53 @@
 .h-info .k{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;opacity:.6}
 .h-info b{font-family:var(--serif);font-size:19px;font-weight:700;letter-spacing:-.2px}
 .h-info .s{font-size:12px;opacity:.78}
+
+/* 종이비행기 종이 위에 작게 적힌 지금 곡 */
+.pp-note {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 7px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #5b5648;
+  opacity: 0;
+  animation: pp-show 0.5s ease 3.2s forwards;
+}
+.pp-note span {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 9.5px;
+  line-height: 1.25;
+  font-weight: 500;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pp-note em {
+  font-style: normal;
+  font-size: 8.5px;
+  opacity: 0.7;
+}
+.pp-note .eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  width: 10px;
+  height: 10px;
+  flex: none;
+}
+.pp-note .eq u {
+  flex: 1;
+  background: #5b5648;
+  border-radius: 1px;
+  animation: pp-eq 0.9s ease-in-out infinite;
+}
+.pp-note .eq u:nth-child(2) { animation-delay: 0.2s; }
+.pp-note .eq u:nth-child(3) { animation-delay: 0.4s; }
+.pp-ov[class*='out-'] .pp-note { animation: pp-hide 0.25s ease forwards; }

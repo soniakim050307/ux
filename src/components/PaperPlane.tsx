@@ -202,6 +202,18 @@ export default function PaperPlane({ active, w, h, onPlay, onAdd }: Props) {
             <div className="pp-vinyl">
               <i style={{ backgroundImage: `url(${url(sh.img)})` }} />
             </div>
+            {/* 지금 들리는 곡: 펼친 종이 아래쪽에 작게 적혀 있음 */}
+            <p className="pp-note">
+              <i className="eq">
+                <u />
+                <u />
+                <u />
+              </i>
+              <span>
+                {nowSong(sh).title} · {nowSong(sh).artist}
+                <em>@{sh.owner}'s list</em>
+              </span>
+            </p>
           </div>
           <div className="pp-cap" style={{ top: ENV_TOP + ENV + 22 }}>
             <b>{sh.city}</b>
@@ -210,20 +222,13 @@ export default function PaperPlane({ active, w, h, onPlay, onAdd }: Props) {
             </span>
           </div>
           <div className="pp-peek" style={{ top: ENV_TOP + ENV + 86 }}>
-            <div className="pp-now">
-              <i className="eq"><u /><u /><u /></i>
-              <span>
-                <b>{nowSong(sh).title}</b>
-                <em>{nowSong(sh).artist} · @{sh.owner}'s list</em>
-              </span>
-            </div>
             <div className="pp-thumbs">
               {base(sh).moments.slice(0, 4).map((m) => (
                 <i key={m.id} style={{ backgroundImage: `url(${m.poster ?? m.src})` }} />
               ))}
             </div>
           </div>
-          <div className="pp-acts" style={{ top: ENV_TOP + ENV + 214 }}>
+          <div className="pp-acts" style={{ top: ENV_TOP + ENV + 160 }}>
             <button type="button" className="pp-btn play" onClick={() => leave('play')}>
               Play now
             </button>
