@@ -1,34 +1,46 @@
 import type { FlowMoment } from './data'
 
-/** 하루 = 트랙 하나. 그날 기록한 moment 들이 한 트랙(노래) 안에 묶인다. */
-export interface DayTrack {
-  /** 1부터 시작하는 여행 일차 */
+/**
+ * 믹싱된 한 곡 = 트랙 안의 한 구간.
+ * 모먼트가 곡을 나누는 게 아니라, 노래가 바뀌는 지점이 구간의 경계다.
+ * (한 곡이 여러 모먼트·여러 날에 걸칠 수 있다)
+ */
+export interface SongSeg {
+  /** 1부터 시작하는 곡 순번 */
   n: number
-  /** 'YYYY.MM.DD' (없으면 빈 문자열) */
-  date: string
-  /** album.moments 안에서의 순번들 */
-  idxs: number[]
-  /** 그날의 노래 (첫 moment 기준) */
   song: { title: string; artist: string }
+  /** album.moments 안에서 이 곡이 깔리는 모먼트 순번들 */
+  idxs: number[]
 }
 
-const dateOf = (m: FlowMoment, i: number) => m.time?.split('·')[0].trim() || `moment-${i}`
+const keyOf = (m: FlowMoment) => `${m.song?.title ?? ''}|${m.song?.artist ?? ''}`
 
-export function buildDays(moments: FlowMoment[]): DayTrack[] {
-  const days: DayTrack[] = []
+/** 이어지는 모먼트 중 같은 노래끼리 한 구간으로 묶는다 */
+export function buildSongs(moments: FlowMoment[]): SongSeg[] {
+  const out: SongSeg[] = []
+  let last = ''
   moments.forEach((m, i) => {
-    const d = dateOf(m, i)
-    const last = days[days.length - 1]
-    if (last && last.date === (d.startsWith('moment-') ? '' : d) && last.date !== '') {
-      last.idxs.push(i)
+    const k = keyOf(m)
+    if (out.length && k === last) {
+      out[out.length - 1].idxs.push(i)
       return
     }
-    days.push({
-      n: days.length + 1,
-      date: d.startsWith('moment-') ? '' : d,
-      idxs: [i],
-      song: { title: m.song?.title ?? 'Music', artist: m.song?.artist ?? '' },
-    })
+    last = k
+    out.push({ n: out.length + 1, song: { title: m.song?.title ?? 'Music', artist: m.song?.artist ?? '' }, idxs: [i] })
   })
-  return days
+  return out
+}
+
+/** 모먼트별 여행 일차 (날짜가 바뀔 때마다 +1) */
+export function dayNumbers(moments: FlowMoment[]): number[] {
+  let n = 0
+  let prev = ''
+  return moments.map((m, i) => {
+    const d = m.time?.split('·')[0].trim() || `m${i}`
+    if (d !== prev) {
+      n += 1
+      prev = d
+    }
+    return n
+  })
 }

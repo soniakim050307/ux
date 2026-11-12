@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
-import { buildDays } from '../days'
+import { buildSongs, dayNumbers } from '../days'
 import type { FlowAlbum } from '../data'
 import { playMusic } from '../music'
 import { useDesignScale } from '../useDesignScale'
@@ -63,7 +63,8 @@ interface Props {
 export default function LpView({ album, active, onBack }: Props) {
   const { ref, k } = useDesignScale<HTMLDivElement>(W)
   const moments = album?.moments ?? []
-  const days = useMemo(() => buildDays(moments), [moments])
+  const songs = useMemo(() => buildSongs(moments), [moments])
+  const dayNo = useMemo(() => dayNumbers(moments), [moments])
   const [collapsed, setCollapsed] = useState<Set<number>>(() => new Set()) // 기본: 모든 날의 모먼트를 다 펼쳐서 보여준다
   const [idx, setIdx] = useState(0)
   const [playing, setPlaying] = useState(false)
@@ -147,14 +148,14 @@ export default function LpView({ album, active, onBack }: Props) {
   }
 
   // 재생 중이면 음악도 함께. moment 가 바뀌면 곡도 바뀐다.
-  // 하루에 한 트랙: 같은 날의 moment 로 넘어갈 땐 노래가 이어지고, 다른 날로 넘어가면 새 노래가 나온다.
-  const dayIdx = Math.max(0, days.findIndex((d) => d.idxs.includes(idx)))
-  const dayFirst = moments[days[dayIdx]?.idxs[0] ?? 0]
+  // 트랙은 하나로 이어진 믹스: 노래가 바뀌는 지점에서만 곡이 바뀐다 (모먼트·날짜가 바뀌어도 같은 곡이면 이어짐)
+  const songIdx = Math.max(0, songs.findIndex((d) => d.idxs.includes(idx)))
+  const songFirst = moments[songs[songIdx]?.idxs[0] ?? 0]
   useEffect(() => {
-    if (!playing || !dayFirst) return
-    return playMusic({ src: dayFirst.audio, seed: dayIdx, start: dayFirst.audioStart })
+    if (!playing || !songFirst) return
+    return playMusic({ src: songFirst.audio, seed: songIdx, start: songFirst.audioStart })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playing, dayIdx, album?.id])
+  }, [playing, songIdx, album?.id])
 
   // 재생 중엔 다음 moment 로 이어서
   useEffect(() => {
@@ -167,10 +168,10 @@ export default function LpView({ album, active, onBack }: Props) {
     return () => clearTimeout(t)
   }, [playing, idx, moments.length, run, repeat])
 
-  // 이전곡·다음곡: 핀이 아니라 하루 단위 트랙(새로운 노래)으로 넘어간다
+  // 이전곡·다음곡: 핀이 아니라 믹스된 노래 단위로 넘어간다
   const step = (d: number) => {
-    if (!days.length) return
-    const to = days[(dayIdx + d + days.length) % days.length]
+    if (!songs.length) return
+    const to = songs[(songIdx + d + songs.length) % songs.length]
     setIdx(to.idxs[0])
     if (playing) setRun((r) => r + 1)
   }
@@ -236,7 +237,7 @@ export default function LpView({ album, active, onBack }: Props) {
 
   // 순간 i 가 시작될 때 비행기는 i번째 점 위에 있고, 재생하면 다음 점을 향해 천천히 날아간다.
   const nM = Math.max(1, moments.length)
-  const dayStarts = new Set(days.map((d) => d.idxs[0])) // 하루가 시작하는 모먼트 = 큰 원
+  const songStarts = new Set(songs.map((d) => d.idxs[0])) // 노래가 바뀌는 지점만 표시
   const stopX = (idx / nM) * PROG_W
   const stopNext = ((idx + 1) / nM) * PROG_W
   const rot = armDrag ?? (playing ? 0 : ARM_LIFT)
@@ -349,7 +350,7 @@ export default function LpView({ album, active, onBack }: Props) {
               <div className="lv-meta">
                 <b>{album?.city}</b>
                 <span>{album?.date}</span>
-                {days[dayIdx] && <span className="day">Day {days[dayIdx].n}</span>}
+                {moments.length > 0 && <span className="day">Day {dayNo[idx]}</span>}
               </div>
 
               {/* 바늘이 판을 따라 가듯, 재생 위치 = 여행 경로 위의 비행기 */}
@@ -379,12 +380,13 @@ export default function LpView({ album, active, onBack }: Props) {
                     />
                     {moments.slice(1).map((m, j) => {
                       const i = j + 1
+                      if (!songStarts.has(i)) return null
                       return (
-                      <i
-                        key={m.id}
-                        className={`lv-stop ${i <= idx ? 'seen' : ''} ${dayStarts.has(i) ? 'day' : ''}`}
-                        style={{ left: (i / moments.length) * PROG_W }}
-                      />
+                        <i
+                          key={m.id}
+                          className={`lv-stop day ${i <= idx ? 'seen' : ''}`}
+                          style={{ left: (i / moments.length) * PROG_W }}
+                        />
                       )
                     })}
                   </>
@@ -503,49 +505,48 @@ export default function LpView({ album, active, onBack }: Props) {
           <div className="lv-list-sheet" role="dialog" aria-modal="true">
             <i className="mp-grab" />
             <h3>
-              {album?.city} <span>{days.length} days · {moments.length} moments</span>
+              {album?.city} <span>{songs.length} songs · {moments.length} moments</span>
             </h3>
             <ul>
-              {days.map((dt, di) => {
-                const first = moments[dt.idxs[0]]
-                const open = !collapsed.has(di)
+              {songs.map((sg, si) => {
+                const first = moments[sg.idxs[0]]
+                const open = !collapsed.has(si)
+                const d0 = dayNo[sg.idxs[0]]
+                const d1 = dayNo[sg.idxs[sg.idxs.length - 1]]
                 return (
-                  <li key={dt.n} className={open ? 'open' : ''}>
-                    <div className={`row ${di === dayIdx ? 'on' : ''}`}>
+                  <li key={sg.n} className={open ? 'open' : ''}>
+                    <div className={`row ${si === songIdx ? 'on' : ''}`}>
                       <button
                         type="button"
                         className="main"
                         onClick={() => {
-                          setIdx(dt.idxs[0])
+                          setIdx(sg.idxs[0])
                           if (playing) setRun((r) => r + 1)
                           setListOpen(false)
                         }}
                       >
-                        <span className="th" style={{ backgroundImage: first.poster || first.kind !== 'video' ? `url(${first.poster ?? first.src})` : undefined }} />
+                        <span className="th" style={{ backgroundImage: `url(${first.poster ?? first.src})` }} />
                         <span className="tx">
-                          <b>{dt.song.title}</b>
-                          <i>{dt.song.artist}</i>
-                          <em>
-                            Day {dt.n}
-                            {dt.date ? ` · ${dt.date}` : ''}
-                          </em>
+                          <b>{sg.song.title}</b>
+                          <i>{sg.song.artist}</i>
+                          <em>{d0 === d1 ? `Day ${d0}` : `Day ${d0}–${d1}`}</em>
                         </span>
                       </button>
                       <button
                         type="button"
                         className="more"
-                        aria-label={`Day ${dt.n} moments`}
+                        aria-label={`${sg.song.title} moments`}
                         aria-expanded={open}
                         onClick={() =>
                           setCollapsed((c) => {
                             const n = new Set(c)
-                            if (n.has(di)) n.delete(di)
-                            else n.add(di)
+                            if (n.has(si)) n.delete(si)
+                            else n.add(si)
                             return n
                           })
                         }
                       >
-                        <span>{dt.idxs.length}</span>
+                        <span>{sg.idxs.length}</span>
                         <svg viewBox="0 0 8 14" width="8" height="14" aria-hidden>
                           <path d="M1 1l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
@@ -553,7 +554,7 @@ export default function LpView({ album, active, onBack }: Props) {
                     </div>
                     {open && (
                       <ul className="sub">
-                        {dt.idxs.map((mi) => {
+                        {sg.idxs.map((mi) => {
                           const m = moments[mi]
                           return (
                             <li key={m.id}>
@@ -567,7 +568,9 @@ export default function LpView({ album, active, onBack }: Props) {
                               >
                                 <span className="th s" style={{ backgroundImage: `url(${m.poster ?? m.src})` }} />
                                 <span className="tx">
-                                  <b>{m.time?.split('·')[1]?.trim() ?? `Moment ${mi + 1}`}</b>
+                                  <b>
+                                    Day {dayNo[mi]} · {m.time?.split('·')[1]?.trim() ?? `Moment ${mi + 1}`}
+                                  </b>
                                   <em>{m.note ?? ''}</em>
                                 </span>
                               </button>

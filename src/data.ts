@@ -156,7 +156,8 @@ for (const a of FLOW_ALBUMS) {
   const list = SONGS[a.id]
   if (!list) continue
   a.moments.forEach((m, i) => {
-    const t = list[i % list.length]
+    // 모먼트가 곡을 나누지 않는다: 한 곡이 여러 모먼트(여러 날)에 걸쳐 깔린다
+    const t = list[[0, 1, 1, 2, 2, 2][i % 6] % list.length]
     if (!m.song) m.song = { title: t[0], artist: t[1] }
   })
 }
