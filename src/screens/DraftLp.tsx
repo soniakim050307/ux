@@ -75,6 +75,20 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
   const saved = album.city !== ''
   const n = album.moments.length
   const days = tripDays(album.moments)
+  // 같은 날 moment끼리 시각이 가까워도 핀이 겹치지 않도록 최소 각도 간격을 둔다
+  const pinDeg: Record<string, number> = {}
+  for (const d of days) {
+    const r = grooveR(days.indexOf(d))
+    const gap = (62 / r) * (180 / Math.PI) // 썸네일·막대가 서로 겹치지 않을 만큼
+    const list = album.moments.filter((m) => dayOf(m) === d).map((m) => ({ id: m.id, deg: timeDeg(dayTime(m)) }))
+    list.sort((a, b) => a.deg - b.deg)
+    for (let i = 1; i < list.length; i++) list[i].deg = Math.max(list[i].deg, list[i - 1].deg + gap)
+    // 아래 끝(밤)을 넘으면 위쪽으로 다시 밀어 올림
+    const over = list.length ? list[list.length - 1].deg - 70 : 0
+    if (over > 0) list.forEach((p) => (p.deg -= over))
+    for (let i = list.length - 2; i >= 0; i--) list[i].deg = Math.min(list[i].deg, list[i + 1].deg - gap)
+    list.forEach((p) => (pinDeg[p.id] = p.deg))
+  }
   const [toast, setToast] = useState('')
   const toastT = useRef(0)
   const say = (t: string) => {
@@ -290,7 +304,7 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
 
         {album.moments.map((m) => {
           const r = grooveR(days.indexOf(dayOf(m)))
-          const a = (timeDeg(dayTime(m)) * Math.PI) / 180
+          const a = ((pinDeg[m.id] ?? timeDeg(dayTime(m))) * Math.PI) / 180
           const thumb = m.poster || (m.kind !== 'video' ? m.src : '')
           return (
             <div
