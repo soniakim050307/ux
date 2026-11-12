@@ -4704,3 +4704,54 @@
     opacity: 1;
   }
 }
+
+
+/* ===== 목록 시트: 어둡고 촘촘하게 (Sound List 시안) ===== */
+.lv-list-sheet {
+  background: #2c3556;
+  color: #fff;
+  padding: 10px 0 20px;
+  max-height: 62%;
+}
+.lv-list-sheet .mp-grab { background: rgba(255, 255, 255, 0.28); margin-bottom: 10px; }
+.lv-list-sheet h3 { margin: 4px 22px 8px; font-size: 19px; font-weight: 600; color: #fff; }
+.lv-list-sheet h3 span { font-size: 12px; color: #9aa3c7; }
+.lv-list-sheet > ul > li {
+  margin: 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+.lv-list-sheet > ul > li:last-child { border-bottom: 0; }
+.lv-list-sheet li .row { border-radius: 0; padding: 0 12px 0 22px; }
+.lv-list-sheet li .row.on { background: rgba(255, 255, 255, 0.07); }
+.lv-list-sheet li .row .main { gap: 12px; padding: 9px 0; color: inherit; }
+.lv-list-sheet .song-art {
+  width: 46px;
+  height: 46px;
+  border-radius: 6px;
+  background: #929292 center / cover;
+  box-shadow: none;
+}
+.lv-list-sheet .song-art::after { display: none; }
+.lv-list-sheet .tx b { font-size: 15px; font-weight: 500; line-height: 1.25; color: #fff; }
+.lv-list-sheet .tx i { margin-top: 1px; font-size: 12px; color: #a2aacb; }
+.lv-list-sheet .tx em { margin-top: 2px; font-size: 11px; color: #7f88ad; -webkit-line-clamp: unset; }
+.lv-list-sheet li .more { padding: 14px 4px 14px 10px; gap: 5px; font-size: 11px; color: #9aa3c7; }
+.lv-list-sheet li .sub { margin: 0 0 8px; padding: 0; border-left: 0; }
+.lv-list-sheet li .sub li button { padding: 5px 22px 5px 80px; gap: 10px; color: inherit; border-radius: 0; }
+.lv-list-sheet li .sub .th.s { width: 30px; height: 30px; border-radius: 5px; }
+.lv-list-sheet li .sub .tx b { font-size: 12px; font-weight: 500; color: #dfe3f5; }
+.lv-list-sheet li .sub .tx em {
+  margin-top: 1px;
+  font-size: 11px;
+  color: #8a93b8;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.lv-list-sheet > ul > li .row.on { background: rgba(255, 255, 255, 0.08); }
+.lv-list-sheet > ul > li .row.on .tx b { color: #9fb2ff; }

@@ -60,22 +60,9 @@ interface Props {
   onBack: () => void
 }
 
-/** 노래의 앨범 표지. 체험용에는 실제 표지가 없어서 곡마다 색이 다른 임시 표지를 만든다. */
-function SongArt({ title, art }: { title: string; art?: string }) {
-  let h = 0
-  for (const c of title) h = (h * 31 + c.charCodeAt(0)) % 360
-  return (
-    <span
-      className="song-art"
-      style={
-        art
-          ? { backgroundImage: `url(${art})` }
-          : { background: `linear-gradient(145deg, hsl(${h} 42% 52%), hsl(${(h + 48) % 360} 48% 28%))` }
-      }
-    >
-      {!art && <i>{title.trim().charAt(0).toUpperCase()}</i>}
-    </span>
-  )
+/** 노래의 앨범 표지. 체험용에는 실제 표지가 없어서 회색 칸으로 둔다 (실제 앱에서는 Apple Music 아트워크). */
+function SongArt({ art }: { art?: string }) {
+  return <span className="song-art" style={art ? { backgroundImage: `url(${art})` } : undefined} />
 }
 
 export default function LpView({ album, active, onBack }: Props) {
@@ -647,7 +634,7 @@ export default function LpView({ album, active, onBack }: Props) {
                           setListOpen(false)
                         }}
                       >
-                        <SongArt title={sg.song.title} art={sg.song.art} />
+                        <SongArt art={sg.song.art} />
                         <span className="tx">
                           <b>{sg.song.title}</b>
                           <i>{sg.song.artist}</i>
