@@ -304,11 +304,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
               />
               <div className="h-hole" />
               {latest && (
-                <button type="button" className="h-play" onClick={playLatest} aria-label={`Play ${latest.city}`}>
-                  <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden>
-                    <path d="M8 5.5v13l11-6.5z" fill="#fff" />
-                  </svg>
-                </button>
+                <button type="button" className="h-play" onClick={playLatest} aria-label={`Play ${latest.city}`} />
               )}
               <svg className="h-arm" viewBox="0 0 393 260">
                 <g className={`h-arm-g ${armDown ? 'up' : 'off'}`}>
