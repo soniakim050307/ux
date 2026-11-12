@@ -4965,12 +4965,10 @@
 .lv-list-sheet > ul > li .row.on .tx b { color: #9fb2ff; }
 
 /* 쉬는 침은 가끔 살짝 움찔해서 "눌러도 된다"는 걸 알려준다 */
-.h-arm-g.up { animation: h-arm-nudge 3.6s ease-in-out 1.2s infinite; }
+.h-arm-g.up { animation: h-arm-nudge 1.5s ease-in-out infinite; }
 @keyframes h-arm-nudge {
-  0%, 74%, 100% { rotate: 0deg; }
-  80% { rotate: 3.5deg; }
-  86% { rotate: -1deg; }
-  92% { rotate: 2deg; }
+  0%, 100% { rotate: 0deg; }
+  50% { rotate: 1.1deg; }
 }
 
 /* 침: 원래 자리(up)에서 쉬다가, 눌러서 재생하면 판 위(on)로 */
