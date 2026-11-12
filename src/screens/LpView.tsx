@@ -107,6 +107,7 @@ export default function LpView({ album, active, onBack }: Props) {
   }
 
   const [listOpen, setListOpen] = useState(false)
+  const [muted, setMuted] = useState(false) // 음소거는 영상 소리와 배경 음악을 모두 끈다
   const [repeat, setRepeat] = useState(false)
 
   // 여행지로 LP 보내기
@@ -159,10 +160,10 @@ export default function LpView({ album, active, onBack }: Props) {
   // 모먼트 상세가 열려 있는 동안은 상세 화면이 자기 음악을 트니까, 여기 음악은 꺼서 섞이지 않게 한다
   const inDetail = detail !== null
   useEffect(() => {
-    if (!playing || !songFirst || inDetail) return
+    if (!playing || !songFirst || inDetail || muted) return
     return playMusic({ src: songFirst.audio, seed: songIdx, start: songFirst.audioStart })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playing, songIdx, album?.id, inDetail])
+  }, [playing, songIdx, album?.id, inDetail, muted])
 
   // 재생 중엔 다음 moment 로 이어서
   useEffect(() => {
@@ -258,7 +259,6 @@ export default function LpView({ album, active, onBack }: Props) {
     else el.pause()
   }, [wantVideo, moment?.id])
   // 크게 보기: 영상 재생/음소거(현장음) 버튼, 재생 시각, LP 돌려서 시점 이동
-  const [muted, setMuted] = useState(true)
   const [clock, setClock] = useState({ t: 0, dur: 0 })
   const [jog, setJog] = useState(0) // LP 를 돌린 각도 (표시용)
   const jogRef = useRef<{ last: number; moved: number } | null>(null)
