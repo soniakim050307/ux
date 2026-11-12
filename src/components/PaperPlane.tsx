@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { FLOW_ALBUMS, type FlowAlbum } from '../data'
+import { playMusic } from '../music'
 
 /** 근처 사람이 공유한 LP (실제 공유 기능 전까지는 예시) */
 /** base: 영상·노래는 기존 예시 앨범의 것을 빌려 쓴다 */
@@ -135,6 +136,21 @@ export default function PaperPlane({ active, w, h, onPlay, onAdd }: Props) {
   }
 
   const sh = caught ? SHARED[caught.i] : null
+  // 잡은 비행기 안의 남의 LP: 펼쳐지면 그 사람이 들은 노래가 흘러나온다 (남의 리스트를 우연히 엿듣기)
+  const caughtIdx = caught ? caught.i : -1
+  useEffect(() => {
+    if (caughtIdx < 0 || leaving === 'play') return
+    const b = base(SHARED[caughtIdx])
+    const m = b.moments[0]
+    let stop: (() => void) | undefined
+    const t = window.setTimeout(() => {
+      stop = playMusic({ src: m?.audio, seed: caughtIdx + 3, start: m?.audioStart })
+    }, 1500)
+    return () => {
+      clearTimeout(t)
+      stop?.()
+    }
+  }, [caughtIdx, leaving])
   return (
     <>
       <button
@@ -186,7 +202,21 @@ export default function PaperPlane({ active, w, h, onPlay, onAdd }: Props) {
               @{sh.owner} · {sh.date} · {base(sh).moments.length} moments · {sh.dist} away
             </span>
           </div>
-          <div className="pp-acts" style={{ top: ENV_TOP + ENV + 98 }}>
+          <div className="pp-peek" style={{ top: ENV_TOP + ENV + 86 }}>
+            <div className="pp-now">
+              <i className="eq"><u /><u /><u /></i>
+              <span>
+                <b>{base(sh).moments[0]?.song?.title ?? 'Unknown song'}</b>
+                <em>{base(sh).moments[0]?.song?.artist ?? ''} · @{sh.owner}'s list</em>
+              </span>
+            </div>
+            <div className="pp-thumbs">
+              {base(sh).moments.slice(0, 4).map((m) => (
+                <i key={m.id} style={{ backgroundImage: `url(${m.poster ?? m.src})` }} />
+              ))}
+            </div>
+          </div>
+          <div className="pp-acts" style={{ top: ENV_TOP + ENV + 214 }}>
             <button type="button" className="pp-btn play" onClick={() => leave('play')}>
               Play now
             </button>
