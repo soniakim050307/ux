@@ -5194,3 +5194,6 @@
     radial-gradient(ellipse 46% 40% at 50% 48%, transparent 94%, rgba(255,255,255,.10) 96%, transparent 100%),
     linear-gradient(to top, rgba(0,0,0,.16), rgba(0,0,0,0) 30%, rgba(0,0,0,0) 80%, rgba(0,0,0,.08))}
 .s-slab .s-spine{box-shadow:0 1px 1.5px rgba(0,0,0,.28), 0 3px 6px -3px rgba(0,0,0,.25)}
+
+.h-arm-g.drag{transition:none}
+.h-arm-g{touch-action:none}

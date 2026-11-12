@@ -197,6 +197,44 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
     if (mode !== 'home' || !latest) return
     setArmDown((v) => !v)
   }
+  // 침을 손으로 끌어서 판 위에 올리거나(재생) 들어 올릴 수도 있다 (살짝 누르면 위와 같이 토글)
+  const armSvg = useRef<SVGSVGElement>(null)
+  const [armRot, setArmRot] = useState<number | null>(null)
+  const armDragRef = useRef<{ a0: number; r0: number; moved: number } | null>(null)
+  const pointerAngle = (e: PointerEvent<SVGGElement>) => {
+    const svg = armSvg.current
+    const m = svg?.getScreenCTM()
+    if (!svg || !m) return 0
+    const pt = svg.createSVGPoint()
+    pt.x = 377
+    pt.y = -20
+    const c = pt.matrixTransform(m)
+    return (Math.atan2(e.clientY - c.y, e.clientX - c.x) * 180) / Math.PI
+  }
+  const onArmDown = (e: PointerEvent<SVGGElement>) => {
+    if (mode !== 'home' || !latest) return
+    e.stopPropagation()
+    e.currentTarget.setPointerCapture(e.pointerId)
+    armDragRef.current = { a0: pointerAngle(e), r0: armDown ? 0 : -16, moved: 0 }
+  }
+  const onArmMove = (e: PointerEvent<SVGGElement>) => {
+    const d = armDragRef.current
+    if (!d) return
+    let da = pointerAngle(e) - d.a0
+    if (da > 180) da -= 360
+    if (da < -180) da += 360
+    d.moved = Math.max(d.moved, Math.abs(da))
+    if (d.moved > 3) setArmRot(Math.max(-16, Math.min(1, d.r0 + da)))
+  }
+  const onArmUp = (e: PointerEvent<SVGGElement>) => {
+    const d = armDragRef.current
+    armDragRef.current = null
+    if (!d) return
+    e.stopPropagation()
+    if (d.moved <= 3) toggleArm()
+    else setArmDown((armRot ?? d.r0) > -11)
+    setArmRot(null)
+  }
   const bgMoment = latest?.moments[0]
   useEffect(() => {
     if (!armDown || !bgMoment) return
@@ -334,8 +372,15 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
               {latest && (
                 <button type="button" className="h-play" onClick={playLatest} aria-label={`Play ${latest.city}`} />
               )}
-              <svg className="h-arm" viewBox="0 0 393 260">
-                <g className={`h-arm-g ${armDown ? 'on' : 'up'}`} onClick={toggleArm}>
+              <svg className="h-arm" viewBox="0 0 393 260" ref={armSvg}>
+                <g
+                  className={`h-arm-g ${armRot !== null ? 'drag' : armDown ? 'on' : 'up'}`}
+                  style={armRot !== null ? { transform: `rotate(${armRot}deg)` } : undefined}
+                  onPointerDown={onArmDown}
+                  onPointerMove={onArmMove}
+                  onPointerUp={onArmUp}
+                  onPointerCancel={onArmUp}
+                >
                   {/* LP 플레이어와 같은 둥근 톤암 (막대 + 카트리지 헤드) */}
                   <g transform="translate(413 -147)">
                     {/* 누르기 쉽게 막대 전체를 덮는 투명한 터치 영역 */}
