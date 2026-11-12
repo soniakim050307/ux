@@ -4456,7 +4456,7 @@
   content: '';
   position: absolute;
   left: 50%;
-  top: 10px;
+  bottom: 10px;
   width: 5px;
   height: 30px;
   margin-left: -2.5px;
