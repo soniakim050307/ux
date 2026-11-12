@@ -608,6 +608,10 @@ export default function LpView({ album, active, onBack }: Props) {
         </svg>
       </button>
 
+      <div className="lv-pagetitle" key={page}>
+        {['LP 음반 재생', '여행 비디오', '모먼트별 회고 텍스트'][page]}
+      </div>
+
       {page === 2 && album && !album.draft && (
         <button type="button" className="lv-send-btn" onClick={() => setSendOpen(true)} aria-label="Send my LP to the destination">
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>

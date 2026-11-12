@@ -24,10 +24,10 @@ export default function Boot({ children, onPip }: { children: React.ReactNode; o
       return () => clearTimeout(t)
     }
     if (stage === 'splash') {
-      const t = setTimeout(() => setStage('done'), 4300)
+      const t = setTimeout(() => setStage('done'), viaPip ? 1500 : 4300)
       return () => clearTimeout(t)
     }
-  }, [stage])
+  }, [stage, viaPip])
 
   return (
     <>
@@ -35,7 +35,7 @@ export default function Boot({ children, onPip }: { children: React.ReactNode; o
       {stage !== 'done' && (
         <div className={`bt bt-${stage}`}>
           {stage === 'splash' ? (
-            <div className="bt-splash">
+            <div className={`bt-splash${viaPip ? ' short' : ''}`}>
               <div className="bt-lock">
                 <div className="bt-disc">
                   <BlueVinylDisc size={76} />

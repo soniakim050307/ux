@@ -5023,3 +5023,12 @@
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.55; transform: scale(0.9); }
 }
+/* 페이지 상단 제목 */
+.lv-pagetitle{position:absolute;top:46px;left:60px;right:60px;height:24px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.92);font-size:15px;font-weight:500;letter-spacing:.2px;pointer-events:none;z-index:24;animation:lv-pt .35s ease}
+@keyframes lv-pt{from{opacity:0;transform:translateY(3px)}}
+
+/* PiP 로 들어올 때는 부팅 화면을 짧게 (LP 로고만 잠깐) */
+.bt-splash.short{animation:bt-bg-s 1.5s ease forwards,bt-out .3s ease 1.2s forwards}
+@keyframes bt-bg-s{0%{background:#747fa3}35%,100%{background:#fefefe}}
+.bt-splash.short .bt-disc{animation-duration:.7s;animation-delay:.1s}
+.bt-splash.short .bt-word{display:none}
