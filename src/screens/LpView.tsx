@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { buildSongs, dayNumbers } from '../days'
-import { lpBg, type FlowAlbum } from '../data'
+import { lpBgImage, type FlowAlbum } from '../data'
 import { playMusic } from '../music'
 import { useDesignScale } from '../useDesignScale'
 import LaidLp from './LaidLp'
@@ -336,7 +336,7 @@ export default function LpView({ album, active, onBack }: Props) {
   const d = scene.disc
 
   return (
-    <div className="l-root" ref={ref} style={{ background: lpBg(album?.id), transition: 'background .4s' }}>
+    <div className="l-root" ref={ref} style={{ background: lpBgImage(album?.id) }}>
       <div
         className="design"
         style={{ width: W, height: H, transform: `scale(${k})` }}
