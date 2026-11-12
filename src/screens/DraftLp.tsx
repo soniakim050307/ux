@@ -43,6 +43,36 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
   const [place, setPlace] = useState('')
+  const [here, setHere] = useState(false)
+  const [locating, setLocating] = useState(false)
+  const [locErr, setLocErr] = useState('')
+  const useHere = () => {
+    setLocErr('')
+    if (!navigator.geolocation) return setLocErr('Location is not available in this browser.')
+    setLocating(true)
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          const r = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${coords.latitude}&longitude=${coords.longitude}&localityLanguage=en`,
+          )
+          const d = await r.json()
+          const city = d.city || d.locality || d.principalSubdivision
+          setPlace([city, d.countryName].filter(Boolean).join(', ') || `${coords.latitude.toFixed(3)}, ${coords.longitude.toFixed(3)}`)
+        } catch {
+          setPlace(`${coords.latitude.toFixed(3)}, ${coords.longitude.toFixed(3)}`)
+        }
+        setHere(true)
+        setLocating(false)
+      },
+      () => {
+        setLocating(false)
+        setHere(false)
+        setLocErr('Allow location access to use this.')
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 },
+    )
+  }
   const saved = album.city !== ''
   const n = album.moments.length
   const [toast, setToast] = useState('')
@@ -365,7 +395,23 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
             </label>
           </div>
           <p className="df-h line">Add location</p>
-          <input className="df-loc" value={place} onChange={(e) => setPlace(e.target.value)} placeholder="e.g. Paris, France" />
+          <input
+            className="df-loc"
+            value={place}
+            onChange={(e) => {
+              setPlace(e.target.value)
+              setHere(false)
+            }}
+            placeholder="e.g. Paris, France"
+            disabled={locating}
+          />
+          {/* 현재 위치로 채우기: 위치 → 도시·나라 이름 */}
+          <label className={`df-here ${here ? 'on' : ''}`}>
+            <input type="checkbox" checked={here} onChange={(e) => (e.target.checked ? useHere() : setHere(false))} />
+            <i />
+            <span>{locating ? 'Finding where you are…' : 'Use current location'}</span>
+          </label>
+          {locErr && <p className="df-here-err">{locErr}</p>}
         </div>
       )}
     </div>
