@@ -4073,3 +4073,99 @@
 .cap-np {
   top: 102px;
 }
+
+/* ───────── 정리 화면: LP 미리보기 + 부드러운 순서 바꾸기 ───────── */
+.og-disc {
+  position: absolute;
+  left: 50%;
+  top: 182px;
+  width: 240px;
+  height: 240px;
+  margin-left: -120px;
+  border-radius: 50%;
+  background: #262529;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
+  animation: et-rise 0.6s ease both;
+}
+.og-disc > span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.og-disc-label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 70px;
+  height: 70px;
+  margin: -35px 0 0 -35px;
+  border-radius: 50%;
+  background: #38373b;
+}
+.og-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.2px solid rgba(255, 255, 255, 0.55);
+}
+.og-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border-radius: 50%;
+  background: #fff;
+  color: #262529;
+  font-size: 10px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+  transition: transform 0.45s cubic-bezier(0.3, 0.8, 0.3, 1), background 0.2s, color 0.2s;
+}
+.og-dot.on {
+  background: #e5484d;
+  color: #fff;
+}
+.og-disc small {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -26px;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.6);
+}
+.og-row {
+  top: 452px;
+}
+.og-track {
+  position: relative;
+  height: 122px;
+  flex: none;
+}
+.og-item {
+  position: absolute;
+  top: 0;
+  touch-action: none;
+  transition:
+    left 0.32s cubic-bezier(0.3, 0.8, 0.3, 1),
+    transform 0.25s ease;
+}
+.og-item.drag {
+  transition: none; /* 잡은 것은 손가락을 그대로 따라오고, 나머지는 부드럽게 비켜줌 */
+}
+.og-item.drag .og-thumb {
+  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.35);
+}
+.og-tip {
+  top: 632px;
+}
+
+/* 그림자와 번호가 잘리지 않도록 아래 여유 */
+.og-row {
+  padding-bottom: 38px;
+}

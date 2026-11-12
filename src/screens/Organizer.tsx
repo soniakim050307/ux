@@ -101,13 +101,36 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
           <p className="og-empty">아직 기록한 순간이 없어요</p>
         ) : (
           <>
+            {/* LP 미리보기: 순서 = 트랙 순서. 바깥 홈이 1번, 순서를 바꾸면 핀도 함께 자리를 옮김 */}
+            <div className="og-disc">
+              <i className="og-disc-label" />
+              {moments.map((m, i) => {
+                const r = 112 - i * Math.min(14, 70 / Math.max(1, moments.length - 1))
+                const a = -70 + i * 38
+                return (
+                  <span key={m.id}>
+                    <i className="og-ring" style={{ width: r * 2, height: r * 2 }} />
+                    <b
+                      className={`og-dot ${drag && moments[drag.i]?.id === m.id ? 'on' : ''}`}
+                      style={{ transform: `rotate(${a}deg) translateX(${r}px) rotate(${-a}deg)` }}
+                    >
+                      {i + 1}
+                    </b>
+                  </span>
+                )
+              })}
+              <small>SIDE A</small>
+            </div>
+
             <div className="og-row" style={{ left: SIDE, width: W - SIDE }}>
+              <div className="og-track" style={{ width: moments.length * STEP }}>
               {moments.map((m, i) => (
                 <div
                   key={m.id}
                   className={`og-item ${drag?.i === i ? 'drag' : ''}`}
                   style={{
-                    transform: drag?.i === i ? `translateX(${drag.off}px) scale(1.06)` : undefined,
+                    left: i * STEP,
+                    transform: drag?.i === i ? `translateX(${drag.off}px) scale(1.08)` : undefined,
                   }}
                   onPointerDown={(e) => down(e, i)}
                   onPointerMove={mv}
@@ -118,6 +141,7 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
                   <em>{i + 1}</em>
                 </div>
               ))}
+              </div>
             </div>
             <p className="og-tip">Tap to edit · drag to reorder</p>
           </>
