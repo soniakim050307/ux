@@ -221,14 +221,7 @@ export default function PaperPlane({ active, w, h, onPlay, onAdd }: Props) {
               @{sh.owner} · {sh.date} · {base(sh).moments.length} moments · {sh.dist} away
             </span>
           </div>
-          <div className="pp-peek" style={{ top: ENV_TOP + ENV + 86 }}>
-            <div className="pp-thumbs">
-              {base(sh).moments.slice(0, 4).map((m) => (
-                <i key={m.id} style={{ backgroundImage: `url(${m.poster ?? m.src})` }} />
-              ))}
-            </div>
-          </div>
-          <div className="pp-acts" style={{ top: ENV_TOP + ENV + 160 }}>
+          <div className="pp-acts" style={{ top: ENV_TOP + ENV + 96 }}>
             <button type="button" className="pp-btn play" onClick={() => leave('play')}>
               Play now
             </button>
