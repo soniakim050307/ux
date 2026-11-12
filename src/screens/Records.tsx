@@ -72,6 +72,8 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
     !!a?.delivery && Date.now() >= a.delivery.startedAt + a.delivery.days * 86400000
   const arrivedAlbum = created.find(isArrived) ?? null
   const slotIdx = Array.from({ length: list.length + 1 }, (_, i) => i)
+  // 홈 턴테이블에 올라가는 LP = 가장 최근에 만든(배송 중이 아닌) 앨범
+  const latest = list.find((a) => !a.delivery && a.moments.length > 0) ?? null
 
   const [armDown, setArmDown] = useState(false)
   useEffect(() => {
@@ -173,6 +175,15 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
       return
     }
     if (i !== sel) setMode('stack')
+  }
+
+  /* ---------- 홈 턴테이블의 LP를 누르면 그 앨범을 바로 재생 ---------- */
+  const playLatest = () => {
+    if (mode !== 'home' || !latest) return
+    setPull(0)
+    setSel(list.indexOf(latest) + 1)
+    setMode('cover')
+    later(commit, 650) // 슬리브에서 LP가 빠져나온 뒤 LP 화면으로 → LpView 가 들어오면 자동 재생
   }
 
   /* ---------- 커버: LP 빼내기 ---------- */
@@ -286,8 +297,18 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
             {/* 홈 일러스트: 턴테이블 + 종이비행기 */}
             <div className={`h-art ${mode !== 'home' ? 'gone' : ''}`} aria-hidden>
               <div className="h-vinyl" />
-              <div className="h-label" />
+              <div
+                className="h-label"
+                style={latest?.cover ? { backgroundImage: `url(${latest.cover})` } : undefined}
+              />
               <div className="h-hole" />
+              {latest && (
+                <button type="button" className="h-play" onClick={playLatest} aria-label={`Play ${latest.city}`}>
+                  <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden>
+                    <path d="M8 5.5v13l11-6.5z" fill="#fff" />
+                  </svg>
+                </button>
+              )}
               <svg className="h-arm" viewBox="0 0 393 260">
                 <g className={`h-arm-g ${armDown ? 'up' : 'off'}`}>
                   {/* LP 플레이어와 같은 둥근 톤암 (막대 + 카트리지 헤드) */}

@@ -107,7 +107,40 @@
   width: 178px;
   height: 178px;
   border-radius: 50%;
-  background: #d9d9d9;
+  background: #d9d9d9 center / cover no-repeat;
+}
+
+.h-play {
+  position: absolute;
+  left: -188px;
+  top: -157px;
+  width: 514px;
+  height: 514px;
+  border-radius: 50%;
+  pointer-events: auto;
+  cursor: pointer;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.h-play svg {
+  position: absolute;
+  left: 229px;
+  top: 229px;
+  width: 36px;
+  height: 36px;
+  padding: 10px;
+  box-sizing: content-box;
+  border-radius: 50%;
+  background: rgba(31, 35, 64, 0.55);
+  backdrop-filter: blur(4px);
+  opacity: 0.9;
+  transition: opacity 0.2s;
+}
+
+.h-play:hover svg,
+.h-play:focus-visible svg {
+  opacity: 1;
 }
 
 .h-hole {
