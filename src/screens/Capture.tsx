@@ -230,7 +230,7 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
               {!rec && (
                 <div className="cap-hint">
                   <b>▶</b>
-                  <span>UP TO 10 SECONDS</span>
+                  <span>EXACTLY 10 SECONDS</span>
                   <em>Live camera works in the web app.{'\n'}Here it's simulated.</em>
                   <button type="button" className="cap-pick" onClick={() => fileRef.current?.click()}>
                     or choose a clip
@@ -260,7 +260,14 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
 
         {!rec && <div className="cap-mode">VIDEO</div>}
 
-        <button type="button" className={`cap-disc ${rec ? 'on' : ''}`} onClick={rec ? stop : start} aria-label={rec ? 'Stop' : 'Record'}>
+        {/* 한 moment 는 딱 10초: 녹화가 시작되면 중간에 멈출 수 없고 10초가 되면 자동으로 끝난다 */}
+        <button
+          type="button"
+          className={`cap-disc ${rec ? 'on' : ''}`}
+          onClick={rec ? undefined : start}
+          disabled={rec}
+          aria-label={rec ? 'Recording 10 seconds' : 'Record 10 seconds'}
+        >
           <i />
         </button>
         <div className="cap-disc-cap">RECORD LP</div>

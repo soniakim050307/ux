@@ -5010,3 +5010,16 @@
 @keyframes bt-pip-hint{0%,100%{right:-40px}50%{right:-33px}}
 .bt-zoom.pip{border-radius:50%;background:#1c1c1e;width:80px;height:80px;top:330px;left:calc(100% - 40px)}
 .cap-over{position:absolute;inset:0;z-index:60}
+
+/* 딱 10초 녹화: 멈춤 버튼(네모) 대신 빨간 원이 그대로 깜빡이며 녹화 중임을 알림 (중간에 멈출 수 없음) */
+.cap-disc:disabled { cursor: default; opacity: 1; }
+.cap-disc.on i {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  animation: cap-rec-pulse 1s ease-in-out infinite;
+}
+@keyframes cap-rec-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.9); }
+}
