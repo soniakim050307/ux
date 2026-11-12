@@ -610,7 +610,7 @@ export default function LpView({ album, active, onBack }: Props) {
 
       {detail === null && (
         <div className="lv-pagetitle" key={page}>
-          {['LP Record Playback', 'Trip Video', 'Moment Reflections'][page]}
+          {['LP Record', 'Trip Video', 'Moment Reflections'][page]}
         </div>
       )}
 
