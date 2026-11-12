@@ -673,6 +673,8 @@ export default function LpView({ album, active, onBack }: Props) {
                                 type="button"
                                 onClick={() => {
                                   setListOpen(false)
+                                  setPage(0) // 뒤로가기 하면 목록 이전 화면이 아니라 음원 재생 화면으로
+                                  setIdx(mi)
                                   setDetail(mi)
                                   setPin(mi)
                                 }}
