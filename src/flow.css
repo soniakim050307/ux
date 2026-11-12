@@ -5107,8 +5107,9 @@
 /* 녹화 후 화면: CARVE 버튼을 머리줄 오른쪽으로, MOMENT 번호는 제목 아래 작게 */
 .et .et-head { align-items: flex-start; }
 .et .et-head b small {
-  display: block;
-  margin-top: 4px;
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: 3px;
   font-family: var(--sans, inherit);
   font-size: 10px;
   font-weight: 500;

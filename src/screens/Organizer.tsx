@@ -1,4 +1,4 @@
-import { advanceDay, todayKey as getTodayKey } from '../grooveDays'
+import { todayKey as getTodayKey } from '../grooveDays'
 import { useRef, useState, type PointerEvent } from 'react'
 import type { FlowAlbum, FlowMoment } from '../data'
 import { useDesignScale } from '../useDesignScale'
@@ -46,9 +46,6 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
 
   /* 홈 하나 = 하루. 가장 바깥 홈이 첫째 날, 안쪽으로 갈수록 날이 지남.
      지난 날의 홈은 이미 새겨져 닫혀 있고, 오늘의 홈만 열려 있어 오늘 moment만 고치고 순서를 바꿀 수 있다. */
-  const [, setDayTick] = useState(0)
-  const [saving, setSaving] = useState(false)
-  const [toast, setToast] = useState('')
   const todayKey = getTodayKey()
   const dayOf = (m: FlowMoment) => (m.time && /^\d{4}\.\d{2}\.\d{2}/.test(m.time) ? m.time.slice(0, 10) : todayKey)
   const days = Array.from(new Set([...moments.map(dayOf), todayKey])).sort()
@@ -91,19 +88,6 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
     setDrag(null)
     if (s && s.moved < 6) setOpen(moments.findIndex((m) => m.id === s.id))
   }
-  /* 오늘 저장: 오늘의 홈이 새겨져 닫히고, 다음 날의 홈이 열린다 */
-  const dayNo = days.indexOf(todayKey) + 1
-  const saveToday = () => {
-    if (saving || today.length === 0) return
-    setSaving(true)
-    window.setTimeout(() => {
-      advanceDay()
-      setSaving(false)
-      setDayTick((n) => n + 1)
-      setToast(`Day ${dayNo} carved · Day ${dayNo + 1} is open`)
-      window.setTimeout(() => setToast(''), 2600)
-    }, 1300)
-  }
   const ringR = (i: number) => 112 - i * Math.min(14, 64 / Math.max(1, moments.length - 1))
   const md = (key: string) => key.slice(5).replace('.', '.')
 
@@ -136,7 +120,7 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
                 const isToday = dayOf(m) === todayKey
                 const a = moments.length > 1 ? -70 + i * Math.min(44, 140 / (moments.length - 1)) : -45
                 return (
-                  <span key={m.id} className={`${isToday ? 'today' : 'past'} ${isToday && saving ? 'carving' : ''}`}>
+                  <span key={m.id} className={isToday ? 'today' : 'past'}>
                     <i className="og-ring" style={{ width: r * 2, height: r * 2 }} />
                     <b
                       className={`og-dot ${drag && today[drag.i]?.id === m.id ? 'on' : ''}`}
@@ -150,15 +134,12 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
                   </span>
                 )
               })}
-              <small>SIDE A · {moments.length} GROOVE{moments.length === 1 ? '' : 'S'} · {days.length} DAY{days.length === 1 ? '' : 'S'}</small>
+              <small>SIDE A · {moments.length} GROOVE{moments.length === 1 ? '' : 'S'}</small>
             </div>
 
             <div className="og-days">
               {/* 오늘: 열려 있는 홈 */}
-              <div className={`og-day today ${saving ? 'carving' : ''}`}>
-                <p className="og-day-h">
-                  DAY {days.indexOf(todayKey) + 1} · {md(todayKey)} <em>TODAY</em>
-                </p>
+              <div className="og-day today">
                 {today.length === 0 ? (
                   <p className="og-day-empty">No moments yet today</p>
                 ) : (
@@ -201,11 +182,10 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
                   </div>
                 ))}
             </div>
-            <p className="og-tip" style={{ opacity: toast ? 0 : 1 }}>Only today's grooves are open · tap to edit, drag to reorder</p>
-            <button type="button" className="og-save" onClick={saveToday} disabled={today.length === 0 || saving}>
-              {saving ? 'Carving…' : `Save Day ${dayNo}`}
+            <p className="og-tip">Tap to edit · drag to reorder</p>
+            <button type="button" className="og-save" onClick={() => setPress(true)} disabled={moments.length === 0}>
+              Press
             </button>
-            {toast && <div className="og-toast">{toast}</div>}
           </>
         )}
       </div>
@@ -216,9 +196,6 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
         </svg>
       </button>
 
-      <button type="button" className="og-press-top" onClick={() => setPress(true)} disabled={moments.length === 0}>
-        Press
-      </button>
 
       {press && <PressSeq city={album.city} onFinish={() => onFinish()} />}
 
