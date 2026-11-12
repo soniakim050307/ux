@@ -176,12 +176,8 @@ const LP_BG: Record<string, string> = {
 }
 export const lpBg = (id?: string) => (id && LP_BG[id]) || '#545e85'
 
-/** 회고 화면 배경: 같은 색을 위는 밝게, 아래는 깊게 — 은은한 빛이 번지는 그라데이션 */
+/** 회고 화면 배경: 같은 색에서 위는 아주 살짝 밝고 아래는 살짝 깊은 은은한 그라데이션 */
 export const lpBgImage = (id?: string) => {
   const c = lpBg(id)
-  return [
-    `radial-gradient(120% 55% at 15% 0%, color-mix(in srgb, ${c} 62%, white) 0%, transparent 62%)`,
-    `radial-gradient(90% 45% at 100% 100%, color-mix(in srgb, ${c} 55%, black) 0%, transparent 70%)`,
-    `linear-gradient(172deg, color-mix(in srgb, ${c} 82%, white) 0%, ${c} 48%, color-mix(in srgb, ${c} 68%, black) 100%)`,
-  ].join(', ')
+  return `linear-gradient(180deg, color-mix(in srgb, ${c} 90%, white) 0%, ${c} 55%, color-mix(in srgb, ${c} 90%, black) 100%)`
 }
