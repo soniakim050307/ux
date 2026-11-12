@@ -104,7 +104,7 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
       window.setTimeout(() => setToast(''), 2600)
     }, 1300)
   }
-  const ringR = (d: number) => 112 - d * Math.min(16, 72 / Math.max(1, days.length - 1))
+  const ringR = (i: number) => 112 - i * Math.min(14, 64 / Math.max(1, moments.length - 1))
   const md = (key: string) => key.slice(5).replace('.', '.')
 
   return (
@@ -130,32 +130,27 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
             {/* LP 미리보기: 홈 하나가 하루. 오늘 홈만 밝고, 그 위 사진 핀은 오늘의 순서대로 놓임 */}
             <div className="og-disc">
               <i className="og-disc-label" />
-              {days.map((d, di) => {
-                const r = ringR(di)
-                const list = byDay(d)
-                const isToday = d === todayKey
+              {/* 홈 하나 = moment 하나: 바깥이 첫 moment. 오늘 moment 의 홈만 밝다 */}
+              {moments.map((m, i) => {
+                const r = ringR(i)
+                const isToday = dayOf(m) === todayKey
+                const a = moments.length > 1 ? -70 + i * Math.min(44, 140 / (moments.length - 1)) : -45
                 return (
-                  <span key={d} className={`${isToday ? 'today' : 'past'} ${isToday && saving ? 'carving' : ''}`}>
+                  <span key={m.id} className={`${isToday ? 'today' : 'past'} ${isToday && saving ? 'carving' : ''}`}>
                     <i className="og-ring" style={{ width: r * 2, height: r * 2 }} />
-                    {list.map((m, j) => {
-                      const a = -70 + j * Math.min(48, 290 / Math.max(1, list.length)) // 위에서부터 이 날의 트랙 순서대로
-                      return (
-                        <b
-                          key={m.id}
-                          className={`og-dot ${drag && today[drag.i]?.id === m.id ? 'on' : ''}`}
-                          style={{
-                            transform: `rotate(${a}deg) translateX(${r}px) rotate(${-a}deg)`,
-                            backgroundImage: m.poster || m.kind !== 'video' ? `url(${m.poster || m.src})` : undefined,
-                          }}
-                        >
-                          {!m.poster && m.kind === 'video' && <video src={m.src} muted playsInline preload="metadata" />}
-                        </b>
-                      )
-                    })}
+                    <b
+                      className={`og-dot ${drag && today[drag.i]?.id === m.id ? 'on' : ''}`}
+                      style={{
+                        transform: `rotate(${a}deg) translateX(${r}px) rotate(${-a}deg)`,
+                        backgroundImage: m.poster || m.kind !== 'video' ? `url(${m.poster || m.src})` : undefined,
+                      }}
+                    >
+                      {!m.poster && m.kind === 'video' && <video src={m.src} muted playsInline preload="metadata" />}
+                    </b>
                   </span>
                 )
               })}
-              <small>SIDE A · {days.length} DAY{days.length === 1 ? '' : 'S'}</small>
+              <small>SIDE A · {moments.length} GROOVE{moments.length === 1 ? '' : 'S'} · {days.length} DAY{days.length === 1 ? '' : 'S'}</small>
             </div>
 
             <div className="og-days">
@@ -206,7 +201,7 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
                   </div>
                 ))}
             </div>
-            <p className="og-tip" style={{ opacity: toast ? 0 : 1 }}>Only today's groove is open · tap to edit, drag to reorder</p>
+            <p className="og-tip" style={{ opacity: toast ? 0 : 1 }}>Only today's grooves are open · tap to edit, drag to reorder</p>
             <button type="button" className="og-save" onClick={saveToday} disabled={today.length === 0 || saving}>
               {saving ? 'Carving…' : `Save Day ${dayNo}`}
             </button>

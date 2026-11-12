@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { dayOf, dayTime, tripDays } from '../grooveDays'
 import type { FlowAlbum } from '../data'
 import { useDesignScale } from '../useDesignScale'
 import Capture from './Capture'
@@ -9,8 +8,6 @@ const W = 393
 const H = 852
 const LP = { cx: 39, cy: 408, r: 323 }
 /** 홈 하나 = 하루 (바깥이 첫째 날). 같은 날 moment는 같은 홈에, 각도는 하루 중 시각 (위가 아침, 아래가 밤) */
-const grooveR = (day: number) => Math.max(186, 298 - day * 18)
-const timeDeg = (t: number) => -62 + t * 124
 
 interface Props {
   album: FlowAlbum
@@ -74,21 +71,12 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
   }
   const saved = album.city !== ''
   const n = album.moments.length
-  const days = tripDays(album.moments)
-  // 같은 날 moment끼리 시각이 가까워도 핀이 겹치지 않도록 최소 각도 간격을 둔다
-  const pinDeg: Record<string, number> = {}
-  for (const d of days) {
-    const r = grooveR(days.indexOf(d))
-    const gap = (62 / r) * (180 / Math.PI) // 썸네일·막대가 서로 겹치지 않을 만큼
-    const list = album.moments.filter((m) => dayOf(m) === d).map((m) => ({ id: m.id, deg: timeDeg(dayTime(m)) }))
-    list.sort((a, b) => a.deg - b.deg)
-    for (let i = 1; i < list.length; i++) list[i].deg = Math.max(list[i].deg, list[i - 1].deg + gap)
-    // 아래 끝(밤)을 넘으면 위쪽으로 다시 밀어 올림
-    const over = list.length ? list[list.length - 1].deg - 70 : 0
-    if (over > 0) list.forEach((p) => (p.deg -= over))
-    for (let i = list.length - 2; i >= 0; i--) list[i].deg = Math.min(list[i].deg, list[i + 1].deg - gap)
-    list.forEach((p) => (pinDeg[p.id] = p.deg))
-  }
+  /* 홈 하나 = moment 하나. 가장 바깥 홈이 첫 moment, 안쪽으로 갈수록 나중 moment.
+     핀은 자기 홈 위에 꽂히고, 순서대로 보이는 오른쪽 호를 따라 위에서 아래로 내려가며 놓인다 */
+  const ms = album.moments
+  const step = ms.length > 1 ? Math.min(18, 112 / (ms.length - 1)) : 18
+  const grooveOf = (i: number) => 298 - i * step
+  const degOf = (i: number) => (ms.length > 1 ? -62 + i * Math.min(42, 124 / (ms.length - 1)) : -40)
   const [toast, setToast] = useState('')
   const toastT = useRef(0)
   const say = (t: string) => {
@@ -281,16 +269,15 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
           </svg>
           {/* 새겨진 홈: 판이 돌아도 핀과 맞도록 회전하지 않는 겹 */}
           <svg className="dl-grooves" viewBox={`${-LP.r} ${-LP.r} ${LP.r * 2} ${LP.r * 2}`}>
-            {days.map((d, di) => {
-              const r = grooveR(di)
-              // 그날 첫 moment 시각에서부터 새겨지기 시작 (홈 하나 = 하루)
-              const first = album.moments.find((m) => dayOf(m) === d)
+            {ms.map((m, i) => {
+              const r = grooveOf(i)
+              // 그 moment 의 핀 자리에서부터 새겨지기 시작
               return (
                 <circle
-                  key={d}
+                  key={m.id}
                   className="dl-carve"
                   r={r}
-                  transform={`rotate(${first ? timeDeg(dayTime(first)) : 0})`}
+                  transform={`rotate(${degOf(i)})`}
                   style={
                     {
                       '--len': (2 * Math.PI * r).toFixed(1),
@@ -302,9 +289,9 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
           </svg>
         </div>
 
-        {album.moments.map((m) => {
-          const r = grooveR(days.indexOf(dayOf(m)))
-          const a = ((pinDeg[m.id] ?? timeDeg(dayTime(m))) * Math.PI) / 180
+        {ms.map((m, i) => {
+          const r = grooveOf(i)
+          const a = (degOf(i) * Math.PI) / 180
           const thumb = m.poster || (m.kind !== 'video' ? m.src : '')
           return (
             <div
