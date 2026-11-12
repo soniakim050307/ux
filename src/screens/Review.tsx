@@ -37,6 +37,15 @@ const RECOMMENDED: Song[] = [
   { title: 'Coffee', artist: 'beabadoobee', color: '#d6a77a', why: 'Recorded at a café' },
   { title: 'Riptide', artist: 'Vance Joy', color: '#86c2a0', why: 'Like your recent picks' },
 ]
+/** 스트리밍 앱에서 가장 많이 들은 곡 (실제 연동 전까지는 예시) */
+const ON_REPEAT: (Song & { plays: number })[] = [
+  { title: 'Ditto', artist: 'NewJeans', color: '#9fc6e6', plays: 128 },
+  { title: 'Paris in the rain', artist: 'Lauv', color: '#f5c518', plays: 96 },
+  { title: 'Love wins all', artist: 'IU', color: '#e8a0b4', plays: 71 },
+  { title: 'Holssi', artist: 'IU', color: '#a6d49f', plays: 54 },
+  { title: 'Steal The Show', artist: 'Lauv', color: '#f0a35e', plays: 42 },
+]
+
 /* MY SONGS: 내가 자주 듣거나 아끼는 노래. 앨범이 달라도 계속 남도록 브라우저에 저장 */
 type MySong = Song & { uses: number }
 const MY_KEY = 'bv-my-songs'
@@ -122,6 +131,27 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
     setAdding(null)
     setQ('')
     setSheet(false)
+  }
+  // 섹션마다 3곡만 보이고 'More'를 누르면 펼침 (검색 중에는 모두 보임)
+  const [more, setMore] = useState<Record<string, boolean>>({})
+  const section = (key: string, title: string, sub: string, list: Song[], subOf: (s: Song) => string) => {
+    const hits = list.filter(match)
+    if (!hits.length) return null
+    const open = !!q || more[key]
+    const shown = open ? hits : hits.slice(0, 3)
+    return (
+      <div key={key}>
+        <div className="et-sec">
+          {title} <span>{sub}</span>
+        </div>
+        {shown.map((x) => row(x, subOf(x)))}
+        {!q && hits.length > 3 && (
+          <button type="button" className="et-more" onClick={() => setMore({ ...more, [key]: !open })}>
+            {open ? 'Show less' : `More (${hits.length - 3})`}
+          </button>
+        )}
+      </div>
+    )
   }
   const match = (s: Song) => !q || (s.title + s.artist).toLowerCase().includes(q.toLowerCase())
   const row = (s: Song, sub: string) => (
@@ -246,22 +276,13 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
                 <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search songs, artists" />
               </div>
               <div className="et-list">
-                {mine.filter(match).length > 0 && (
-                  <>
-                    <div className="et-sec">
-                      MY SONGS <span>songs you keep coming back to</span>
-                    </div>
-                    {mine.filter(match).map((s) => row(s, s.uses ? `${s.uses} moment${s.uses === 1 ? '' : 's'}` : 'saved'))}
-                  </>
-                )}
-                <div className="et-sec">
-                  JUST PLAYED <span>from your music app</span>
-                </div>
-                {RECENT.filter(match).map((s) => row(s, s.when ?? ''))}
-                <div className="et-sec">
-                  RECOMMENDED <span>for this moment</span>
-                </div>
-                {RECOMMENDED.filter(match).map((s) => row(s, s.why ?? ''))}
+                {section('mine', 'MY SONGS', 'songs you saved', mine, (x) => {
+                  const u = (x as MySong).uses
+                  return u ? `${u} moment${u === 1 ? '' : 's'}` : 'saved'
+                })}
+                {section('repeat', 'ON REPEAT', 'most played in your music app', ON_REPEAT, (x) => `${(x as Song & { plays: number }).plays} plays`)}
+                {section('recent', 'JUST PLAYED', 'from your music app', RECENT, (x) => x.when ?? '')}
+                {section('rec', 'RECOMMENDED', 'for this moment', RECOMMENDED, (x) => x.why ?? '')}
 
                 {/* 목록에 없으면 직접 추가 */}
                 {adding ? (
