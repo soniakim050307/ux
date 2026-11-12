@@ -4412,10 +4412,10 @@
   position: absolute;
   left: 24px;
   right: 24px;
-  top: 754px;
+  top: 760px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s ease;
@@ -4425,18 +4425,20 @@
 .lv-vc .pill {
   display: flex;
   align-items: center;
-  gap: 14px;
-  height: 44px;
-  padding: 0 22px 0 18px;
-  border-radius: 22px;
+  gap: 10px;
+  height: 34px;
+  padding: 0 16px 0 13px;
+  border-radius: 17px;
   background: rgba(158, 158, 158, 0.92);
-  font-size: 18px;
+  font-size: 14px;
   font-variant-numeric: tabular-nums;
 }
 .lv-vc .pill em { font-style: normal; color: rgba(255, 255, 255, 0.62); margin-left: 2px; }
 .lv-vc .mute {
-  width: 44px;
-  height: 44px;
+  position: absolute;
+  right: 0;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -4500,3 +4502,6 @@
 .et-more {
   margin-left: 52px;
 }
+
+.lv-vc .pill svg { width: 11px; height: 13px; }
+.lv-vc .mute svg { width: 17px; height: 15px; }
