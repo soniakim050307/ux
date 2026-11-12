@@ -13,7 +13,8 @@ const photo = (n: string) => `${import.meta.env.BASE_URL}img/${n}`
 
 type Stage = 'home' | 'opening' | 'splash' | 'done'
 
-export default function Boot({ children }: { children: React.ReactNode }) {
+export default function Boot({ children, onPip }: { children: React.ReactNode; onPip?: () => void }) {
+  const [viaPip, setViaPip] = useState(false)
   const skip = typeof location !== 'undefined' && new URLSearchParams(location.search).get('boot') === '0'
   const [stage, setStage] = useState<Stage>(skip ? 'done' : 'home')
 
@@ -107,6 +108,19 @@ export default function Boot({ children }: { children: React.ReactNode }) {
                 {ICON('news', '뉴스')}
                 {ICON('photos', '사진')}
               </div>
+              <button
+                type="button"
+                className="bt-pip"
+                aria-label="기록하기"
+                onClick={() => {
+                  if (stage !== 'home') return
+                  setViaPip(true)
+                  onPip?.()
+                  setStage('opening')
+                }}
+              >
+                <i />
+              </button>
               <div className="bt-dots"><i className="on" /><i /></div>
               <div className="bt-dock">
                 {DOCK.map((a, i) => (
@@ -115,7 +129,7 @@ export default function Boot({ children }: { children: React.ReactNode }) {
               </div>
               <div className="bt-homebar" />
               {stage === 'opening' && (
-                <div className="bt-zoom"><BlueVinylIcon size={60} /></div>
+                <div className={`bt-zoom${viaPip ? ' pip' : ''}`}>{viaPip ? null : <BlueVinylIcon size={60} />}</div>
               )}
             </div>
           )}

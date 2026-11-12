@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { FLOW_ALBUMS } from './data'
 import Records from './screens/Records'
 import Boot from './screens/Boot'
+import Capture from './screens/Capture'
 import CarveScene from './screens/CarveScene'
 
 /**
@@ -8,6 +10,7 @@ import CarveScene from './screens/CarveScene'
  * 촬영·프레스 등 나머지 화면은 src/screens 에 보관 중이며, 다음 단계에서 다시 연결한다.
  */
 export default function App() {
+  const [cap, setCap] = useState(false)
   if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('carve') === '1')
     return (
       <div className="stage">
@@ -19,8 +22,13 @@ export default function App() {
   return (
     <div className="stage">
       <div className="app">
-        <Boot>
+        <Boot onPip={() => setCap(true)}>
           <Records albums={FLOW_ALBUMS} />
+          {cap && (
+            <div className="cap-over">
+              <Capture title="New Journey" index={1} onClose={() => setCap(false)} onDone={() => setCap(false)} />
+            </div>
+          )}
         </Boot>
       </div>
     </div>
