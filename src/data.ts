@@ -18,7 +18,7 @@ export interface FlowMoment {
   /** 세부 위치 (예: 카페 이름, 거리) */
   place?: string
   /** 같이 담은 노래 (표시용) */
-  song?: { title: string; artist: string }
+  song?: { title: string; artist: string; /** 앨범 표지 (실제 앱에서는 Apple Music 아트워크) */ art?: string }
 }
 
 export interface FlowAlbum {

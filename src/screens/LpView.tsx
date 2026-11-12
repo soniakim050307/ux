@@ -60,6 +60,24 @@ interface Props {
   onBack: () => void
 }
 
+/** 노래의 앨범 표지. 체험용에는 실제 표지가 없어서 곡마다 색이 다른 임시 표지를 만든다. */
+function SongArt({ title, art }: { title: string; art?: string }) {
+  let h = 0
+  for (const c of title) h = (h * 31 + c.charCodeAt(0)) % 360
+  return (
+    <span
+      className="song-art"
+      style={
+        art
+          ? { backgroundImage: `url(${art})` }
+          : { background: `linear-gradient(145deg, hsl(${h} 42% 52%), hsl(${(h + 48) % 360} 48% 28%))` }
+      }
+    >
+      {!art && <i>{title.trim().charAt(0).toUpperCase()}</i>}
+    </span>
+  )
+}
+
 export default function LpView({ album, active, onBack }: Props) {
   const { ref, k } = useDesignScale<HTMLDivElement>(W)
   const moments = album?.moments ?? []
@@ -614,7 +632,6 @@ export default function LpView({ album, active, onBack }: Props) {
             </h3>
             <ul>
               {songs.map((sg, si) => {
-                const first = moments[sg.idxs[0]]
                 const open = !collapsed.has(si)
                 const d0 = dayNo[sg.idxs[0]]
                 const d1 = dayNo[sg.idxs[sg.idxs.length - 1]]
@@ -630,7 +647,7 @@ export default function LpView({ album, active, onBack }: Props) {
                           setListOpen(false)
                         }}
                       >
-                        <span className="th" style={{ backgroundImage: `url(${first.poster ?? first.src})` }} />
+                        <SongArt title={sg.song.title} art={sg.song.art} />
                         <span className="tx">
                           <b>{sg.song.title}</b>
                           <i>{sg.song.artist}</i>

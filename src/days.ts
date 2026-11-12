@@ -8,7 +8,7 @@ import type { FlowMoment } from './data'
 export interface SongSeg {
   /** 1부터 시작하는 곡 순번 */
   n: number
-  song: { title: string; artist: string }
+  song: { title: string; artist: string; art?: string }
   /** album.moments 안에서 이 곡이 깔리는 모먼트 순번들 */
   idxs: number[]
 }
@@ -26,7 +26,7 @@ export function buildSongs(moments: FlowMoment[]): SongSeg[] {
       return
     }
     last = k
-    out.push({ n: out.length + 1, song: { title: m.song?.title ?? 'Music', artist: m.song?.artist ?? '' }, idxs: [i] })
+    out.push({ n: out.length + 1, song: { title: m.song?.title ?? 'Music', artist: m.song?.artist ?? '', art: m.song?.art }, idxs: [i] })
   })
   return out
 }
