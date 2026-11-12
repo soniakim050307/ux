@@ -4405,3 +4405,68 @@
   color: #545c86;
   font-weight: 500;
 }
+
+
+/* ===== 크게 보기: 재생·음소거, LP 돌려서 시점 이동 ===== */
+.lv-vc {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 754px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.lv-vc.on { opacity: 1; pointer-events: auto; transition-delay: 0.4s; }
+.lv-vc button { border: 0; cursor: pointer; color: #fff; -webkit-tap-highlight-color: transparent; }
+.lv-vc .pill {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 44px;
+  padding: 0 22px 0 18px;
+  border-radius: 22px;
+  background: rgba(158, 158, 158, 0.92);
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+.lv-vc .pill em { font-style: normal; color: rgba(255, 255, 255, 0.62); margin-left: 2px; }
+.lv-vc .mute {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(205, 205, 205, 0.95);
+}
+.lv-disc.still { cursor: grab; touch-action: none; }
+.lv-disc .lv-jog { display: none; }
+.lv-disc.still .lv-jog {
+  display: block;
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+/* 돌리고 있다는 걸 보여주는 홈(눈금)과 빛 반사 */
+.lv-disc.still .lv-jog::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  width: 5px;
+  height: 30px;
+  margin-left: -2.5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.5);
+}
+.lv-disc.still .lv-jog::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 30%, rgba(255, 255, 255, 0.1) 36%, transparent 42% 80%, rgba(255, 255, 255, 0.08) 86%, transparent 92%);
+}

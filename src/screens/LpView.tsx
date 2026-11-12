@@ -16,7 +16,7 @@ const H = 852
  */
 const SCENE = [
   { disc: { cx: 98, cy: 382, d: 496 }, photo: 226, pivot: { x: 329, y: 203 }, armScale: 1 },
-  { disc: { cx: 195, cy: 426, d: 679 }, photo: 372, pivot: { x: 510, y: 180 }, armScale: 1.372 },
+  { disc: { cx: 195, cy: 376, d: 679 }, photo: 372, pivot: { x: 510, y: 130 }, armScale: 1.372 },
 ] as const
 
 /** 톤암 부품 (페이지 0 기준, 축 중심(0,0) 으로부터의 상대 좌표). Figma 값을 그대로 옮김 */
@@ -231,7 +231,7 @@ export default function LpView({ album, active, onBack }: Props) {
     }
   }
   const onDiscClick = () => {
-    if (swiped.current) return
+    if (swiped.current || jogged.current) return
     if (page === 1) play(!playing) // 크게 보기에서는 판을 탭해서 재생/정지
   }
 
@@ -250,6 +250,77 @@ export default function LpView({ album, active, onBack }: Props) {
     if (wantVideo) void el.play().catch(() => {})
     else el.pause()
   }, [wantVideo, moment?.id])
+  // 크게 보기: 영상 재생/음소거(현장음) 버튼, 재생 시각, LP 돌려서 시점 이동
+  const [muted, setMuted] = useState(true)
+  const [clock, setClock] = useState({ t: 0, dur: 0 })
+  const [jog, setJog] = useState(0) // LP 를 돌린 각도 (표시용)
+  const jogRef = useRef<{ last: number; moved: number } | null>(null)
+  const jogged = useRef(false)
+  useEffect(() => {
+    if (vref.current) vref.current.muted = muted
+  }, [muted, moment?.id])
+  useEffect(() => {
+    setClock({ t: 0, dur: moment?.kind === 'video' ? 0 : MOMENT_MS / 1000 })
+  }, [moment?.id])
+  useEffect(() => {
+    if (page !== 1) return
+    const id = window.setInterval(() => {
+      const el = vref.current
+      if (el) setClock({ t: el.currentTime, dur: isFinite(el.duration) ? el.duration : 0 })
+      else if (playing) setClock((c) => ({ ...c, t: Math.min(c.dur, c.t + 0.15) }))
+    }, 150)
+    return () => clearInterval(id)
+  }, [page, playing, moment?.id])
+  // 크게 보기로 들어오면 바로 재생
+  useEffect(() => {
+    if (page === 1 && !playing && moments.length) play(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page])
+  const fmt = (t: number) => {
+    const s = Math.max(0, Math.floor(t))
+    return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
+  }
+  const discAngle = (e: PointerEvent) => {
+    const r = ref.current!.getBoundingClientRect()
+    const px = (e.clientX - r.left) / k - d.cx
+    const py = (e.clientY - r.top) / k - d.cy
+    return { a: (Math.atan2(py, px) * 180) / Math.PI, rad: Math.hypot(px, py) }
+  }
+  const onJogDown = (e: PointerEvent) => {
+    if (page !== 1) return
+    const { a, rad } = discAngle(e)
+    if (rad < scene.photo / 2 + 4) return // 영상 부분은 옆으로 넘기는 제스처 그대로
+    e.stopPropagation()
+    e.currentTarget.setPointerCapture(e.pointerId)
+    jogRef.current = { last: a, moved: 0 }
+    jogged.current = false
+    vref.current?.pause()
+  }
+  const onJogMove = (e: PointerEvent) => {
+    const j = jogRef.current
+    if (!j) return
+    const { a } = discAngle(e)
+    let delta = a - j.last
+    if (delta > 180) delta -= 360
+    if (delta < -180) delta += 360
+    j.last = a
+    j.moved += Math.abs(delta)
+    if (j.moved > 3) jogged.current = true
+    setJog((v) => v + delta)
+    const el = vref.current
+    if (el && isFinite(el.duration) && el.duration > 0) {
+      // LP 한 바퀴 = 영상 전체. 시계 방향이면 앞으로, 반대면 뒤로 (계속 돌릴 수 있다)
+      const dur = el.duration
+      el.currentTime = (((el.currentTime + (delta / 360) * dur) % dur) + dur) % dur
+      setClock({ t: el.currentTime, dur })
+    }
+  }
+  const onJogUp = () => {
+    if (!jogRef.current) return
+    jogRef.current = null
+    if (playing) void vref.current?.play().catch(() => {})
+    window.setTimeout(() => (jogged.current = false), 50)
+  }
   const showMedia = moment !== null // 재생 전에도 가운데에 사진이 보인다
   const d = scene.disc
 
@@ -289,7 +360,12 @@ export default function LpView({ album, active, onBack }: Props) {
               className={`lv-disc ${playing ? 'run' : ''} ${page === 1 ? 'still' : ''}`}
               style={{ left: d.cx - d.d / 2, top: d.cy - d.d / 2, width: d.d, height: d.d }}
               onClick={onDiscClick}
+              onPointerDown={onJogDown}
+              onPointerMove={onJogMove}
+              onPointerUp={onJogUp}
+              onPointerCancel={onJogUp}
             >
+              <i className="lv-jog" style={{ transform: `rotate(${jog}deg)` }} />
               <div className="lv-photo" style={{ width: scene.photo, height: scene.photo }}>
                 {moment &&
                   (moment.kind === 'video' ? (
@@ -343,6 +419,35 @@ export default function LpView({ album, active, onBack }: Props) {
                   }}
                 />
               ))}
+            </div>
+
+            {/* 크게 보기: 재생·음소거 */}
+            <div className={`lv-vc ${page === 1 ? 'on' : ''}`}>
+              <button type="button" className="pill" onClick={() => play(!playing)} aria-label={playing ? 'Pause' : 'Play'}>
+                {playing ? (
+                  <svg viewBox="0 0 16 18" width="14" height="16" aria-hidden>
+                    <rect x="1" y="0" width="5" height="18" rx="1" fill="#fff" />
+                    <rect x="10" y="0" width="5" height="18" rx="1" fill="#fff" />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 16 18" width="14" height="16" aria-hidden>
+                    <path d="M1.5 1.2 14.5 9 1.5 16.8Z" fill="#fff" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round" />
+                  </svg>
+                )}
+                <span>
+                  {fmt(clock.t)} <em>/ {fmt(clock.dur)}</em>
+                </span>
+              </button>
+              <button type="button" className="mute" onClick={() => setMuted((m) => !m)} aria-label={muted ? 'Unmute' : 'Mute'} aria-pressed={muted}>
+                <svg viewBox="0 0 26 22" width="22" height="19" aria-hidden>
+                  <path d="M2 7.5h4.5L12 2.5v17L6.5 14.5H2Z" fill="#fff" stroke="#fff" strokeWidth="1.4" strokeLinejoin="round" />
+                  {muted ? (
+                    <path d="M16 8l7 7M23 8l-7 7" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+                  ) : (
+                    <path d="M16 7.5c1.8 1.8 1.8 5.2 0 7M19.5 4.5c3.6 3.6 3.6 9.4 0 13" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" />
+                  )}
+                </svg>
+              </button>
             </div>
 
             {/* 플레이어 정보 + 컨트롤 (플레이어 화면에서만) */}
