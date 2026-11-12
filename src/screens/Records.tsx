@@ -16,6 +16,7 @@ import {
   type Geo,
 } from '../stackLayout'
 import { DESIGN_W, useDesignScale } from '../useDesignScale'
+import PaperPlane from '../components/PaperPlane'
 import LpView from './LpView'
 import DraftLp from './DraftLp'
 import DeliveryMap from './DeliveryMap'
@@ -321,6 +322,9 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                 </g>
               </svg>
             </div>
+
+            {/* 종이비행기: 가끔 지나가고, 잡으면 근처 사람이 공유한 LP */}
+            <PaperPlane active={mode === 'home' && page === 0 && !mapOpen} w={DESIGN_W} h={dh} />
 
             {/* 기록 중인 앨범으로 바로 돌아가기 */}
             {recording && draft && (

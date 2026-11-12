@@ -4535,3 +4535,172 @@
   border-radius: inherit;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
 }
+
+/* ───────── 지나가는 종이비행기 (blue-vinyl) ───────── */
+.pp-plane {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 8;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  visibility: hidden;
+  filter: drop-shadow(3px 6px 5px rgba(0, 0, 0, 0.3));
+}
+.pp-plane.on {
+  visibility: visible;
+}
+.pp-plane img {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.pp-ov {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 30;
+  animation: pp-dim 0.9s ease forwards;
+}
+@keyframes pp-dim {
+  from {
+    background: rgba(12, 13, 24, 0);
+  }
+  to {
+    background: rgba(12, 13, 24, 0.55);
+  }
+}
+.pp-fly {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 60px;
+  height: 60px;
+  margin: -30px 0 0 -30px;
+  animation: pp-in 1.1s cubic-bezier(0.3, 0.6, 0.3, 1) forwards, pp-unfold 0.45s ease-in 1.15s forwards;
+}
+@keyframes pp-in {
+  from {
+    transform: translate(var(--sx), var(--sy)) scale(1) rotate(-8deg);
+  }
+  70% {
+    transform: translate(-16px, 20px) scale(2.2) rotate(6deg);
+  }
+  to {
+    transform: scale(2.4);
+  }
+}
+@keyframes pp-unfold {
+  from {
+    transform: scale(2.4);
+    opacity: 1;
+  }
+  to {
+    transform: scale(3.2, 0.4) rotate(-6deg);
+    opacity: 0;
+  }
+}
+.pp-card {
+  position: absolute;
+  left: 50%;
+  width: 220px;
+  height: 220px;
+  margin-left: -110px;
+  opacity: 0;
+  animation: pp-card 0.8s cubic-bezier(0.2, 0.8, 0.3, 1) 1.3s forwards;
+}
+@keyframes pp-card {
+  from {
+    transform: scale(0.2, 0.05) rotate(-12deg);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.06) rotate(1deg);
+    opacity: 1;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.pp-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 3px;
+  background: #6d7292 center / cover;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+  animation: pp-cover 0.9s cubic-bezier(0.45, 0, 0.2, 1) 2.4s forwards;
+}
+@keyframes pp-cover {
+  to {
+    transform: translate(-40px, 0) scale(0.86);
+  }
+}
+.pp-vinyl {
+  position: absolute;
+  inset: 8px;
+  z-index: 1;
+  border-radius: 50%;
+  background: repeating-radial-gradient(circle, #1d1d20 0 2px, #2a2a2e 2px 4px);
+  display: grid;
+  place-items: center;
+  animation: pp-vinyl 0.9s cubic-bezier(0.45, 0, 0.2, 1) 2.4s forwards;
+}
+.pp-vinyl i {
+  width: 34%;
+  height: 34%;
+  border-radius: 50%;
+  background: center / cover;
+}
+@keyframes pp-vinyl {
+  to {
+    transform: translateX(78px) rotate(200deg);
+  }
+}
+.pp-cap {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  text-align: center;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0;
+  animation: pp-show 0.6s ease 3.1s forwards;
+}
+.pp-cap small {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  opacity: 0.7;
+}
+.pp-cap b {
+  font-family: var(--serif);
+  font-size: 22px;
+}
+.pp-cap span {
+  font-size: 12px;
+  opacity: 0.8;
+}
+.pp-go {
+  position: absolute;
+  left: 50%;
+  bottom: 70px;
+  transform: translateX(-50%);
+  padding: 12px 26px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #2b2d42;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  animation: pp-show 0.5s ease 3.4s forwards;
+}
+@keyframes pp-show {
+  to {
+    opacity: 1;
+  }
+}
