@@ -5182,3 +5182,15 @@
 .pp-note .eq u:nth-child(2) { animation-delay: 0.2s; }
 .pp-note .eq u:nth-child(3) { animation-delay: 0.4s; }
 .pp-ov[class*='out-'] .pp-note { animation: pp-hide 0.25s ease forwards; }
+
+/* 앨범 슬리브: 안쪽 그림자 + 책등 쪽이 더 어두운 접힘 + 안에 든 LP 가 눌러놓은 둥근 자국 */
+.s-cover.sleeve::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 46% 40% at 50% 52%, transparent 94%, rgba(255,255,255,.10) 96%, transparent 100%),
+    linear-gradient(to bottom, rgba(0,0,0,.42), rgba(0,0,0,0) 38%, rgba(0,0,0,0) 72%, rgba(0,0,0,.22));
+  box-shadow: inset 0 0 16px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.07)}
+.s-cover.sleeve.up::after{
+  background:
+    radial-gradient(ellipse 46% 40% at 50% 48%, transparent 94%, rgba(255,255,255,.10) 96%, transparent 100%),
+    linear-gradient(to top, rgba(0,0,0,.42), rgba(0,0,0,0) 38%, rgba(0,0,0,0) 72%, rgba(0,0,0,.22))}
+.s-slab .s-spine{box-shadow:0 1px 1.5px rgba(0,0,0,.28), 0 6px 10px -4px rgba(0,0,0,.35)}

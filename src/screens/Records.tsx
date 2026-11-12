@@ -408,7 +408,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                   onKeyDown={(e) => e.key === 'Enter' && tapSlab(i)}
                 >
                   <div
-                    className="s-cover"
+                    className={`s-cover ${a && !a.delivery ? `sleeve ${g.dir}` : ''}`}
                     style={{
                       top: g.dir === 'down' ? SPINE_H - 1 : 0,
                       height: g.h,
