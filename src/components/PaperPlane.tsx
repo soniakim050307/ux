@@ -34,16 +34,25 @@ export default function PaperPlane({ active, w, h }: Props) {
     const ltr = Math.random() < 0.5
     const y0 = 150 + Math.random() * 110
     const rise = 60 + Math.random() * 70
-    const X = ltr ? [-90, w * 0.25, w * 0.6, w + 30] : [w + 30, w * 0.6, w * 0.25, -90]
+    // 진행 방향(왼→오 기준)의 각 구간 기울기에 맞춰 비행기 코를 돌린다.
+    // plane.png 는 코가 오른쪽 위 41° 를 향하므로, 진행 각도 + 41° 만큼 돌리면 코가 진행 방향을 가리킴
+    const xs = [-90, w * 0.25, w * 0.6, w + 30]
+    const ys = [y0, y0 - rise * 0.45, y0 - rise * 0.55, y0 - rise]
+    const heading = (i: number) => {
+      const a = Math.max(0, i - 1)
+      const c = Math.min(3, i + 1)
+      return (Math.atan2(ys[c] - ys[a], xs[c] - xs[a]) * 180) / Math.PI
+    }
+    const NOSE = 41
+    const wob = [3, -3, 2, -2]
+    const X = ltr ? xs : xs.map((x) => w - x)
     const f = ltr ? '' : ' scaleX(-1)'
     setFlying(true)
     anim.current = el.animate(
-      [
-        { transform: `translate(${X[0]}px,${y0}px)${f} rotate(4deg)` },
-        { transform: `translate(${X[1]}px,${y0 - rise * 0.45}px)${f} rotate(-8deg)`, offset: 0.33 },
-        { transform: `translate(${X[2]}px,${y0 - rise * 0.55}px)${f} rotate(2deg)`, offset: 0.66 },
-        { transform: `translate(${X[3]}px,${y0 - rise}px)${f} rotate(-10deg)` },
-      ],
+      [0, 1, 2, 3].map((i) => ({
+        transform: `translate(${X[i]}px,${ys[i]}px)${f} rotate(${(heading(i) + NOSE + wob[i]).toFixed(1)}deg)`,
+        offset: i / 3,
+      })),
       { duration: 7200, easing: 'linear' },
     )
     anim.current.onfinish = () => {
