@@ -30,6 +30,8 @@ npm run build    # dist/ 생성
 ## AI 사용 고지 (과제 appendix용)
 코드는 Claude(Anthropic)의 도움으로 작성되었고, UI 디자인은 팀이 Figma에서 직접 만든 것을 기준으로 했습니다.
 
+> The play button and the song list were reshaped by AI. We kept them because they follow a more familiar mental model for users (a pill-shaped play/time control and a compact, music-app-style track list).
+
 ## 주의
 참가자의 촬영 데이터는 기기 안에만 저장됩니다. 저장소에 커밋하지 마세요.
 
