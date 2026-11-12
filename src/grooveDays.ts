@@ -7,8 +7,29 @@ import type { FlowMoment } from './data'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
+/* 체험용 날짜: '오늘 저장'을 누르면 하루가 지난 것으로 친다 (실제 앱에서는 진짜 날짜가 바뀔 때 다음 날이 열림) */
+const KEY = 'bv-day-offset'
+let offset = (() => {
+  try {
+    return Number(localStorage.getItem(KEY)) || 0
+  } catch {
+    return 0
+  }
+})()
+/** 지금 시각 (체험용으로 넘긴 날 수만큼 더한 시각) */
+export const nowDate = () => new Date(Date.now() + offset * 86400000)
+/** 오늘을 닫고 다음 날로 */
+export const advanceDay = () => {
+  offset += 1
+  try {
+    localStorage.setItem(KEY, String(offset))
+  } catch {
+    /* 저장이 안 되는 환경이면 이번 방문 동안만 */
+  }
+}
+
 export const todayKey = () => {
-  const d = new Date()
+  const d = nowDate()
   return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`
 }
 

@@ -5056,3 +5056,47 @@
 .h-label{animation:h-label-spin 5s linear infinite;animation-play-state:paused}
 .h-art.spinning .h-label{animation-play-state:running}
 @keyframes h-label-spin{to{transform:rotate(360deg)}}
+
+/* 오늘 저장 → 오늘 홈이 새겨지고 다음 날로 */
+.og-days { bottom: 128px; }
+.og-tip { top: auto; bottom: 106px; }
+.og-save {
+  position: absolute;
+  left: 26px;
+  right: 26px;
+  bottom: 44px;
+  height: 48px;
+  border-radius: 24px;
+  background: #fff;
+  color: #2b2f4a;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: opacity 0.3s;
+}
+.og-save:disabled { opacity: 0.4; }
+.og-disc .carving .og-ring { animation: og-carve 1.3s ease both; }
+@keyframes og-carve {
+  0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+  50% { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.15); border-color: #fff; }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); opacity: 0.4; }
+}
+.og-day.carving { animation: og-day-close 1.3s ease both; }
+@keyframes og-day-close {
+  60% { opacity: 1; }
+  100% { opacity: 0.45; filter: saturate(0.4); }
+}
+.og-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 100px;
+  transform: translateX(-50%);
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: rgba(20, 22, 36, 0.85);
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 5;
+  animation: pp-show 0.3s ease both;
+}

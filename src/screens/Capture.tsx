@@ -1,3 +1,4 @@
+import { nowDate } from '../grooveDays'
 import { useEffect, useRef, useState } from 'react'
 import type { FlowMoment } from '../data'
 import { useDesignScale } from '../useDesignScale'
@@ -121,7 +122,7 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
   }, [cam, mic])
 
   const finish = (url: string, kind: 'video' | 'audio') => {
-    const now = new Date()
+    const now = nowDate()
     const pad = (n: number) => String(n).padStart(2, '0')
     const dur = Math.max(1, (performance.now() - startAt.current) / 1000)
     stream.current?.getTracks().forEach((t) => t.stop())

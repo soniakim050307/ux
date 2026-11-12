@@ -1,3 +1,4 @@
+import { nowDate } from '../grooveDays'
 import Parcel from '../Parcel'
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import type { FlowAlbum } from '../data'
@@ -278,7 +279,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
 
   const finishDraft = () => {
     if (!draft) return
-    const now = new Date()
+    const now = nowDate()
     const a: FlowAlbum = {
       ...draft,
       id: `new-${now.getTime()}`,

@@ -1,3 +1,4 @@
+import { advanceDay, todayKey as getTodayKey } from '../grooveDays'
 import { useRef, useState, type PointerEvent } from 'react'
 import type { FlowAlbum, FlowMoment } from '../data'
 import { useDesignScale } from '../useDesignScale'
@@ -45,9 +46,10 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
 
   /* 홈 하나 = 하루. 가장 바깥 홈이 첫째 날, 안쪽으로 갈수록 날이 지남.
      지난 날의 홈은 이미 새겨져 닫혀 있고, 오늘의 홈만 열려 있어 오늘 moment만 고치고 순서를 바꿀 수 있다. */
-  const pad = (n: number) => String(n).padStart(2, '0')
-  const now = new Date()
-  const todayKey = `${now.getFullYear()}.${pad(now.getMonth() + 1)}.${pad(now.getDate())}`
+  const [, setDayTick] = useState(0)
+  const [saving, setSaving] = useState(false)
+  const [toast, setToast] = useState('')
+  const todayKey = getTodayKey()
   const dayOf = (m: FlowMoment) => (m.time && /^\d{4}\.\d{2}\.\d{2}/.test(m.time) ? m.time.slice(0, 10) : todayKey)
   const days = Array.from(new Set([...moments.map(dayOf), todayKey])).sort()
   const byDay = (key: string) => moments.filter((m) => dayOf(m) === key)
@@ -89,6 +91,19 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
     setDrag(null)
     if (s && s.moved < 6) setOpen(moments.findIndex((m) => m.id === s.id))
   }
+  /* 오늘 저장: 오늘의 홈이 새겨져 닫히고, 다음 날의 홈이 열린다 */
+  const dayNo = days.indexOf(todayKey) + 1
+  const saveToday = () => {
+    if (saving || today.length === 0) return
+    setSaving(true)
+    window.setTimeout(() => {
+      advanceDay()
+      setSaving(false)
+      setDayTick((n) => n + 1)
+      setToast(`Day ${dayNo} carved · Day ${dayNo + 1} is open`)
+      window.setTimeout(() => setToast(''), 2600)
+    }, 1300)
+  }
   const ringR = (d: number) => 112 - d * Math.min(16, 72 / Math.max(1, days.length - 1))
   const md = (key: string) => key.slice(5).replace('.', '.')
 
@@ -120,7 +135,7 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
                 const list = byDay(d)
                 const isToday = d === todayKey
                 return (
-                  <span key={d} className={isToday ? 'today' : 'past'}>
+                  <span key={d} className={`${isToday ? 'today' : 'past'} ${isToday && saving ? 'carving' : ''}`}>
                     <i className="og-ring" style={{ width: r * 2, height: r * 2 }} />
                     {list.map((m, j) => {
                       const a = -70 + j * Math.min(48, 290 / Math.max(1, list.length)) // 위에서부터 이 날의 트랙 순서대로
@@ -145,7 +160,7 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
 
             <div className="og-days">
               {/* 오늘: 열려 있는 홈 */}
-              <div className="og-day today">
+              <div className={`og-day today ${saving ? 'carving' : ''}`}>
                 <p className="og-day-h">
                   DAY {days.indexOf(todayKey) + 1} · {md(todayKey)} <em>TODAY</em>
                 </p>
@@ -191,7 +206,11 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
                   </div>
                 ))}
             </div>
-            <p className="og-tip">Only today's groove is open · tap to edit, drag to reorder</p>
+            <p className="og-tip" style={{ opacity: toast ? 0 : 1 }}>Only today's groove is open · tap to edit, drag to reorder</p>
+            <button type="button" className="og-save" onClick={saveToday} disabled={today.length === 0 || saving}>
+              {saving ? 'Carving…' : `Save Day ${dayNo}`}
+            </button>
+            {toast && <div className="og-toast">{toast}</div>}
           </>
         )}
       </div>
