@@ -6,7 +6,7 @@ import Engrave from './Engrave'
 
 const W = 393
 const H = 852
-const MAX_S = 15
+const MAX_S = 10
 const RING_R = 149 // 원형 뷰파인더를 감싸는 흰 진행 링
 const RING_LEN = 2 * Math.PI * RING_R
 /** 지금 듣고 있는 노래 (실제 연동 전까지는 최근 재생곡으로 대신) */
@@ -230,7 +230,7 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
               {!rec && (
                 <div className="cap-hint">
                   <b>▶</b>
-                  <span>UP TO 15 SECONDS</span>
+                  <span>UP TO 10 SECONDS</span>
                   <em>Live camera works in the web app.{'\n'}Here it's simulated.</em>
                   <button type="button" className="cap-pick" onClick={() => fileRef.current?.click()}>
                     or choose a clip
