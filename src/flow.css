@@ -170,7 +170,7 @@
 }
 
 .h-arm-g.off {
-  transform: translate(-70px, 200px) rotate(-40deg);
+  transform: translate(-78px, 75px) rotate(-40deg);
 }
 
 .h-arm-g.up {
@@ -4963,3 +4963,12 @@
 }
 .lv-list-sheet > ul > li .row.on { background: rgba(255, 255, 255, 0.08); }
 .lv-list-sheet > ul > li .row.on .tx b { color: #9fb2ff; }
+
+/* 쉬는 침은 가끔 살짝 움찔해서 "눌러도 된다"는 걸 알려준다 */
+.h-arm-g.off { animation: h-arm-nudge 3.6s ease-in-out 1.2s infinite; }
+@keyframes h-arm-nudge {
+  0%, 74%, 100% { rotate: 0deg; }
+  80% { rotate: 3.5deg; }
+  86% { rotate: -1deg; }
+  92% { rotate: 2deg; }
+}
