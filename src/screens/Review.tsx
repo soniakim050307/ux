@@ -150,8 +150,25 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
     <div className="l-root cap et" ref={ref}>
       <div className="design" style={{ width: W, height: H, transform: `scale(${k})` }}>
         <div className="et-head">
-          <b>{title}</b>
-          <span>MOMENT {index}</span>
+          <b>
+            {title}
+            <small>MOMENT {index}</small>
+          </b>
+          {/* LP에 새기기: 원래 아래에 있던 버튼을 머리줄 오른쪽(MOMENT 자리)으로 */}
+          <button
+            type="button"
+            className="et-carve-top"
+            onClick={() => {
+              onSave({ title: song.title, artist: song.artist }, note.trim() || undefined, place.trim() || undefined)
+            }}
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+              <circle cx="12" cy="12" r="9" />
+              <circle cx="12" cy="12" r="5" />
+              <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+            </svg>
+            Carve
+          </button>
         </div>
 
         <div className="et-media" onClick={toggle}>
@@ -212,20 +229,6 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
           </span>
         </label>
 
-        <button
-          type="button"
-          className="et-carve"
-          onClick={() => {
-            onSave({ title: song.title, artist: song.artist }, note.trim() || undefined, place.trim() || undefined)
-          }}
-        >
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6">
-            <circle cx="12" cy="12" r="9" />
-            <circle cx="12" cy="12" r="5" />
-            <circle cx="12" cy="12" r="1.4" fill="currentColor" />
-          </svg>
-          CARVE INTO LP
-        </button>
 
         {sheet && (
           <>

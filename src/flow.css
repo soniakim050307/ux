@@ -5100,3 +5100,25 @@
   z-index: 5;
   animation: pp-show 0.3s ease both;
 }
+
+/* 녹화 후 화면: CARVE 버튼을 머리줄 오른쪽으로, MOMENT 번호는 제목 아래 작게 */
+.et .et-head { align-items: flex-start; }
+.et .et-head b small {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--sans, inherit);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  opacity: 0.6;
+}
+.et-carve-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 2px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
