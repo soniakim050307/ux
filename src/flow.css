@@ -165,12 +165,12 @@
 
 .h-arm-g {
   transform-box: view-box;
-  transform-origin: 337px -20px;
+  transform-origin: 377px -20px;
   transition: transform 1.4s cubic-bezier(0.45, 0, 0.2, 1);
 }
 
 .h-arm-g.off {
-  transform: rotate(-50deg);
+  transform: translate(-70px, 200px) rotate(-40deg);
 }
 
 .h-arm-g.up {
