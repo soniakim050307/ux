@@ -312,7 +312,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
               <svg className="h-arm" viewBox="0 0 393 260">
                 <g className={`h-arm-g ${armDown ? 'up' : 'off'}`}>
                   {/* LP 플레이어와 같은 둥근 톤암 (막대 + 카트리지 헤드) */}
-                  <g transform="translate(413 -147)">
+                  <g transform="translate(373 -137)">
                     <rect x="-182.0" y="139.5" width="274" height="13" rx="0" fill="#959595" transform="rotate(-65 -45 146)" />
                     <rect x="-115.0" y="269.5" width="16" height="15" rx="0" fill="#d9d9d9" transform="rotate(-65 -107 277)" />
                     <rect x="-129.9" y="285.9" width="29.8" height="18.2" rx="9" fill="#d9d9d9" transform="rotate(-64.5 -115 295)" />
