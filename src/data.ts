@@ -163,3 +163,15 @@ for (const a of FLOW_ALBUMS) {
     if (!m.song) m.song = { title: t[0], artist: t[1] }
   })
 }
+
+/** 회고 화면 배경색: 기본 파란색(#545e85)에서 크게 벗어나지 않게, 각 여행 대표 사진의 색을 살짝 섞은 값 */
+const LP_BG: Record<string, string> = {
+  barcelona: '#6a627a',
+  newyork: '#5b5c80',
+  reykjavik: '#587390',
+  bangkok: '#55776f',
+  kyoto: '#6b5a78',
+  lisbon: '#76667a',
+  jeju: '#4f6f98',
+}
+export const lpBg = (id?: string) => (id && LP_BG[id]) || '#545e85'

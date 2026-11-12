@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
-import type { FlowAlbum } from '../data'
+import { lpBg, type FlowAlbum } from '../data'
 import { playMusic } from '../music'
 import { DESIGN_H, DESIGN_W, useDesignScale } from '../useDesignScale'
 
@@ -50,7 +50,7 @@ export default function MomentDetail({ album, index, onIndex, onClose }: Props) 
   }
 
   return (
-    <div className="d-root" ref={ref} onPointerDown={onDown} onPointerUp={onUp}>
+    <div className="d-root" ref={ref} onPointerDown={onDown} onPointerUp={onUp} style={{ background: lpBg(album.id) }}>
       <div className="design" style={{ width: DESIGN_W, height: DESIGN_H, transform: `scale(${k})` }}>
         <header className="d-head">
           <h2>{album.city}</h2>
