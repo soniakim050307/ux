@@ -1,5 +1,4 @@
 import { nowDate } from '../grooveDays'
-import { buildSongs, dayNumbers } from '../days'
 import Parcel from '../Parcel'
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import type { FlowAlbum } from '../data'
@@ -329,9 +328,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                 <div className="h-info">
                   <span className="k">Latest record</span>
                   <b>{latest.city}</b>
-                  <span className="s">
-                    {latest.date} · {latest.moments.length} moments · {buildSongs(latest.moments).length} songs · {new Set(dayNumbers(latest.moments)).size} days
-                  </span>
+                  <span className="s">{latest.date}</span>
                 </div>
               )}
               {latest && (
