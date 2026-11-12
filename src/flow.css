@@ -5126,3 +5126,9 @@
   font-weight: 500;
   letter-spacing: 0.02em;
 }
+
+/* 홈: 가장 최근 LP 정보 */
+.h-info{position:absolute;left:33px;right:33px;top:364px;display:flex;flex-direction:column;gap:3px;color:#fff;pointer-events:none}
+.h-info .k{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;opacity:.6}
+.h-info b{font-family:var(--serif);font-size:19px;font-weight:700;letter-spacing:-.2px}
+.h-info .s{font-size:12px;opacity:.78}

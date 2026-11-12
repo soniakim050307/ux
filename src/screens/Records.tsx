@@ -1,4 +1,5 @@
 import { nowDate } from '../grooveDays'
+import { buildSongs, dayNumbers } from '../days'
 import Parcel from '../Parcel'
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import type { FlowAlbum } from '../data'
@@ -324,6 +325,15 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                 style={latest?.cover ? { backgroundImage: `url(${latest.cover})` } : undefined}
               />
               <div className="h-hole" />
+              {latest && (
+                <div className="h-info">
+                  <span className="k">Latest record</span>
+                  <b>{latest.city}</b>
+                  <span className="s">
+                    {latest.date} · {latest.moments.length} moments · {buildSongs(latest.moments).length} songs · {new Set(dayNumbers(latest.moments)).size} days
+                  </span>
+                </div>
+              )}
               {latest && (
                 <button type="button" className="h-play" onClick={playLatest} aria-label={`Play ${latest.city}`} />
               )}
