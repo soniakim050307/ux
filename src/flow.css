@@ -5230,3 +5230,6 @@
 .lv-arm.lv-base {
   filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.22));
 }
+
+/* 영상·사진이 바뀌는 사이에도 포스터가 배경으로 깔려 있어 회색 원이 보이지 않는다 */
+.lv-photo img,.lv-photo video{transition-delay:0s}

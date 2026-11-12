@@ -332,6 +332,13 @@ export default function LpView({ album, active, onBack }: Props) {
     if (playing) void vref.current?.play().catch(() => {})
     window.setTimeout(() => (jogged.current = false), 50)
   }
+  // 다음 곡으로 넘길 때 회색 원이 비지 않도록 모든 모먼트 사진을 미리 받아둔다
+  useEffect(() => {
+    moments.forEach((m) => {
+      const im = new Image()
+      im.src = m.poster ?? m.src
+    })
+  }, [album?.id]) // eslint-disable-line react-hooks/exhaustive-deps
   const showMedia = moment !== null // 재생 전에도 가운데에 사진이 보인다
   const d = scene.disc
 
@@ -377,7 +384,16 @@ export default function LpView({ album, active, onBack }: Props) {
               onPointerCancel={onJogUp}
             >
               <i className="lv-jog" style={{ transform: `rotate(${jog}deg)` }} />
-              <div className="lv-photo" style={{ width: scene.photo, height: scene.photo }}>
+              <div
+                className="lv-photo"
+                style={{
+                  width: scene.photo,
+                  height: scene.photo,
+                  backgroundImage: moment ? `url(${moment.poster ?? moment.src})` : undefined,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              >
                 {moment &&
                   (moment.kind === 'video' ? (
                     <video
