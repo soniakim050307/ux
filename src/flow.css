@@ -2349,10 +2349,11 @@
   position: absolute;
   border-radius: 50%;
   background: #242424;
+  /* 위치·가로·세로를 같은 시간·곡선으로 움직여야 타원 → 원으로 바뀌는 동안 모양이 일그러지지 않는다 */
   transition:
-    left 0.9s cubic-bezier(0.5, 0, 0.2, 1),
-    top 0.9s cubic-bezier(0.5, 0, 0.2, 1),
-    width 0.9s cubic-bezier(0.5, 0, 0.2, 1),
+    left 1.1s cubic-bezier(0.45, 0, 0.2, 1),
+    top 1.1s cubic-bezier(0.45, 0, 0.2, 1),
+    width 1.1s cubic-bezier(0.45, 0, 0.2, 1),
     height 1.1s cubic-bezier(0.45, 0, 0.2, 1),
     box-shadow 1.6s ease;
 }
@@ -2381,7 +2382,7 @@
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
   transition:
     left 1.1s cubic-bezier(0.45, 0, 0.2, 1),
-    top 1.5s cubic-bezier(0.55, 0, 0.3, 1),
+    top 1.1s cubic-bezier(0.45, 0, 0.2, 1),
     width 1.1s cubic-bezier(0.45, 0, 0.2, 1),
     height 1.1s cubic-bezier(0.45, 0, 0.2, 1);
 }
@@ -2743,9 +2744,9 @@
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
   }
   100% {
-    scale: 1.02 0.88;
-    translate: 0 2px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+    scale: 1 1;
+    translate: 0 0;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.28);
   }
 }
 
@@ -2811,7 +2812,9 @@
 .mp-chip { display: none; }
 
 /* 도착한 소포 */
-.h-parcel { position: absolute; z-index: 15; left: 50%; top: 600px; width: 150px; margin-left: -75px; text-align: center; }
+.h-parcel { position: absolute; z-index: 15; left: 50%; top: 600px; width: 150px; margin-left: -75px; text-align: center; animation: hp-in .35s ease .9s both; }
+/* 스택이 아래로 다 내려간 뒤에 소포가 나타나야 서로 겹치지 않는다 */
+@keyframes hp-in { from { opacity: 0; } to { opacity: 1; } }
 .hp-box { position: relative; display: block; width: 150px; height: 100px; background: #e3b98f; border-radius: 4px; box-shadow: 0 14px 24px rgba(0,0,0,.35); animation: hp-jig 3.2s ease-in-out infinite; transform-origin: 50% 100%; }
 .hp-box .pk-tape.h { top: 62%; height: 6px; animation: none; }
 .hp-box .pk-tape.v { left: 68%; width: 6px; animation: none; }

@@ -3,6 +3,7 @@ import { FLOW_ALBUMS } from './data'
 import Records from './screens/Records'
 import Boot from './screens/Boot'
 import Capture from './screens/Capture'
+import PressSeq from './screens/PressSeq'
 import CarveScene from './screens/CarveScene'
 
 /**
@@ -16,6 +17,14 @@ export default function App() {
       <div className="stage">
         <div className="app">
           <CarveScene loop />
+        </div>
+      </div>
+    )
+  if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('press') === '1')
+    return (
+      <div className="stage">
+        <div className="app">
+          <PressSeq city="Reykjavik, Iceland" onFinish={() => {}} />
         </div>
       </div>
     )
