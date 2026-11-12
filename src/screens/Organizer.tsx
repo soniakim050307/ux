@@ -110,11 +110,15 @@ export default function Organizer({ album, onChange, onClose, onFinish }: Props)
                 return (
                   <span key={m.id}>
                     <i className="og-ring" style={{ width: r * 2, height: r * 2 }} />
+                    {/* 번호 대신 그 moment의 사진이 판 위에 꽂힘 */}
                     <b
                       className={`og-dot ${drag && moments[drag.i]?.id === m.id ? 'on' : ''}`}
-                      style={{ transform: `rotate(${a}deg) translateX(${r}px) rotate(${-a}deg)` }}
+                      style={{
+                        transform: `rotate(${a}deg) translateX(${r}px) rotate(${-a}deg)`,
+                        backgroundImage: m.poster || m.kind !== 'video' ? `url(${m.poster || m.src})` : undefined,
+                      }}
                     >
-                      {i + 1}
+                      {!m.poster && m.kind === 'video' && <video src={m.src} muted playsInline preload="metadata" />}
                     </b>
                   </span>
                 )
