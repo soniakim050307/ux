@@ -26,6 +26,12 @@ function toAlbum(sh: Shared): FlowAlbum {
 }
 const url = (p: string) => `${import.meta.env.BASE_URL}${p}`
 const base = (sh: { base: string }) => FLOW_ALBUMS.find((a) => a.id === sh.base)!
+/** 지금 실제로 나오는 소리의 곡 정보: 음원 파일이 있으면 그 파일의 곡, 없으면 모먼트에 적힌 곡 */
+const nowSong = (sh: { base: string }) => {
+  const m = base(sh).moments[0]
+  if (m?.audio) return { title: 'Paris in the rain', artist: 'Lauv' }
+  return m?.song ?? { title: 'Unknown song', artist: '' }
+}
 /** 봉투 크기·위치 (디자인 좌표) */
 const ENV = 236
 const ENV_TOP = 178
@@ -206,8 +212,8 @@ export default function PaperPlane({ active, w, h, onPlay, onAdd }: Props) {
             <div className="pp-now">
               <i className="eq"><u /><u /><u /></i>
               <span>
-                <b>{base(sh).moments[0]?.song?.title ?? 'Unknown song'}</b>
-                <em>{base(sh).moments[0]?.song?.artist ?? ''} · @{sh.owner}'s list</em>
+                <b>{nowSong(sh).title}</b>
+                <em>{nowSong(sh).artist} · @{sh.owner}'s list</em>
               </span>
             </div>
             <div className="pp-thumbs">
