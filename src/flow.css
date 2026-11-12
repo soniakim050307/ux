@@ -4189,3 +4189,87 @@
   border-color: #e5484d;
   box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.35), 0 4px 10px rgba(0, 0, 0, 0.35);
 }
+
+/* ───────── 정리 화면: 홈 하나 = 하루 ───────── */
+.og-disc > span.past {
+  opacity: 0.38;
+}
+.og-disc > span.past .og-dot {
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border-width: 1.5px;
+}
+.og-disc > span.today .og-ring {
+  border: 2px solid #fff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
+}
+.og-days {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 446px;
+  bottom: 56px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 0 0 20px;
+}
+.og-days::-webkit-scrollbar {
+  display: none;
+}
+.og-day {
+  padding: 0 0 0 26px;
+  margin-bottom: 18px;
+}
+.og-day-h {
+  margin: 0 0 8px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.85);
+}
+.og-day-h em {
+  font-style: normal;
+  margin-left: 6px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 9px;
+  background: #fff;
+  color: #545e85;
+}
+.og-day.past .og-day-h em {
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.8);
+}
+.og-day .og-row {
+  position: relative;
+  top: auto;
+  left: auto;
+  width: auto;
+  padding: 6px 26px 12px 0;
+}
+.og-day .og-track {
+  height: 104px;
+}
+.og-day-empty {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+}
+.og-past {
+  display: flex;
+  gap: 10px;
+  opacity: 0.5;
+  pointer-events: none;
+  filter: grayscale(0.4);
+}
+.og-tip {
+  top: auto;
+  bottom: 26px;
+}
+
+.og-days {
+  top: 474px;
+}
+.og-day .og-row {
+  padding-bottom: 26px;
+}

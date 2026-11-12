@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { dayOf, dayTime, tripDays } from '../grooveDays'
 import type { FlowAlbum } from '../data'
 import { useDesignScale } from '../useDesignScale'
 import Capture from './Capture'
@@ -7,11 +8,9 @@ import Organizer from './Organizer'
 const W = 393
 const H = 852
 const LP = { cx: 39, cy: 408, r: 323 }
-/** moment마다 판의 서로 다른 홈(반지름)에 핀이 꽂히고, 그 홈이 흰 줄로 새겨진다 */
-const pinPos = (k: number) => ({
-  deg: (-55 + k * 27) % 110,
-  r: 186 + (k % 9) * 14,
-})
+/** 홈 하나 = 하루 (바깥이 첫째 날). 같은 날 moment는 같은 홈에, 각도는 하루 중 시각 (위가 아침, 아래가 밤) */
+const grooveR = (day: number) => Math.max(186, 298 - day * 18)
+const timeDeg = (t: number) => -62 + t * 124
 
 interface Props {
   album: FlowAlbum
@@ -75,6 +74,7 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
   }
   const saved = album.city !== ''
   const n = album.moments.length
+  const days = tripDays(album.moments)
   const [toast, setToast] = useState('')
   const toastT = useRef(0)
   const say = (t: string) => {
@@ -267,14 +267,16 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
           </svg>
           {/* 새겨진 홈: 판이 돌아도 핀과 맞도록 회전하지 않는 겹 */}
           <svg className="dl-grooves" viewBox={`${-LP.r} ${-LP.r} ${LP.r * 2} ${LP.r * 2}`}>
-            {album.moments.map((m, k) => {
-              const { deg, r } = pinPos(k)
+            {days.map((d, di) => {
+              const r = grooveR(di)
+              // 그날 첫 moment 시각에서부터 새겨지기 시작 (홈 하나 = 하루)
+              const first = album.moments.find((m) => dayOf(m) === d)
               return (
                 <circle
-                  key={m.id}
+                  key={d}
                   className="dl-carve"
                   r={r}
-                  transform={`rotate(${deg})`}
+                  transform={`rotate(${first ? timeDeg(dayTime(first)) : 0})`}
                   style={
                     {
                       '--len': (2 * Math.PI * r).toFixed(1),
@@ -286,9 +288,9 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
           </svg>
         </div>
 
-        {album.moments.map((m, k) => {
-          const { deg, r } = pinPos(k)
-          const a = (deg * Math.PI) / 180
+        {album.moments.map((m) => {
+          const r = grooveR(days.indexOf(dayOf(m)))
+          const a = (timeDeg(dayTime(m)) * Math.PI) / 180
           const thumb = m.poster || (m.kind !== 'video' ? m.src : '')
           return (
             <div
