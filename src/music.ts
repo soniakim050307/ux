@@ -84,7 +84,9 @@ export function playMusic(opts: { src?: string; seed: number; start?: number }):
     const start = opts.start ?? 0
     if (start > 0) {
       el.addEventListener('loadedmetadata', () => {
-        el.currentTime = start
+        // 파일이 짧아졌으므로 시작 지점은 길이 안으로 접어 넣는다
+        const d = el.duration
+        el.currentTime = isFinite(d) && d > 0 ? start % d : 0
       })
     }
     void el.play().catch(() => {})
