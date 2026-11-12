@@ -39,6 +39,17 @@ const ARM_PARTS: {
   { x: -133, y: 318, w: 60, h: 28, r: -35, c: '#d9d9d9', radius: '10px' },
 ]
 
+/** 축에서 바늘 끝까지 이어지는 직사각형 (축 기준, 막대 방향으로 회전) */
+const _tip = ARM_PARTS[ARM_PARTS.length - 1]
+const ARM_HIT = {
+  left: 36,
+  top: -48,
+  width: Math.hypot(_tip.x, _tip.y) + 30 - 36,
+  height: 96,
+  transformOrigin: '-36px 48px',
+  transform: `rotate(${(Math.atan2(_tip.y, _tip.x) * 180) / Math.PI}deg)`,
+}
+
 /** 앞의 4개(받침 + 힌지)는 고정, 나머지(막대·바늘)만 돌아간다 */
 const BASE_N = 4
 
@@ -432,6 +443,8 @@ export default function LpView({ album, active, onBack }: Props) {
               onPointerUp={page === 0 ? onArmUp : undefined}
               onPointerCancel={page === 0 ? onArmUp : undefined}
             >
+              {/* 톤암 전체(막대~바늘 끝)를 한 덩어리로 잡는 보이지 않는 터치 영역 */}
+              <i className="lv-armhit" style={ARM_HIT} />
               {ARM_PARTS.slice(BASE_N).map((p, i) => (
                 <i
                   key={i}
