@@ -5130,8 +5130,9 @@
 /* 홈: 가장 최근 LP 정보 */
 .h-info{position:absolute;left:33px;right:33px;top:346px;display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:3px;color:#fff;pointer-events:none}
 .h-info .k{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;opacity:.6}
-.h-info b{font-family:var(--serif);font-size:19px;font-weight:700;letter-spacing:-.2px}
-.h-info .s{font-size:12px;opacity:.78}
+.h-info b{font-family:var(--serif);font-size:25px;line-height:30px;font-weight:700;letter-spacing:-.3px;margin-top:2px}
+.h-info b::after{content:'';display:block;width:22px;height:2px;border-radius:2px;background:rgba(255,255,255,.55);margin:8px 0 0 auto}
+.h-info .s{font-size:12px;opacity:.7;margin-top:5px;letter-spacing:.4px}
 
 /* 종이비행기 종이 위에 작게 적힌 지금 곡 */
 .pp-note {
@@ -5197,3 +5198,11 @@
 
 .h-arm-g.drag{transition:none}
 .h-arm-g{touch-action:none}
+
+/* 모먼트 핀 위계: 대표 핀은 크고 또렷하게, 나머지는 한 단계 낮게 */
+.lp2-pin .lp2-pinhead{opacity:.78}
+.lp2-pin.lead .lp2-pinhead{opacity:1;border-width:3px;box-shadow:0 0 0 5px rgba(255,255,255,.12),0 6px 14px rgba(0,0,0,.35)}
+.lp2-pin.lead .lp2-stem{background:rgba(232,226,214,.95)}
+.lp2-pin.dim .lp2-pinhead,.lp2-pin.dim .lp2-stem,.lp2-pin.dim .lp2-foot{opacity:.5}
+.lp2-pin.on .lp2-pinhead{opacity:1}
+.lp2-pinhead,.lp2-stem,.lp2-foot{transition-property:width,height,left,top,opacity}

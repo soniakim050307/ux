@@ -20,9 +20,9 @@ const SLOTS: [number, number][] = [
   [-0.6, 0.2],
 ]
 /** 핀 머리 크기와, 머리 중심에서 바닥까지 높이(REST 기준) */
-const HEAD = [24, 25, 27]
-const PIN_H = [63, 65, 71]
-const FOOT_W = [17, 17, 19]
+const HEAD = [31, 24, 21]
+const PIN_H = [80, 64, 56]
+const FOOT_W = [20, 16, 14]
 const SEL_CIRCLE = 182
 const SEL_STEM = 61
 
@@ -71,7 +71,7 @@ export default function LaidLp({ album, selected, onSelect, onOpen }: Props) {
           : Math.max(8, (PIN_H[i] ?? 66) * squash - hh / 2)
         const fw = FOOT_W[i] ?? 17
         return (
-          <div key={m.id} className={`lp2-pin ${on ? 'on' : ''}`} style={{ left: fx, top: fy }}>
+          <div key={m.id} className={`lp2-pin ${on ? 'on' : ''} ${i === 0 ? 'lead' : ''} ${selected !== null && !on ? 'dim' : ''}`} style={{ left: fx, top: fy }}>
             <i className="lp2-foot" style={{ width: fw, height: fw * 0.55, left: -fw / 2, top: -fw * 0.275 }} />
             <i className="lp2-stem" style={{ height: stem, top: -stem }} />
             <button
