@@ -18,6 +18,7 @@ import {
 import { DESIGN_W, useDesignScale } from '../useDesignScale'
 import PaperPlane from '../components/PaperPlane'
 import LpView from './LpView'
+import { playMusic } from '../music'
 import DraftLp from './DraftLp'
 import DeliveryMap from './DeliveryMap'
 
@@ -78,11 +79,8 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
   // 홈 턴테이블에 올라가는 LP = 가장 최근에 만든(배송 중이 아닌) 앨범
   const latest = list.find((a) => !a.delivery && !a.sharedBy && a.moments.length > 0) ?? null
 
+  // 침은 평소엔 판 옆에 쉬고 있다가, LP를 누르면 판 위로 내려온다
   const [armDown, setArmDown] = useState(false)
-  useEffect(() => {
-    const t = setTimeout(() => setArmDown(true), 400)
-    return () => clearTimeout(t)
-  }, [])
   const [mode, setMode] = useState<Mode>('home')
   const [sel, setSel] = useState<number | null>(null)
   const [pull, setPull] = useState(0)
@@ -183,11 +181,27 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
   /* ---------- 홈 턴테이블의 LP를 누르면 그 앨범을 바로 재생 ---------- */
   const playLatest = () => {
     if (mode !== 'home' || !latest) return
+    setArmDown(false) // 배경 음악은 멈추고, LP 화면이 직접 재생한다
     setPull(0)
     setSel(list.indexOf(latest) + 1)
     setMode('cover')
-    later(commit, 650) // 슬리브에서 LP가 빠져나온 뒤 LP 화면으로 → LpView 가 들어오면 자동 재생
+    later(commit, 650) // 슬리브에서 LP가 빠져나온 뒤 LP 화면으로
   }
+
+  // 침을 누르면 판 위로 내려오고 배경 음악이 깔린다. 한 번 더 누르면 침이 올라가고 멈춘다.
+  const toggleArm = () => {
+    if (mode !== 'home' || !latest) return
+    setArmDown((v) => !v)
+  }
+  const bgMoment = latest?.moments[0]
+  useEffect(() => {
+    if (!armDown || !bgMoment) return
+    return playMusic({ src: bgMoment.audio, seed: 0, start: bgMoment.audioStart })
+  }, [armDown, latest?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+  // 홈을 벗어나면 침은 다시 쉬는 자리로
+  useEffect(() => {
+    if (mode !== 'home') setArmDown(false)
+  }, [mode])
 
   /* ---------- 커버: LP 빼내기 ---------- */
   const commit = () => {
@@ -310,9 +324,11 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
                 <button type="button" className="h-play" onClick={playLatest} aria-label={`Play ${latest.city}`} />
               )}
               <svg className="h-arm" viewBox="0 0 393 260">
-                <g className={`h-arm-g ${armDown ? 'up' : 'off'}`}>
+                <g className={`h-arm-g ${armDown ? 'on' : 'up'}`} onClick={toggleArm}>
                   {/* LP 플레이어와 같은 둥근 톤암 (막대 + 카트리지 헤드) */}
                   <g transform="translate(413 -147)">
+                    {/* 누르기 쉽게 막대 전체를 덮는 투명한 터치 영역 */}
+                    <line x1="-133" y1="318" x2="13" y2="22" stroke="transparent" strokeWidth="50" strokeLinecap="round" style={{ pointerEvents: 'stroke', cursor: 'pointer' }} />
                     <rect x="-182.0" y="139.5" width="274" height="13" rx="0" fill="#959595" transform="rotate(-65 -45 146)" />
                     <rect x="-115.0" y="269.5" width="16" height="15" rx="0" fill="#d9d9d9" transform="rotate(-65 -107 277)" />
                     <rect x="-129.9" y="285.9" width="29.8" height="18.2" rx="9" fill="#d9d9d9" transform="rotate(-64.5 -115 295)" />
