@@ -162,11 +162,6 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
               onSave({ title: song.title, artist: song.artist }, note.trim() || undefined, place.trim() || undefined)
             }}
           >
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
-              <circle cx="12" cy="12" r="9" />
-              <circle cx="12" cy="12" r="5" />
-              <circle cx="12" cy="12" r="1.4" fill="currentColor" />
-            </svg>
             Carve
           </button>
         </div>
