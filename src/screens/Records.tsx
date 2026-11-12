@@ -350,18 +350,6 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
               onAdd={(a) => setCreated((c) => [...c, a])}
             />
 
-            {/* 기록 중인 앨범으로 바로 돌아가기 */}
-            {recording && draft && (
-              <button type="button" className={`h-rec ${mode === 'home' ? '' : 'gone'}`} onClick={() => tapSlab(0)}>
-                <i />
-                <span>
-                  <b>NOW RECORDING</b>
-                  {draft.city || 'New Journey'} · {draft.moments.length} moment{draft.moments.length === 1 ? '' : 's'}
-                </span>
-                <em>›</em>
-              </button>
-            )}
-
             {transitAlbum && page === 0 && !mapOpen && (
               <button type="button" className="r-trigger" onClick={arriveNow}>
                 ▶ 배송 도착시키기 (체험용)
