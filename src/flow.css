@@ -4579,7 +4579,7 @@
   width: 60px;
   height: 60px;
   margin: -30px 0 0 -30px;
-  animation: pp-in 1.1s cubic-bezier(0.3, 0.6, 0.3, 1) forwards, pp-unfold 0.45s ease-in 1.15s forwards;
+  animation: pp-in 1.1s cubic-bezier(0.3, 0.6, 0.3, 1) forwards, pp-unfold 0.2s linear 1.1s forwards;
 }
 @keyframes pp-in {
   from {
@@ -4598,31 +4598,95 @@
     opacity: 1;
   }
   to {
-    transform: scale(3.2, 0.4) rotate(-6deg);
+    transform: scale(2.4);
     opacity: 0;
   }
 }
 .pp-env {
   position: absolute;
   left: 50%;
-  border-radius: 16px;
-  background: linear-gradient(160deg, #f4f1e8, #e7e2d6);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-  opacity: 0;
-  animation: pp-card 0.8s cubic-bezier(0.2, 0.8, 0.3, 1) 1.3s forwards;
+  perspective: 900px;
+  filter: drop-shadow(0 16px 22px rgba(0, 0, 0, 0.32));
 }
-@keyframes pp-card {
-  from {
-    transform: scale(0.2, 0.05) rotate(-12deg);
-    opacity: 0;
-  }
-  70% {
-    transform: scale(1.05) rotate(1deg);
+/* ── 종이 펼치기 ── */
+.pp-sheet {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  opacity: 0;
+  animation: pp-sheet-in 0.15s linear 1.1s forwards, pp-sheet-turn 0.55s cubic-bezier(0.3, 0.7, 0.3, 1) 1.15s both;
+}
+@keyframes pp-sheet-in {
+  to {
     opacity: 1;
+  }
+}
+/* 비행기처럼 코가 오른쪽 위를 향한 채 작게 → 똑바로 서며 원래 크기로 */
+@keyframes pp-sheet-turn {
+  from {
+    transform: translate(-30px, 0) rotate(45deg) scale(0.62);
   }
   to {
     transform: none;
-    opacity: 1;
+  }
+}
+.sh {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: linear-gradient(160deg, #f4f1e8, #e7e2d6);
+}
+.sh-rb {
+  clip-path: polygon(50% 0, 100% 50%, 100% 100%, 50% 100%);
+}
+.sh-lb {
+  clip-path: polygon(0 50%, 50% 0, 50% 100%, 0 100%);
+}
+/* 접혀 있는 모서리: 종이 뒷면이라 조금 더 어둡게 보이다가 펼쳐지며 밝아짐 */
+.sh-rf {
+  clip-path: polygon(50% 0, 100% 0, 100% 50%);
+  transform-origin: 75% 25%;
+  animation: pp-rf 0.45s cubic-bezier(0.45, 0, 0.25, 1) 2.2s both;
+}
+@keyframes pp-rf {
+  from {
+    transform: translateZ(1px) rotate3d(1, 1, 0, 180deg);
+    filter: brightness(0.86);
+  }
+  to {
+    transform: none;
+    filter: none;
+  }
+}
+.sh-lf {
+  clip-path: polygon(0 0, 50% 0, 0 50%);
+  transform-origin: 25% 25%;
+  animation: pp-lf 0.45s cubic-bezier(0.45, 0, 0.25, 1) 2.45s both;
+}
+@keyframes pp-lf {
+  from {
+    transform: translateZ(1px) rotate3d(-1, 1, 0, -180deg);
+    filter: brightness(0.86);
+  }
+  to {
+    transform: none;
+    filter: none;
+  }
+}
+/* 반으로 접힌 왼쪽 면이 먼저 열림 */
+.sh-l {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  animation: pp-l 0.55s cubic-bezier(0.45, 0, 0.25, 1) 1.65s both;
+}
+@keyframes pp-l {
+  from {
+    transform: translateZ(2px) rotateY(-180deg);
+  }
+  to {
+    transform: none;
   }
 }
 /* 봉투 접힌 자국 (X) */
@@ -4631,6 +4695,8 @@
   inset: 0;
   width: 100%;
   height: 100%;
+  opacity: 0;
+  animation: pp-show 0.4s ease 2.85s forwards;
 }
 .pp-fold path {
   stroke: rgba(80, 70, 50, 0.1);
@@ -4649,7 +4715,7 @@
   background: #8ea2c8 center / cover;
   opacity: 0;
   transform: translateY(20px);
-  animation: pp-photo 0.7s ease 2.25s forwards;
+  animation: pp-photo 0.7s ease 3.15s forwards;
 }
 @keyframes pp-photo {
   to {
@@ -4670,7 +4736,7 @@
   place-items: center;
   opacity: 0;
   transform: translateY(26px) scale(0.6);
-  animation: pp-vinyl 0.9s cubic-bezier(0.2, 0.8, 0.3, 1) 2.1s forwards;
+  animation: pp-vinyl 0.9s cubic-bezier(0.2, 0.8, 0.3, 1) 3s forwards;
 }
 .pp-vinyl i {
   position: relative;
@@ -4706,7 +4772,7 @@
   flex-direction: column;
   gap: 6px;
   opacity: 0;
-  animation: pp-show 0.6s ease 2.8s forwards;
+  animation: pp-show 0.6s ease 3.6s forwards;
 }
 .pp-cap b {
   font-family: var(--serif);
@@ -4736,17 +4802,17 @@
 .pp-btn.play {
   background: #fff;
   color: #1d1f2c;
-  animation-delay: 3.05s;
+  animation-delay: 3.85s;
 }
 .pp-btn.add {
   background: #d9d9d9;
   color: #1d1f2c;
-  animation-delay: 3.15s;
+  animation-delay: 3.95s;
 }
 .pp-btn.discard {
   background: #ad6460;
   color: #fff;
-  animation-delay: 3.25s;
+  animation-delay: 4.05s;
 }
 /* 나갈 때: Play = LP가 커지며 화면 전환, add = 봉투째 아래 목록으로, discard = 봉투가 접혀 다시 날아감 */
 .pp-ov.out-play,

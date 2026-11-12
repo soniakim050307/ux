@@ -163,6 +163,15 @@ export default function PaperPlane({ active, w, h, onPlay, onAdd }: Props) {
             style={{ '--sx': `${caught.x - w / 2}px`, '--sy': `${caught.y - ENV_TOP - ENV / 2}px` } as React.CSSProperties}
           />
           <div className="pp-env" style={{ top: ENV_TOP, width: ENV, height: ENV, marginLeft: -ENV / 2 }}>
+            {/* 접힌 종이: 왼쪽 반이 오른쪽 위로 접혀 있고, 위 두 모서리가 가운데로 접혀 있음 → 하나씩 펼쳐진다 */}
+            <div className="pp-sheet">
+              <div className="sh sh-rb" />
+              <div className="sh sh-rf" />
+              <div className="sh-l">
+                <div className="sh sh-lb" />
+                <div className="sh sh-lf" />
+              </div>
+            </div>
             <svg className="pp-fold" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
               <path d="M0 0L100 100M100 0L0 100" />
             </svg>
