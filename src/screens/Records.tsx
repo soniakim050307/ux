@@ -351,7 +351,7 @@ export default function Records({ albums }: { albums: FlowAlbum[] }) {
               return (
                 <div
                   key={a ? a.id : 'add'}
-                  className={`s-slab ${i === 0 ? 'add' : ''} ${a?.delivery ? 'parcel' : ''}`}
+                  className={`s-slab ${i === 0 ? 'add' : ''} ${a?.delivery ? 'parcel' : ''} ${a && isArrived(a) ? 'arrived' : ''}`}
                   style={style}
                   role="button"
                   tabIndex={0}

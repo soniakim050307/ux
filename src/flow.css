@@ -2810,7 +2810,8 @@
 .r-trigger.in-map { bottom: auto; top: 54px; background: rgba(35,39,68,.85); color: #fff; }
 
 /* 스택 속 소포: 끈 + 도장 + 움찔 */
-.s-slab.parcel { animation: sp-jig 3.4s ease-in-out infinite; transform-origin: 50% 100%; }
+.s-slab.parcel { transform-origin: 50% 100%; }
+.s-slab.parcel.arrived { animation: sp-jig 3.4s ease-in-out infinite; } /* 덜컹거림은 도착한 소포만 */
 .sp-tape { position: absolute; background: #f6e4cd; }
 .sp-tape.h { left: 0; right: 0; top: 52%; height: 9%; }
 .sp-tape.v { top: 0; bottom: 0; left: 68%; width: 5%; }
