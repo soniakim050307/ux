@@ -382,7 +382,9 @@ export default function DraftLp({ album, active, onChange, onBack, onFinish }: P
               }}
               aria-label="Back"
             >
-              ←
+              <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
+                <path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </button>
             <button type="button" onClick={save}>
               Save
