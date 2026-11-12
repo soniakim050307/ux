@@ -37,6 +37,24 @@ const RECOMMENDED: Song[] = [
   { title: 'Coffee', artist: 'beabadoobee', color: '#d6a77a', why: 'Recorded at a café' },
   { title: 'Riptide', artist: 'Vance Joy', color: '#86c2a0', why: 'Like your recent picks' },
 ]
+/* MY SONGS: 내가 자주 듣거나 아끼는 노래. 앨범이 달라도 계속 남도록 브라우저에 저장 */
+type MySong = Song & { uses: number }
+const MY_KEY = 'bv-my-songs'
+const PALETTE = ['#f5c518', '#e58a8a', '#9fb4e6', '#f0a35e', '#8fd1b5', '#c9a4f0', '#d6a77a', '#86c2a0']
+const loadMine = (): MySong[] => {
+  try {
+    return JSON.parse(localStorage.getItem(MY_KEY) || '[]')
+  } catch {
+    return []
+  }
+}
+const saveMine = (l: MySong[]) => {
+  try {
+    localStorage.setItem(MY_KEY, JSON.stringify(l))
+  } catch {
+    /* 저장이 막힌 환경에서는 이번 화면에서만 유지 */
+  }
+}
 const disc = (c: string) => `radial-gradient(circle, ${c} 0 18%, #000 19%)`
 
 /** 녹화가 끝난 뒤 (blue-vinyl): 원 안에서 다시 보고, 노래를 붙이고, 짧은 메모를 남긴 뒤 LP에 새긴다 */
@@ -87,6 +105,24 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
       setPlaying(false)
     }
   }
+  const [mine, setMine] = useState<MySong[]>(loadMine)
+  const [adding, setAdding] = useState<{ title: string; artist: string } | null>(null)
+  const updateMine = (l: MySong[]) => {
+    setMine(l)
+    saveMine(l)
+  }
+  const isMine = (s: Song) => mine.some((m) => m.title === s.title && m.artist === s.artist)
+  const toggleMine = (s: Song) =>
+    updateMine(isMine(s) ? mine.filter((m) => !(m.title === s.title && m.artist === s.artist)) : [{ ...s, uses: 0 }, ...mine])
+  const addOwn = () => {
+    if (!adding || !adding.title.trim()) return
+    const s: MySong = { title: adding.title.trim(), artist: adding.artist.trim() || 'Unknown', color: PALETTE[mine.length % PALETTE.length], uses: 0 }
+    updateMine([s, ...mine.filter((m) => !(m.title === s.title && m.artist === s.artist))])
+    setSong(s)
+    setAdding(null)
+    setQ('')
+    setSheet(false)
+  }
   const match = (s: Song) => !q || (s.title + s.artist).toLowerCase().includes(q.toLowerCase())
   const row = (s: Song, sub: string) => (
     <button
@@ -104,6 +140,17 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
         <small>{s.artist}</small>
       </span>
       <em>{sub}</em>
+      <span
+        role="button"
+        className={`et-star ${isMine(s) ? 'on' : ''}`}
+        aria-label={isMine(s) ? 'Remove from my songs' : 'Save to my songs'}
+        onClick={(e) => {
+          e.stopPropagation()
+          toggleMine(s)
+        }}
+      >
+        {isMine(s) ? '★' : '☆'}
+      </span>
     </button>
   )
 
@@ -129,6 +176,15 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
             </span>
           )}
         </div>
+
+        {/* 다시 찍기: 원 오른쪽 아래 */}
+        <button type="button" className="et-retake" onClick={onRetake} aria-label="Retake">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 12a8 8 0 1 0 2.4-5.7" />
+            <path d="M4 4v4.5h4.5" />
+          </svg>
+          <span>Retake</span>
+        </button>
 
         <div className="et-song">
           <i className={`et-d ${playing ? 'spin' : ''}`} style={{ background: disc(song.color) }} />
@@ -167,7 +223,10 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
         <button
           type="button"
           className="et-carve"
-          onClick={() => onSave({ title: song.title, artist: song.artist }, note.trim() || undefined, place.trim() || undefined)}
+          onClick={() => {
+            if (isMine(song)) updateMine(mine.map((m) => (m.title === song.title && m.artist === song.artist ? { ...m, uses: m.uses + 1 } : m)))
+            onSave({ title: song.title, artist: song.artist }, note.trim() || undefined, place.trim() || undefined)
+          }}
         >
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6">
             <circle cx="12" cy="12" r="9" />
@@ -187,6 +246,14 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
                 <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search songs, artists" />
               </div>
               <div className="et-list">
+                {mine.filter(match).length > 0 && (
+                  <>
+                    <div className="et-sec">
+                      MY SONGS <span>songs you keep coming back to</span>
+                    </div>
+                    {mine.filter(match).map((s) => row(s, s.uses ? `${s.uses} moment${s.uses === 1 ? '' : 's'}` : 'saved'))}
+                  </>
+                )}
                 <div className="et-sec">
                   JUST PLAYED <span>from your music app</span>
                 </div>
@@ -195,6 +262,26 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
                   RECOMMENDED <span>for this moment</span>
                 </div>
                 {RECOMMENDED.filter(match).map((s) => row(s, s.why ?? ''))}
+
+                {/* 목록에 없으면 직접 추가 */}
+                {adding ? (
+                  <div className="et-add-form">
+                    <input autoFocus value={adding.title} onChange={(e) => setAdding({ ...adding, title: e.target.value })} placeholder="Song title" />
+                    <input value={adding.artist} onChange={(e) => setAdding({ ...adding, artist: e.target.value })} placeholder="Artist" />
+                    <div>
+                      <button type="button" onClick={() => setAdding(null)}>
+                        Cancel
+                      </button>
+                      <button type="button" className="on" onClick={addOwn} disabled={!adding.title.trim()}>
+                        Add to my songs
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button type="button" className="et-add" onClick={() => setAdding({ title: q, artist: '' })}>
+                    + {q ? `Add “${q}” as your own song` : 'Add your own song'}
+                  </button>
+                )}
               </div>
             </div>
           </>
