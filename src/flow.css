@@ -4470,3 +4470,33 @@
   border-radius: 50%;
   background: conic-gradient(from 0deg, transparent 0 30%, rgba(255, 255, 255, 0.1) 36%, transparent 42% 80%, rgba(255, 255, 255, 0.08) 86%, transparent 92%);
 }
+
+/* 노래 목록을 압축적으로: 한 줄에 제목 · 가수 */
+.et-srow.c {
+  padding: 6px 10px;
+  gap: 12px;
+}
+.et-srow.c .et-sd {
+  width: 30px;
+  height: 30px;
+}
+.et-srow.c .et-st {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+}
+.et-srow.c .et-st b {
+  font-weight: 500;
+}
+.et-srow.c .et-st small {
+  display: inline;
+  margin-left: 4px;
+}
+.et-sec {
+  padding-top: 14px;
+}
+.et-more {
+  margin-left: 52px;
+}

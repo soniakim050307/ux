@@ -46,24 +46,7 @@ const ON_REPEAT: (Song & { plays: number })[] = [
   { title: 'Steal The Show', artist: 'Lauv', color: '#f0a35e', plays: 42 },
 ]
 
-/* MY SONGS: 내가 자주 듣거나 아끼는 노래. 앨범이 달라도 계속 남도록 브라우저에 저장 */
-type MySong = Song & { uses: number }
-const MY_KEY = 'bv-my-songs'
 const PALETTE = ['#f5c518', '#e58a8a', '#9fb4e6', '#f0a35e', '#8fd1b5', '#c9a4f0', '#d6a77a', '#86c2a0']
-const loadMine = (): MySong[] => {
-  try {
-    return JSON.parse(localStorage.getItem(MY_KEY) || '[]')
-  } catch {
-    return []
-  }
-}
-const saveMine = (l: MySong[]) => {
-  try {
-    localStorage.setItem(MY_KEY, JSON.stringify(l))
-  } catch {
-    /* 저장이 막힌 환경에서는 이번 화면에서만 유지 */
-  }
-}
 const disc = (c: string) => `radial-gradient(circle, ${c} 0 18%, #000 19%)`
 
 /** 녹화가 끝난 뒤 (blue-vinyl): 원 안에서 다시 보고, 노래를 붙이고, 짧은 메모를 남긴 뒤 LP에 새긴다 */
@@ -114,27 +97,18 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
       setPlaying(false)
     }
   }
-  const [mine, setMine] = useState<MySong[]>(loadMine)
+  // 음악 앱 밖에서 들은 노래(카페, 거리 공연, 라디오…)는 직접 적어서 이 moment에만 붙임
   const [adding, setAdding] = useState<{ title: string; artist: string } | null>(null)
-  const updateMine = (l: MySong[]) => {
-    setMine(l)
-    saveMine(l)
-  }
-  const isMine = (s: Song) => mine.some((m) => m.title === s.title && m.artist === s.artist)
-  const toggleMine = (s: Song) =>
-    updateMine(isMine(s) ? mine.filter((m) => !(m.title === s.title && m.artist === s.artist)) : [{ ...s, uses: 0 }, ...mine])
-  const addOwn = () => {
+  const addHeard = () => {
     if (!adding || !adding.title.trim()) return
-    const s: MySong = { title: adding.title.trim(), artist: adding.artist.trim() || 'Unknown', color: PALETTE[mine.length % PALETTE.length], uses: 0 }
-    updateMine([s, ...mine.filter((m) => !(m.title === s.title && m.artist === s.artist))])
-    setSong(s)
+    setSong({ title: adding.title.trim(), artist: adding.artist.trim() || 'Heard nearby', color: PALETTE[Math.floor(Math.random() * PALETTE.length)] })
     setAdding(null)
     setQ('')
     setSheet(false)
   }
   // 섹션마다 3곡만 보이고 'More'를 누르면 펼침 (검색 중에는 모두 보임)
   const [more, setMore] = useState<Record<string, boolean>>({})
-  const section = (key: string, title: string, sub: string, list: Song[], subOf: (s: Song) => string) => {
+  const section = (key: string, title: string, sub: string, list: Song[]) => {
     const hits = list.filter(match)
     if (!hits.length) return null
     const open = !!q || more[key]
@@ -144,7 +118,7 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
         <div className="et-sec">
           {title} <span>{sub}</span>
         </div>
-        {shown.map((x) => row(x, subOf(x)))}
+        {shown.map((x) => row(x))}
         {!q && hits.length > 3 && (
           <button type="button" className="et-more" onClick={() => setMore({ ...more, [key]: !open })}>
             {open ? 'Show less' : `More (${hits.length - 3})`}
@@ -154,11 +128,12 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
     )
   }
   const match = (s: Song) => !q || (s.title + s.artist).toLowerCase().includes(q.toLowerCase())
-  const row = (s: Song, sub: string) => (
+  // 한 줄에 제목 · 가수만 (재생 횟수나 들은 시각 같은 세부 정보는 빼서 압축적으로)
+  const row = (s: Song) => (
     <button
       type="button"
       key={s.title}
-      className={`et-srow ${s.title === song.title ? 'sel' : ''}`}
+      className={`et-srow c ${s.title === song.title ? 'sel' : ''}`}
       onClick={() => {
         setSong(s)
         setSheet(false)
@@ -166,20 +141,7 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
     >
       <i className="et-sd" style={{ background: disc(s.color) }} />
       <span className="et-st">
-        {s.title}
-        <small>{s.artist}</small>
-      </span>
-      <em>{sub}</em>
-      <span
-        role="button"
-        className={`et-star ${isMine(s) ? 'on' : ''}`}
-        aria-label={isMine(s) ? 'Remove from my songs' : 'Save to my songs'}
-        onClick={(e) => {
-          e.stopPropagation()
-          toggleMine(s)
-        }}
-      >
-        {isMine(s) ? '★' : '☆'}
+        <b>{s.title}</b> <small>{s.artist}</small>
       </span>
     </button>
   )
@@ -254,7 +216,6 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
           type="button"
           className="et-carve"
           onClick={() => {
-            if (isMine(song)) updateMine(mine.map((m) => (m.title === song.title && m.artist === song.artist ? { ...m, uses: m.uses + 1 } : m)))
             onSave({ title: song.title, artist: song.artist }, note.trim() || undefined, place.trim() || undefined)
           }}
         >
@@ -276,13 +237,9 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
                 <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search songs, artists" />
               </div>
               <div className="et-list">
-                {section('mine', 'MY SONGS', 'songs you saved', mine, (x) => {
-                  const u = (x as MySong).uses
-                  return u ? `${u} moment${u === 1 ? '' : 's'}` : 'saved'
-                })}
-                {section('repeat', 'ON REPEAT', 'most played in your music app', ON_REPEAT, (x) => `${(x as Song & { plays: number }).plays} plays`)}
-                {section('recent', 'JUST PLAYED', 'from your music app', RECENT, (x) => x.when ?? '')}
-                {section('rec', 'RECOMMENDED', 'for this moment', RECOMMENDED, (x) => x.why ?? '')}
+                {section('repeat', 'ON REPEAT', 'most played', ON_REPEAT)}
+                {section('recent', 'JUST PLAYED', 'from your music app', RECENT)}
+                {section('rec', 'RECOMMENDED', 'for this moment', RECOMMENDED)}
 
                 {/* 목록에 없으면 직접 추가 */}
                 {adding ? (
@@ -293,14 +250,14 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
                       <button type="button" onClick={() => setAdding(null)}>
                         Cancel
                       </button>
-                      <button type="button" className="on" onClick={addOwn} disabled={!adding.title.trim()}>
-                        Add to my songs
+                      <button type="button" className="on" onClick={addHeard} disabled={!adding.title.trim()}>
+                        Add to this moment
                       </button>
                     </div>
                   </div>
                 ) : (
                   <button type="button" className="et-add" onClick={() => setAdding({ title: q, artist: '' })}>
-                    + {q ? `Add “${q}” as your own song` : 'Add your own song'}
+                    + {q ? `Heard “${q}” around you?` : 'Heard it around you? Add it'}
                   </button>
                 )}
               </div>
