@@ -45,10 +45,12 @@ interface Props {
   onPlay: (a: FlowAlbum) => void
   /** add to list: 내 앨범 목록(스택)에 꽂아 둔다 */
   onAdd: (a: FlowAlbum) => void
+  /** 비행기를 잡아 남의 LP 가 펼쳐질 때 (원래 나오던 소리를 끄는 데 쓴다) */
+  onCatch?: () => void
 }
 
 /** 종이비행기: 가끔 화면을 가로질러 날아가고, 지나가는 동안 잡으면(탭) 근처 사람이 공유한 LP가 펼쳐진다. 놓치면 그냥 지나감 */
-export default function PaperPlane({ active, w, h, onPlay, onAdd }: Props) {
+export default function PaperPlane({ active, w, h, onPlay, onAdd, onCatch }: Props) {
   const planeRef = useRef<HTMLButtonElement>(null)
   const anim = useRef<Animation | null>(null)
   const timer = useRef(0)
@@ -145,12 +147,16 @@ export default function PaperPlane({ active, w, h, onPlay, onAdd }: Props) {
   // 잡은 비행기 안의 남의 LP: 펼쳐지면 그 사람이 들은 노래가 흘러나온다 (남의 리스트를 우연히 엿듣기)
   const caughtIdx = caught ? caught.i : -1
   useEffect(() => {
+    if (caughtIdx >= 0) onCatch?.()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [caughtIdx])
+  useEffect(() => {
     if (caughtIdx < 0 || leaving === 'play') return
     const b = base(SHARED[caughtIdx])
     const m = b.moments[0]
     let stop: (() => void) | undefined
     const t = window.setTimeout(() => {
-      stop = playMusic({ src: m?.audio, seed: caughtIdx + 3, start: m?.audioStart })
+      stop = playMusic({ src: m?.audio, seed: caughtIdx + 3, start: m?.audioStart, fadeIn: 4 })
     }, 1500)
     return () => {
       clearTimeout(t)

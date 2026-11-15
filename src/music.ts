@@ -77,7 +77,7 @@ function synth(seed: number): () => void {
 }
 
 /** 재생을 시작하고, 멈추는 함수를 돌려준다. */
-export function playMusic(opts: { src?: string; seed: number; start?: number }): () => void {
+export function playMusic(opts: { src?: string; seed: number; start?: number; fadeIn?: number }): () => void {
   if (opts.src) {
     const el = new Audio(opts.src)
     el.loop = true
@@ -89,8 +89,20 @@ export function playMusic(opts: { src?: string; seed: number; start?: number }):
         el.currentTime = isFinite(d) && d > 0 ? start % d : 0
       })
     }
+    // 서서히 커지게: 볼륨을 0에서 1까지 fadeIn 초 동안 올린다
+    let fade = 0
+    if (opts.fadeIn && opts.fadeIn > 0) {
+      el.volume = 0
+      const t0 = performance.now()
+      fade = window.setInterval(() => {
+        const x = Math.min(1, (performance.now() - t0) / (opts.fadeIn! * 1000))
+        el.volume = x * x // 처음엔 아주 천천히
+        if (x >= 1) clearInterval(fade)
+      }, 60)
+    }
     void el.play().catch(() => {})
     return () => {
+      clearInterval(fade)
       el.pause()
       el.src = ''
     }

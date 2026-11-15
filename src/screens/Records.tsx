@@ -411,6 +411,7 @@ export default function Records({ albums, saved }: { albums: FlowAlbum[]; saved?
                 setPage(1)
               }}
               onAdd={(a) => setCreated((c) => [...c, a])}
+              onCatch={() => setArmDown(false)}
             />
 
             {mode === 'home' && page === 0 && !mapOpen && (
