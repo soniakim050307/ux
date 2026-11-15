@@ -116,7 +116,7 @@ export function playMusic(opts: { src?: string; seed: number; start?: number; fa
  * 0–20초   노래가 서서히 커지고, 현장음이 아주 작게 깔린다
  * 20–27초  현장음이 커지면서 노래는 줄어든다 (노래 → 현장음으로 넘어가는 이음새)
  * 27–32초  노래는 사라지고 현장음도 천천히 꺼진다
- * 현장음은 촬영한 영상의 소리가 있으면 그것을, 없으면 임시로 만든 잔잔한 바람소리를 쓴다. */
+ * 현장음은 촬영한 영상의 소리가 있을 때만 섞는다 (없으면 노래만). */
 const MIX_LEN = 32
 
 function ambience(): { gain: (v: number) => void; stop: () => void } | null {
@@ -170,13 +170,13 @@ export function playMix(opts: { previewUrl?: string; field?: string }): () => vo
   const song = new Audio(opts.previewUrl ?? '')
   song.volume = 0
   let fieldEl: HTMLAudioElement | null = null
-  let amb: ReturnType<typeof ambience> = null
+  const amb: ReturnType<typeof ambience> = null // 임시 바람소리는 노이즈처럼 들려서 쓰지 않는다
   if (opts.field) {
     fieldEl = new Audio(opts.field)
     fieldEl.loop = true
     fieldEl.volume = 0
     void fieldEl.play().catch(() => {})
-  } else amb = ambience()
+  }
   if (opts.previewUrl) void song.play().catch(() => {})
   const clamp = (x: number) => Math.max(0, Math.min(1, x))
   const ramp = (t: number, a: number, b: number) => clamp((t - a) / (b - a))
