@@ -22,6 +22,7 @@ import LpView from './LpView'
 import { playMusic } from '../music'
 import DraftLp from './DraftLp'
 import DeliveryMap from './DeliveryMap'
+import { saveState, type SavedState } from '../store'
 
 type Mode = 'home' | 'stack' | 'cover'
 
@@ -56,11 +57,15 @@ const spineColor = (a: FlowAlbum | null) => (a ? (a.delivery ? '#f3e6d6' : SPINE
 /** 새 앨범 인트로의 빈 커버(dl-isleeve)와 같은 색 */
 const BLANK_COVER = 'linear-gradient(160deg, #9a9fb8, #6d7292)'
 
-export default function Records({ albums }: { albums: FlowAlbum[] }) {
+export default function Records({ albums, saved }: { albums: FlowAlbum[]; saved?: SavedState | null }) {
   // 슬랩 0 = "Add New Album", 1.. = 최신 → 오래된 앨범
-  const [created, setCreated] = useState<FlowAlbum[]>([])
+  const [created, setCreated] = useState<FlowAlbum[]>(saved?.created ?? [])
   const list = [...albums, ...created].reverse()
-  const [draft, setDraft] = useState<FlowAlbum | null>(null)
+  const [draft, setDraft] = useState<FlowAlbum | null>(saved?.draft ?? null)
+  // 새로고침해도 이어서 기록할 수 있게 저장
+  useEffect(() => {
+    saveState({ created, draft })
+  }, [created, draft])
   // 종이비행기로 받아서 바로 재생 중인 LP (목록에는 없음)
   const [guest, setGuest] = useState<FlowAlbum | null>(null)
   const [, setTick] = useState(0)

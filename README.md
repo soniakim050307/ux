@@ -62,3 +62,6 @@ Paris 외 도시 앨범(Lisbon·Kyoto·Reykjavik·Bangkok·New York·Barcelona·
 
 ## Claude 아티팩트용 빌드
 - `npx vite build -c vite.art.config.ts` → `dist-art/` (폰트는 Google Fonts 링크 사용, 오디오는 용량 때문에 별도 압축해서 게시).
+
+## 기록 저장 (새로고침해도 유지)
+새로 만든 앨범, 기록 중인 앨범(초안), 배송 상태와 촬영한 사진·영상·음성은 **이 기기의 브라우저 저장소(IndexedDB)** 에 저장됩니다(`src/store.ts`). 서버·계정이 없어서 기기마다 따로 저장되며, 다른 사람과는 섞이지 않습니다. 사이트 데이터를 지우거나 시크릿 모드를 쓰면 사라집니다. (AI 사용: Claude가 작성)
