@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { buildSongs, dayNumbers } from '../days'
 import { lpBgImage, type FlowAlbum } from '../data'
-import { playMusic } from '../music'
+import { playMusic, playMix } from '../music'
+import { findPreview } from '../preview'
 import { useDesignScale } from '../useDesignScale'
 import LaidLp from './LaidLp'
 import MomentDetail from './MomentDetail'
@@ -150,6 +151,7 @@ export default function LpView({ album, active, onBack }: Props) {
     if (auto) setRun((r) => r + 1)
     setIdx(0)
     setPage(0)
+    fromMoments.current = false
     setPin(null)
     setDetail(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -172,7 +174,21 @@ export default function LpView({ album, active, onBack }: Props) {
   const inDetail = detail !== null
   useEffect(() => {
     if (!playing || !songFirst || inDetail || muted) return
-    return playMusic({ src: songFirst.audio, seed: songIdx, start: songFirst.audioStart })
+    // 노래 제목에 맞는 30초 미리듣기 + 현장음을 섞어서 튼다. 미리듣기를 못 찾으면 예전처럼 기본 음원.
+    let stop: (() => void) | undefined
+    let dead = false
+    const song = songFirst.song
+    const recorded = songFirst.kind === 'video' && songFirst.src.startsWith('blob:') ? songFirst.src : undefined
+    void (song ? findPreview(song.title, song.artist) : Promise.resolve(null)).then((pv) => {
+      if (dead) return
+      stop = pv
+        ? playMix({ previewUrl: pv.url, field: recorded })
+        : playMusic({ src: songFirst.audio, seed: songIdx, start: songFirst.audioStart })
+    })
+    return () => {
+      dead = true
+      stop?.()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playing, songIdx, album?.id, inDetail, muted])
 
@@ -228,9 +244,18 @@ export default function LpView({ album, active, onBack }: Props) {
   }
 
   /* ---------- 좌우로 밀어서 페이지 넘기기 ---------- */
+  // 모먼트 화면에서 플레이어·영상 화면으로 넘어왔다면, 뒤로가기는 먼저 모먼트 화면으로 돌아간다
+  const fromMoments = useRef(false)
   const goPage = (p: 0 | 1 | 2) => {
-    if (p === 2) play(false)
+    if (p === 2) {
+      play(false)
+      fromMoments.current = false
+    } else if (page === 2) fromMoments.current = true
     setPage(p)
+  }
+  const goBack = () => {
+    if (page !== 2 && fromMoments.current) goPage(2)
+    else onBack()
   }
   const onDown = (e: PointerEvent) => {
     swipe.current = { x: e.clientX }
@@ -631,7 +656,7 @@ export default function LpView({ album, active, onBack }: Props) {
         </div>
       </div>
 
-      <button type="button" className="l-back" onClick={onBack} aria-label="Back to albums">
+      <button type="button" className="l-back" onClick={goBack} aria-label="Back to albums">
         <svg viewBox="0 0 24 24" width="22" height="22">
           <path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -712,6 +737,7 @@ export default function LpView({ album, active, onBack }: Props) {
                                 type="button"
                                 onClick={() => {
                                   setListOpen(false)
+                                  if (page === 2) fromMoments.current = true
                                   setPage(0) // 뒤로가기 하면 목록 이전 화면이 아니라 음원 재생 화면으로
                                   setIdx(mi)
                                   setDetail(mi)

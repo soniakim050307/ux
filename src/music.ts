@@ -109,3 +109,97 @@ export function playMusic(opts: { src?: string; seed: number; start?: number; fa
   }
   return synth(opts.seed)
 }
+
+/* ───────── 30초 믹스: 노래 미리듣기 + 현장음 ─────────
+ * 0–20초   노래가 서서히 커지고, 현장음이 아주 작게 깔린다
+ * 20–27초  현장음이 커지면서 노래는 줄어든다 (노래 → 현장음으로 넘어가는 이음새)
+ * 27–32초  노래는 사라지고 현장음도 천천히 꺼진다
+ * 현장음은 촬영한 영상의 소리가 있으면 그것을, 없으면 임시로 만든 잔잔한 바람소리를 쓴다. */
+const MIX_LEN = 32
+
+function ambience(): { gain: (v: number) => void; stop: () => void } | null {
+  const c = audioCtx()
+  if (!c) return null
+  const len = c.sampleRate * 4
+  const buf = c.createBuffer(1, len, c.sampleRate)
+  const d = buf.getChannelData(0)
+  let b0 = 0, b1 = 0, b2 = 0
+  for (let i = 0; i < len; i++) {
+    const w = Math.random() * 2 - 1
+    b0 = 0.99765 * b0 + w * 0.099046
+    b1 = 0.963 * b1 + w * 0.2965164
+    b2 = 0.57 * b2 + w * 1.0526913
+    d[i] = (b0 + b1 + b2 + w * 0.1848) * 0.18
+  }
+  const src = c.createBufferSource()
+  src.buffer = buf
+  src.loop = true
+  const lp = c.createBiquadFilter()
+  lp.type = 'lowpass'
+  lp.frequency.value = 900
+  const lfo = c.createOscillator() // 파도처럼 천천히 일렁이게
+  const lfoG = c.createGain()
+  lfo.frequency.value = 0.13
+  lfoG.gain.value = 350
+  lfo.connect(lfoG).connect(lp.frequency)
+  const g = c.createGain()
+  g.gain.value = 0
+  src.connect(lp).connect(g).connect(c.destination)
+  src.start()
+  lfo.start()
+  return {
+    gain: (v) => g.gain.setTargetAtTime(v, c.currentTime, 0.4),
+    stop: () => {
+      g.gain.setTargetAtTime(0, c.currentTime, 0.1)
+      window.setTimeout(() => {
+        try {
+          src.stop()
+          lfo.stop()
+          g.disconnect()
+        } catch {
+          /* already stopped */
+        }
+      }, 400)
+    },
+  }
+}
+
+export function playMix(opts: { previewUrl: string; field?: string }): () => void {
+  const song = new Audio(opts.previewUrl)
+  song.volume = 0
+  let fieldEl: HTMLAudioElement | null = null
+  let amb: ReturnType<typeof ambience> = null
+  if (opts.field) {
+    fieldEl = new Audio(opts.field)
+    fieldEl.loop = true
+    fieldEl.volume = 0
+    void fieldEl.play().catch(() => {})
+  } else amb = ambience()
+  void song.play().catch(() => {})
+  const clamp = (x: number) => Math.max(0, Math.min(1, x))
+  const ramp = (t: number, a: number, b: number) => clamp((t - a) / (b - a))
+  const t0 = performance.now()
+  const id = window.setInterval(() => {
+    const t = (performance.now() - t0) / 1000
+    const sIn = ramp(t, 0, 1.6)
+    const duck = 1 - 0.7 * ramp(t, 20, 24) // 현장음이 올라오면 노래를 낮춘다
+    const sOut = 1 - ramp(t, 26, 30)
+    song.volume = clamp(sIn * duck * sOut)
+    const bed = 0.1 + 0.45 * ramp(t, 20, 25) // 처음엔 아주 작게, 이음새에서 커진다
+    const fOut = 1 - ramp(t, 28, MIX_LEN)
+    const f = clamp(bed * fOut * ramp(t, 0.5, 3))
+    if (fieldEl) fieldEl.volume = f
+    amb?.gain(f * 0.9)
+    if (t >= MIX_LEN) clearInterval(id)
+  }, 60)
+  return () => {
+    clearInterval(id)
+    song.pause()
+    song.src = ''
+    if (fieldEl) {
+      fieldEl.pause()
+      fieldEl.src = ''
+    }
+    amb?.stop()
+  }
+}
