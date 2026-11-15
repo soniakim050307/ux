@@ -59,10 +59,10 @@ p {
 
 .app {
   position: relative;
-  /* 창이 낮으면 폰 비율(393:852)을 유지한 채 같이 줄어든다 */
-  --h: min(100dvh, 852px);
-  width: min(100vw, calc(var(--h) * 393 / 852));
-  height: var(--h);
+  /* 어떤 화면에서도 폰 비율(393:852)을 그대로 두고, 잘리지 않게 화면 안에 맞춘다 (남는 쪽은 여백) */
+  aspect-ratio: 393 / 852;
+  width: min(100vw, calc(100dvh * 393 / 852));
+  height: auto;
   overflow: hidden;
   border-radius: 28px;
   background: var(--bg);
@@ -74,8 +74,6 @@ p {
     background: var(--bg);
   }
   .app {
-    width: 100vw;
-    height: 100dvh;
     border-radius: 0;
     box-shadow: none;
   }
