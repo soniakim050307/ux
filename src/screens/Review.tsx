@@ -1,3 +1,4 @@
+import { findPreview } from '../preview'
 import { useEffect, useRef, useState } from 'react'
 import type { FlowMoment } from '../data'
 import { useDesignScale } from '../useDesignScale'
@@ -86,7 +87,60 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
   const isVideo = moment.kind === 'video'
   const src = isVideo ? moment.src : moment.audio
 
-  useEffect(() => () => media.current?.pause(), [])
+  // 노래 칩의 재생 버튼: 노래(30초 미리듣기)를 재생한다. 위 원의 재생은 찍은 영상 그대로.
+  const songAudio = useRef<HTMLAudioElement | null>(null)
+  const songFade = useRef(0)
+  const [songOn, setSongOn] = useState(false)
+  const [songMsg, setSongMsg] = useState('')
+  const stopSong = () => {
+    clearInterval(songFade.current)
+    songAudio.current?.pause()
+    songAudio.current = null
+    setSongOn(false)
+  }
+  useEffect(
+    () => () => {
+      media.current?.pause()
+      clearInterval(songFade.current)
+      songAudio.current?.pause()
+    },
+    [],
+  )
+  // 곡을 바꾸면 듣던 노래는 멈춘다
+  useEffect(() => {
+    stopSong()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [song.title, song.artist])
+  const toggleSong = async () => {
+    if (songOn) return stopSong()
+    setSongMsg('Loading…')
+    const pv = await findPreview(song.title, song.artist)
+    if (!pv) {
+      setSongMsg('No preview found')
+      window.setTimeout(() => setSongMsg(''), 2200)
+      return
+    }
+    setSongMsg('')
+    const el = new Audio(pv.url)
+    el.volume = 0
+    songAudio.current = el
+    el.onended = () => stopSong()
+    try {
+      await el.play()
+    } catch {
+      setSongMsg('Tap again to play')
+      window.setTimeout(() => setSongMsg(''), 2200)
+      return
+    }
+    setSongOn(true)
+    const t0 = performance.now()
+    clearInterval(songFade.current)
+    songFade.current = window.setInterval(() => {
+      const x = Math.min(1, (performance.now() - t0) / 1200)
+      el.volume = x
+      if (x >= 1) clearInterval(songFade.current)
+    }, 50)
+  }
 
   const toggle = () => {
     const m = media.current
@@ -191,13 +245,13 @@ export default function Review({ moment, title, index, onSave, onRetake }: Props
         </button>
 
         <div className="et-song">
-          <i className={`et-d ${playing ? 'spin' : ''}`} style={{ background: disc(song.color) }} />
+          <i className={`et-d ${songOn ? 'spin' : ''}`} style={{ background: disc(song.color) }} />
           <span className="et-t" key={song.title}>
             {song.title}
-            <small>{song.artist}</small>
+            <small>{songMsg || song.artist}</small>
           </span>
-          <button type="button" className="et-b" onClick={toggle} aria-label="Play">
-            {playing ? '❚❚' : '▶'}
+          <button type="button" className="et-b" onClick={() => void toggleSong()} aria-label="Play song">
+            {songOn ? '❚❚' : '▶'}
           </button>
           <button type="button" className="et-b" onClick={() => setSheet(true)} aria-label="Change song">
             ⇄

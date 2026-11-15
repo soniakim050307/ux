@@ -5228,3 +5228,8 @@
 .r-menu button:disabled{opacity:.4}
 .r-menu button.danger{color:#ffb4b4}
 @keyframes r-menu-in{from{opacity:0;transform:translateY(-6px) scale(.97);transform-origin:100% 0}}
+
+/* 듣고 있는 노래 담기: + → ✓ */
+.cap-np-add{width:26px;height:26px;margin-left:4px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(255,255,255,.2);transition:background .2s ease,color .2s ease,transform .15s ease}
+.cap-np-add:active{transform:scale(.9)}
+.cap-np-add.on{background:#fff;color:#545e85}

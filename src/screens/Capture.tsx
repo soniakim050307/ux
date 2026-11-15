@@ -35,6 +35,10 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
   const [rec, setRec] = useState(false)
   const [err, setErr] = useState('')
   const [shot, setShot] = useState(0)
+  // 듣고 있는 노래를 이 모먼트에 담을지 (+ → ✓)
+  const [added, setAdded] = useState(false)
+  const addedRef = useRef(false)
+  addedRef.current = added
   const [stage, setStage] = useState<'cap' | 'review' | 'engrave'>('cap')
   const [taken, setTaken] = useState<{ m: FlowMoment; dur: number; peaks: number[] } | null>(null)
   const startAt = useRef(0)
@@ -136,7 +140,7 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
         kind,
         audio: kind === 'video' ? undefined : url,
         time: `${now.getFullYear()}.${pad(now.getMonth() + 1)}.${pad(now.getDate())} · ${pad(now.getHours())}:${pad(now.getMinutes())}`,
-        song: NOW_PLAYING,
+        song: addedRef.current ? NOW_PLAYING : undefined,
       },
     })
     setStage('review')
@@ -219,6 +223,17 @@ export default function Capture({ title, index, onClose, onDone }: Props) {
             <small>NOW PLAYING</small>
             {NOW_PLAYING.title} · {NOW_PLAYING.artist}
           </span>
+          <button
+            type="button"
+            className={`cap-np-add ${added ? 'on' : ''}`}
+            onClick={() => setAdded((v) => !v)}
+            aria-label={added ? 'Added to this moment' : 'Add to this moment'}
+            aria-pressed={added}
+          >
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              {added ? <path d="M5 12.5l4.5 4.5L19 7.5" /> : <path d="M12 5v14M5 12h14" />}
+            </svg>
+          </button>
         </div>
 
         <div className="cap-take">{rec ? `${mmss(sec)} / ${mmss(MAX_S)}` : 'TAKE A MOMENT'}</div>
