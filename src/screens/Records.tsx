@@ -19,7 +19,7 @@ import {
 import { DESIGN_W, useDesignScale } from '../useDesignScale'
 import PaperPlane from '../components/PaperPlane'
 import LpView from './LpView'
-import { playMusic } from '../music'
+import { playForMoment } from '../music'
 import DraftLp from './DraftLp'
 import DeliveryMap from './DeliveryMap'
 import { saveState, clearAll, type SavedState } from '../store'
@@ -245,7 +245,7 @@ export default function Records({ albums, saved }: { albums: FlowAlbum[]; saved?
   const bgMoment = latest?.moments[0]
   useEffect(() => {
     if (!armDown || !bgMoment) return
-    return playMusic({ src: bgMoment.audio, seed: 0, start: bgMoment.audioStart })
+    return playForMoment(bgMoment)
   }, [armDown, latest?.id]) // eslint-disable-line react-hooks/exhaustive-deps
   // 홈을 벗어나면 침은 다시 쉬는 자리로
   useEffect(() => {

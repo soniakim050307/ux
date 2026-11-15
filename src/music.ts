@@ -5,6 +5,8 @@
  * 반드시 사용자 제스처(탭/드래그 끝) 안에서 start 를 불러야 소리가 난다.
  */
 
+import { findPreview } from './preview'
+
 let ctx: AudioContext | null = null
 
 function audioCtx(): AudioContext | null {
@@ -164,8 +166,8 @@ function ambience(): { gain: (v: number) => void; stop: () => void } | null {
   }
 }
 
-export function playMix(opts: { previewUrl: string; field?: string }): () => void {
-  const song = new Audio(opts.previewUrl)
+export function playMix(opts: { previewUrl?: string; field?: string }): () => void {
+  const song = new Audio(opts.previewUrl ?? '')
   song.volume = 0
   let fieldEl: HTMLAudioElement | null = null
   let amb: ReturnType<typeof ambience> = null
@@ -175,7 +177,7 @@ export function playMix(opts: { previewUrl: string; field?: string }): () => voi
     fieldEl.volume = 0
     void fieldEl.play().catch(() => {})
   } else amb = ambience()
-  void song.play().catch(() => {})
+  if (opts.previewUrl) void song.play().catch(() => {})
   const clamp = (x: number) => Math.max(0, Math.min(1, x))
   const ramp = (t: number, a: number, b: number) => clamp((t - a) / (b - a))
   const t0 = performance.now()
@@ -201,5 +203,20 @@ export function playMix(opts: { previewUrl: string; field?: string }): () => voi
       fieldEl.src = ''
     }
     amb?.stop()
+  }
+}
+
+/** 모먼트의 노래 제목에 맞는 30초 미리듣기를 믹스로 튼다. 못 찾으면 다른 노래 대신 현장음만. 멈추는 함수를 돌려준다. */
+export function playForMoment(m: { song?: { title: string; artist: string }; kind?: string; src: string } | undefined, fadeFieldOnly = false): () => void {
+  let stop: (() => void) | undefined
+  let dead = false
+  const recorded = m?.kind === 'video' && m.src.startsWith('blob:') ? m.src : undefined
+  void (m?.song ? findPreview(m.song.title, m.song.artist) : Promise.resolve(null)).then((pv) => {
+    if (dead) return
+    stop = playMix({ previewUrl: fadeFieldOnly ? undefined : pv?.url, field: recorded })
+  })
+  return () => {
+    dead = true
+    stop?.()
   }
 }

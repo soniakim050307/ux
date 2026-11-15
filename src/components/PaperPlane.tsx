@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { FLOW_ALBUMS, type FlowAlbum } from '../data'
-import { playMusic } from '../music'
+import { playForMoment } from '../music'
 
 /** 근처 사람이 공유한 LP (실제 공유 기능 전까지는 예시) */
 /** base: 영상·노래는 기존 예시 앨범의 것을 빌려 쓴다 */
@@ -156,7 +156,7 @@ export default function PaperPlane({ active, w, h, onPlay, onAdd, onCatch }: Pro
     const m = b.moments[0]
     let stop: (() => void) | undefined
     const t = window.setTimeout(() => {
-      stop = playMusic({ src: m?.audio, seed: caughtIdx + 3, start: m?.audioStart, fadeIn: 4 })
+      stop = playForMoment(m)
     }, 1500)
     return () => {
       clearTimeout(t)

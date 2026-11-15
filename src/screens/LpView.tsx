@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { buildSongs, dayNumbers } from '../days'
 import { lpBgImage, type FlowAlbum } from '../data'
-import { playMusic, playMix } from '../music'
+import { playMix } from '../music'
 import { findPreview } from '../preview'
 import { useDesignScale } from '../useDesignScale'
 import LaidLp from './LaidLp'
@@ -181,9 +181,8 @@ export default function LpView({ album, active, onBack }: Props) {
     const recorded = songFirst.kind === 'video' && songFirst.src.startsWith('blob:') ? songFirst.src : undefined
     void (song ? findPreview(song.title, song.artist) : Promise.resolve(null)).then((pv) => {
       if (dead) return
-      stop = pv
-        ? playMix({ previewUrl: pv.url, field: recorded })
-        : playMusic({ src: songFirst.audio, seed: songIdx, start: songFirst.audioStart })
+      // 제목과 맞는 노래를 못 찾으면 다른 노래를 틀지 않고 현장음만 깐다
+      stop = playMix({ previewUrl: pv?.url, field: recorded })
     })
     return () => {
       dead = true

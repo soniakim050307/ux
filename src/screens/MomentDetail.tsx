@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import { lpBgImage, type FlowAlbum } from '../data'
-import { playMusic } from '../music'
+import { playForMoment } from '../music'
 import { DESIGN_H, DESIGN_W, useDesignScale } from '../useDesignScale'
 
 interface Props {
@@ -35,8 +35,8 @@ export default function MomentDetail({ album, index, onIndex, onClose }: Props) 
 
   useEffect(() => {
     if (!musicOn) return
-    return playMusic({ src: m.audio, seed: index, start: m.audioStart })
-  }, [musicOn, index, m.audio, m.audioStart])
+    return playForMoment(m)
+  }, [musicOn, index, m.id])
 
   const onDown = (e: PointerEvent) => {
     start.current = e.clientX
