@@ -5218,3 +5218,13 @@
 .lp2-pin.dim .lp2-pinhead,.lp2-pin.dim .lp2-stem,.lp2-pin.dim .lp2-foot{opacity:.5}
 .lp2-pin.on .lp2-pinhead{opacity:1}
 .lp2-pinhead,.lp2-stem,.lp2-foot{transition-property:width,height,left,top,opacity}
+
+/* 홈 우측 위 설정 버튼 + 메뉴 (새로고침 / 배송 도착 / 기록 지우기) */
+.r-gear{position:absolute;z-index:32;right:14px;top:14px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;background:rgba(255,255,255,.16);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.r-menu-wrap{position:absolute;inset:0;z-index:31}
+.r-menu{position:absolute;right:14px;top:58px;min-width:206px;padding:6px;border-radius:14px;background:rgba(35,39,68,.94);box-shadow:0 10px 28px rgba(0,0,0,.35);display:flex;flex-direction:column;animation:r-menu-in .18s ease}
+.r-menu button{text-align:left;padding:11px 12px;border-radius:9px;color:#fff;font-size:13px;font-weight:500;white-space:nowrap}
+.r-menu button:active{background:rgba(255,255,255,.12)}
+.r-menu button:disabled{opacity:.4}
+.r-menu button.danger{color:#ffb4b4}
+@keyframes r-menu-in{from{opacity:0;transform:translateY(-6px) scale(.97);transform-origin:100% 0}}

@@ -148,3 +148,21 @@ if (typeof window !== 'undefined') {
     /* ignore */
   }
 }
+
+/** 이 기기에 저장된 기록을 모두 지운다 (이후 새로고침) */
+export async function clearAll() {
+  clearTimeout(timer)
+  latest = null
+  seq++
+  try {
+    const d = await db()
+    d?.close()
+    dbp = null
+    await new Promise<void>((resolve) => {
+      const req = indexedDB.deleteDatabase(DB_NAME)
+      req.onsuccess = req.onerror = req.onblocked = () => resolve()
+    })
+  } catch {
+    /* ignore */
+  }
+}

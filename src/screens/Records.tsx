@@ -22,7 +22,7 @@ import LpView from './LpView'
 import { playMusic } from '../music'
 import DraftLp from './DraftLp'
 import DeliveryMap from './DeliveryMap'
-import { saveState, type SavedState } from '../store'
+import { saveState, clearAll, type SavedState } from '../store'
 
 type Mode = 'home' | 'stack' | 'cover'
 
@@ -90,6 +90,8 @@ export default function Records({ albums, saved }: { albums: FlowAlbum[]; saved?
 
   // 침은 평소엔 판 옆에 쉬고 있다가, LP를 누르면 판 위로 내려온다
   const [armDown, setArmDown] = useState(false)
+  const [menu, setMenu] = useState(false)
+  const [confirmReset, setConfirmReset] = useState(false)
   const [mode, setMode] = useState<Mode>('home')
   const [sel, setSel] = useState<number | null>(null)
   const [pull, setPull] = useState(0)
@@ -411,10 +413,55 @@ export default function Records({ albums, saved }: { albums: FlowAlbum[]; saved?
               onAdd={(a) => setCreated((c) => [...c, a])}
             />
 
-            {transitAlbum && page === 0 && !mapOpen && (
-              <button type="button" className="r-trigger" onClick={arriveNow}>
-                ▶ 배송 도착시키기 (체험용)
-              </button>
+            {mode === 'home' && page === 0 && !mapOpen && (
+              <>
+                <button
+                  type="button"
+                  className="r-gear"
+                  aria-label="Settings"
+                  onClick={() => {
+                    setMenu((v) => !v)
+                    setConfirmReset(false)
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <circle cx="12" cy="12" r="3.2" />
+                    <path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" />
+                  </svg>
+                </button>
+                {menu && (
+                  <div className="r-menu-wrap" onClick={() => setMenu(false)}>
+                    <div className="r-menu" onClick={(e) => e.stopPropagation()}>
+                      <button type="button" onClick={() => window.location.reload()}>
+                        ↻&nbsp; 새로고침
+                      </button>
+                      <button
+                        type="button"
+                        disabled={!transitAlbum}
+                        onClick={() => {
+                          arriveNow()
+                          setMenu(false)
+                        }}
+                      >
+                        ▶&nbsp; 배송 도착시키기 (체험용)
+                      </button>
+                      {confirmReset ? (
+                        <button
+                          type="button"
+                          className="danger"
+                          onClick={() => void clearAll().then(() => window.location.reload())}
+                        >
+                          정말 지울까요? 한 번 더 누르면 삭제
+                        </button>
+                      ) : (
+                        <button type="button" className="danger" onClick={() => setConfirmReset(true)}>
+                          🗑&nbsp; 내 기록 모두 지우기
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             {/* 도착한 소포 (홈) */}
