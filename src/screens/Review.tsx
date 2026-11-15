@@ -44,7 +44,7 @@ const ON_REPEAT: (Song & { plays: number })[] = [
   { title: 'Paris in the rain', artist: 'Lauv', color: '#f5c518', plays: 96 },
   { title: 'Love wins all', artist: 'IU', color: '#e8a0b4', plays: 71 },
   { title: 'Holssi', artist: 'IU', color: '#a6d49f', plays: 54 },
-  { title: 'Steal The Show', artist: 'Lauv', color: '#f0a35e', plays: 42 },
+  { title: 'I Like Me Better', artist: 'Lauv', color: '#f0a35e', plays: 42 },
 ]
 
 const PALETTE = ['#f5c518', '#e58a8a', '#9fb4e6', '#f0a35e', '#8fd1b5', '#c9a4f0', '#d6a77a', '#86c2a0']

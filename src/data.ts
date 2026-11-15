@@ -151,7 +151,7 @@ const SONGS: Record<string, [string, string][]> = {
   reykjavik: [['Hoppípolla', 'Sigur Rós'], ['Jóga', 'Björk'], ['Near Light', 'Ólafur Arnalds']],
   bangkok: [['Maria También', 'Khruangbin'], ['White Gloves', 'Khruangbin'], ['Evan Finds the Third Room', 'Khruangbin']],
   kyoto: [['Summer', 'Joe Hisaishi'], ['Merry Christmas Mr. Lawrence', 'Ryuichi Sakamoto'], ['First Love', 'Hikaru Utada']],
-  lisbon: [['O Pastor', 'Madredeus'], ['Estranha Forma de Vida', 'Amália Rodrigues'], ['Gente da Minha Terra', 'Mariza']],
+  lisbon: [['O Pastor', 'Madredeus'], ['Estranha Forma de Vida', 'Amália Rodrigues'], ['Ó Gente da Minha Terra', 'Mariza']],
   jeju: [['Palette', 'IU'], ['Little Star', 'Standing Egg'], ['Wi Ing Wi Ing', 'HYUKOH']],
 }
 for (const a of FLOW_ALBUMS) {
