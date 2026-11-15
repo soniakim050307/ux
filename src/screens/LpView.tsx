@@ -643,7 +643,7 @@ export default function LpView({ album, active, onBack }: Props) {
         </div>
       )}
 
-      {page === 2 && album && !album.draft && (
+      {album && !album.draft && detail === null && (
         <button type="button" className="lv-send-btn" onClick={() => setSendOpen(true)} aria-label="Send my LP to the destination">
           <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
             <path d="M21 3 3 10.5l6.2 2.3L11.5 19l2.3-4.2L21 3Z M9.2 12.8 21 3" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" />
